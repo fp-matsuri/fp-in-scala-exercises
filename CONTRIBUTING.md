@@ -41,6 +41,8 @@
 
 5. [任意] [exercisesに対するテストコード](https://github.com/fpinscala/fpinscala/tree/second-edition/src/test/scala/fpinscala/exercises)を実装言語向けに移植する
 
+⚠️ テストコードは(answersではなく) exercisesをテスト対象として実装すること(answersの解答例を手もとで仮反映してすべてのテストケースをパスすることを確認する)。
+
 ℹ️ 本家Scala版では独自実装されたproperty-based testing (PBT)ライブラリが使われているが、PBTのテストコードを再現する場合には実装言語での標準的なPBTライブラリを利用してよい(そもそも標準的なPBTライブラリがない場合にはexample-based testingのテストケースで代替してよい)。
 
 6. [任意] フォーマッターやリンターを導入して適用する
