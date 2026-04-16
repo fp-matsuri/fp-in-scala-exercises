@@ -13,7 +13,7 @@
    [fp-in-clojure.test-helper :as test-helper]))
 
 (t/use-fixtures
-  :once test-helper/instrument-specs)
+  :once (test-helper/instrument-specs *ns*))
 
 (def ^:private mul-curry
   (sut/curry *'))
