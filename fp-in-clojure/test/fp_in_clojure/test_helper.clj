@@ -22,11 +22,12 @@
 
 ;; fixtures
 
-(defn instrument-specs [f]
-  (if-let [sut-ns-sym (test-ns->sut-ns-sym *ns*)]
-    (do (instrument-ns sut-ns-sym)
-        (try
-          (f)
-          (finally
-            (unstrument-ns sut-ns-sym))))
-    (f)))
+(defn instrument-specs [test-ns]
+  (fn [f]
+    (if-let [sut-ns-sym (test-ns->sut-ns-sym test-ns)]
+      (do (instrument-ns sut-ns-sym)
+          (try
+            (f)
+            (finally
+              (unstrument-ns sut-ns-sym))))
+      (f))))
