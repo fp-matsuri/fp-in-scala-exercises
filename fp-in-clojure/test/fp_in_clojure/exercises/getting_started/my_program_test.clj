@@ -1,6 +1,7 @@
 (ns fp-in-clojure.exercises.getting-started.my-program-test
   (:require
    [clojure.spec.alpha :as s]
+   [clojure.test :as t]
    [clojure.test.check.clojure-test :as tc]
    [clojure.test.check.properties :as prop]
    ;; 解答例
@@ -8,7 +9,11 @@
    ;; ref. https://clojure.org/guides/weird_characters#_discard
    #_[fp-in-clojure.answers.getting-started.my-program :as sut]
    [fp-in-clojure.exercises.common :as common]
-   [fp-in-clojure.exercises.getting-started.my-program :as sut]))
+   [fp-in-clojure.exercises.getting-started.my-program :as sut]
+   [fp-in-clojure.test-helper :as test-helper]))
+
+(t/use-fixtures
+  :once test-helper/instrument-specs)
 
 ;; NOTE: test.checkによるプロパティベーステスト(PBT)のテストケース
 ;; ref. https://github.com/clojure/test.check
