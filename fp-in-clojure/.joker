@@ -1,0 +1,4 @@
+{:known-macros [clojure.core.match/match
+                clojure.spec.alpha/fdef
+                clojure.test.check.clojure-test/defspec
+                clojure.test.check.properties/for-all]}
