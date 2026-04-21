@@ -1,0 +1,22 @@
+{
+  "name": "fp-in-scala-exercises",
+  "image": "ghcr.io/cachix/devenv:latest",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/direnv:1": {}
+  },
+  "onCreateCommand": "find /workspaces -maxdepth 2 -name '.envrc' -exec direnv allow {} \\;",
+  "postStartCommand": "eval \"$(direnv hook bash)\" && direnv reload",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "direnv.path.executable": "/usr/bin/direnv"
+      },
+      "extensions": [
+        "mkhl.direnv",
+        "betterthantomorrow.calva",
+        "haskell.haskell",
+        "scalameta.metals"
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+# claude
+.claude/
+
+# devenv が生成する一時ファイル
+.devenv/
+.devenv.flake.nix
+.devenv.instructions
+
+# direnv が生成する一時ファイル
+.direnv/
