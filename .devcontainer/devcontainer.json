@@ -7,8 +7,7 @@
   "containerEnv": {
     "XDG_CACHE_HOME": "/tmp/devenv-cache"
   },
-  "postCreateCommand": "find /workspaces -maxdepth 3 -name '.envrc' -exec direnv allow {} + && echo 'eval \"$(direnv hook bash)\"' >> ~/.bashrc",
-  "onCreateCommand": "find /workspaces -maxdepth 2 -name '.envrc' -exec direnv allow {} \\;",
+  "onCreateCommand": "find /workspaces -maxdepth 3 -name '.envrc' -exec direnv allow {} + && echo 'eval \"$(direnv hook bash)\"' >> ~/.bashrc",
   "customizations": {
     "vscode": {
       "settings": {
