@@ -14,9 +14,5 @@
   ];
 
   scripts = {
-    tests.exec = "cabal test";
-    lint.exec = ''hlint $(find src -name "*.hs")'';
-    fmt.exec = ''ormolu --mode inplace $(find src -name "*.hs")'';
-    repl.exec = "cabal repl";
   };
 }
