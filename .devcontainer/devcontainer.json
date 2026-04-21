@@ -4,12 +4,17 @@
   "features": {
     "ghcr.io/devcontainers-extra/features/direnv:1": {}
   },
+  "containerEnv": {
+    "XDG_CACHE_HOME": "/tmp/devenv-cache"
+  },
+  "postCreateCommand": "find /workspaces -maxdepth 3 -name '.envrc' -exec direnv allow {} + && echo 'eval \"$(direnv hook bash)\"' >> ~/.bashrc",
   "onCreateCommand": "find /workspaces -maxdepth 2 -name '.envrc' -exec direnv allow {} \\;",
-  "postStartCommand": "eval \"$(direnv hook bash)\" && direnv reload",
   "customizations": {
     "vscode": {
       "settings": {
-        "direnv.path.executable": "/usr/bin/direnv"
+        "direnv.path.executable": "/nix/var/nix/profiles/default/bin/direnv",
+        "direnv.restart.automatic": true,
+        "terminal.integrated.defaultProfile.linux": "bash"
       },
       "extensions": [
         "mkhl.direnv",
@@ -18,5 +23,6 @@
         "scalameta.metals"
       ]
     }
-  }
+  },
+  "remoteUser": "root"
 }

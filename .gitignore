@@ -8,3 +8,5 @@
 
 # direnv が生成する一時ファイル
 .direnv/
+
+.lsp/
