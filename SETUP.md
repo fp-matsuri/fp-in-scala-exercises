@@ -31,8 +31,7 @@ direnv hook fish | source
 git clone https://github.com/fp-matsuri/fp-in-scala-exercises
 cd fp-in-scala-exercises
 
-# ルートおよび各サブプロジェクトの .envrc を信頼する
-direnv allow
+# 各サブプロジェクトの .envrc を信頼する
 direnv allow fp-in-clojure
 direnv allow fp-in-haskell
 direnv allow fp-in-scala
@@ -71,13 +70,6 @@ fmt    # フォーマット
 repl   # REPL 起動
 ```
 
-### 各言語の環境詳細
-
-| ディレクトリ | 言語 | 主なツール |
-|------------|------|-----------|
-| `fp-in-clojure/` | Clojure + Java 21 | clj-kondo, cljstyle, joker |
-| `fp-in-haskell/` | Haskell (GHC) | cabal, hlint, ormolu, HLS |
-| `fp-in-scala/` | Scala 3 + Java 21 | sbt, scalafmt, metals |
 
 ## VS Code / Dev Container で使う
 
