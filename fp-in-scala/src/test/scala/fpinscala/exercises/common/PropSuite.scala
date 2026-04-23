@@ -4,7 +4,6 @@ import fpinscala.answers.testing.exhaustive.*
 import fpinscala.answers.testing.exhaustive.Prop.*
 import fpinscala.answers.testing.exhaustive.Prop.Result.*
 import munit.*
-import munit.internal.FutureCompat.*
 
 import scala.annotation.nowarn
 import scala.util.{Success, Try}
@@ -26,7 +25,7 @@ trait PropSuite extends FunSuite:
       "FPInScala Prop",
       t =>
         t.withBodyMap(
-          _.transformCompat {
+          _.transform {
             case Success(result: Result @nowarn) => resultToTry(result, t)
             case r => r
           }(munitExecutionContext)
