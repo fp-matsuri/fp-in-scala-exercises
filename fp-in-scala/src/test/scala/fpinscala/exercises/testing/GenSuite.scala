@@ -23,7 +23,7 @@ object Gen:
   extension [A](self: Gen[A])
     // We should use a different method name to avoid looping (not 'run')
     def next(rng: RNG): (A, RNG) = self.run(rng)
-*/
+ */
 
 // Gen tests:
 /*
@@ -91,8 +91,7 @@ object Gen:
       val (unionList3, _) = genUnion3.listOfN(shortSample).next(rng)
       assert(unionList3.count(_ == n) >= shortSample / 5, "g2 is twice as common as g1")
       assert(unionList3.count(_ == m) >= shortSample / 2, "g2 is twice as common as g1")
-*/
-
+ */
 
 // Prop tests: Before using these tests (starting from Exercise 8.9),
 // add the next block to fpinscala.exercises.testing.Gen.scala file
@@ -105,7 +104,7 @@ object Prop:
                rng: RNG = RNG.Simple(System.currentTimeMillis)
              ): Result =
       self(maxSize, testCases, rng)
-*/
+ */
 
 // Prop tests
 /*
@@ -125,8 +124,7 @@ object Prop:
     assertEquals((propPassed || propFalsified).check(), Passed)
     assertEquals((propFalsified || propPassed).check(), Passed)
     assert((propFalsified || propFalsified).check().isFalsified)
-*/
-
+ */
 
 // SGen tests: Before using these tests (starting from Exercise 8.10),
 // add the next block to fpinscala.exercises.testing.Gen.scala file
@@ -136,7 +134,7 @@ object SGen:
 
   extension [A](self: SGen[A])
     def apply(n: Int): Gen[A] = self(n)
-*/
+ */
 
 // SGen tests
 /*
@@ -160,4 +158,4 @@ object SGen:
     case n ** rng =>
       val (randomNonEmptyList, _) = Gen.boolean.nonEmptyList(n).next(rng)
       assert(randomNonEmptyList.nonEmpty)
-*/
+ */

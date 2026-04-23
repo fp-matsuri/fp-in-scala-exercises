@@ -20,8 +20,7 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
   object Id:
     given idMonad: Monad[Id] with
       def unit[A](a: => A) = a
-      extension [A](a: A)
-        override def flatMap[B](f: A => B): B = f(a)
+      extension [A](a: A) override def flatMap[B](f: A => B): B = f(a)
 
   extension [A](fa: F[A])
     def map[B](f: A => B): F[B] =
@@ -37,7 +36,7 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
       fa.mapAccum(List[A]())((a, s) => ((), a :: s))(1).reverse
 
     def zipWithIndex_ : F[(A, Int)] =
-      fa.traverse(a => 
+      fa.traverse(a =>
         for
           i <- State.get[Int]
           _ <- State.set(i + 1)
@@ -45,19 +44,23 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
       ).run(0)(0)
 
     def toList_ : List[A] =
-      fa.traverse(a => 
+      fa.traverse(a =>
         for
-          as <- State.get[List[A]] // Get the current state, the accumulated list.
-          _  <- State.set(a :: as) // Add the current element and set the new list as the new state.
+          as <- State
+            .get[List[A]] // Get the current state, the accumulated list.
+          _ <- State.set(
+            a :: as
+          ) // Add the current element and set the new list as the new state.
         yield ()
-      ).run(Nil)(1).reverse
+      ).run(Nil)(1)
+        .reverse
 
     def mapAccum[S, B](s: S)(f: (A, S) => (B, S)): (F[B], S) =
-      fa.traverse(a => 
+      fa.traverse(a =>
         for
           s1 <- State.get[S]
           (b, s2) = f(a, s1)
-          _  <- State.set(s2)
+          _ <- State.set(s2)
         yield b
       ).run(s)
 
@@ -69,24 +72,29 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
 
     def zip[B](fb: F[B]): F[(A, B)] =
       fa.mapAccum(fb.toList):
-        case (a, Nil) => sys.error("zip: Incompatible shapes.")
+        case (a, Nil)     => sys.error("zip: Incompatible shapes.")
         case (a, b :: bs) => ((a, b), bs)
       ._1
 
     def zipL[B](fb: F[B]): F[(A, Option[B])] =
       fa.mapAccum(fb.toList):
-        case (a, Nil) => ((a, None), Nil)
+        case (a, Nil)     => ((a, None), Nil)
         case (a, b :: bs) => ((a, Some(b): Option[B]), bs)
       ._1
 
     def zipR[B](fb: F[B]): F[(Option[A], B)] =
       fb.mapAccum(fa.toList):
-        case (b, Nil) => ((None, b), Nil)
+        case (b, Nil)     => ((None, b), Nil)
         case (b, a :: as) => ((Some(a): Option[A], b), as)
       ._1
 
-    def fuse[M[_], N[_], B](f: A => M[B], g: A => N[B])(using m: Applicative[M], n: Applicative[N]): (M[F[B]], N[F[B]]) =
-      fa.traverse[[x] =>> (M[x], N[x]), B](a => (f(a), g(a)))(using m.product(n))
+    def fuse[M[_], N[_], B](f: A => M[B], g: A => N[B])(using
+        m: Applicative[M],
+        n: Applicative[N]
+    ): (M[F[B]], N[F[B]]) =
+      fa.traverse[[x] =>> (M[x], N[x]), B](a => (f(a), g(a)))(using
+        m.product(n)
+      )
 
   def compose[G[_]: Traverse]: Traverse[[x] =>> F[G[x]]] = new:
     extension [A](fa: F[G[A]])
@@ -113,7 +121,7 @@ object Traverse:
     extension [A](ta: Tree[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Tree[B]] =
         f(ta.head).map2(ta.tail.traverse(a => a.traverse(f)))(Tree(_, _))
-  
+
   given mapTraverse[K]: Traverse[Map[K, _]] with
     extension [A](m: Map[K, A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Map[K, B]] =

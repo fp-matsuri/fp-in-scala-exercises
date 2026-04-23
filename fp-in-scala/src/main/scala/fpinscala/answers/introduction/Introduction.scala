@@ -60,10 +60,8 @@ object ThirdExample:
 
   case class Charge(cc: CreditCard, amount: Double):
     def combine(other: Charge): Charge =
-      if cc == other.cc then
-        Charge(cc, amount + other.amount)
-      else
-        throw new Exception("Can't combine charges to different cards")
+      if cc == other.cc then Charge(cc, amount + other.amount)
+      else throw new Exception("Can't combine charges to different cards")
 
   class Coffee:
     val price: Double = 2.0

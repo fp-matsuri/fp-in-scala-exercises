@@ -28,7 +28,7 @@ object Task:
     def or[B >: A](t2: Task[B]): Task[B] =
       IO.monad.flatMap(self):
         case Failure(e) => t2
-        case a => IO(a)
+        case a          => IO(a)
 
     def unsafeRunSync(es: ExecutorService): A = IO.unsafeRunSync(self)(es).get
 

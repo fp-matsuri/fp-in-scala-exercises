@@ -1,25 +1,23 @@
 package fpinscala.answers.iomonad
 
-/**
- * A version of `TailRec` implemented using exceptions.
- * In the implementation of `flatMap`, rather than calling
- * the function, we throw an exception indicating what
- * function we want to call. A central loop repeatedly tries
- * and catches these exceptions to force the computation.
- */
+/** A version of `TailRec` implemented using exceptions. In the implementation
+  * of `flatMap`, rather than calling the function, we throw an exception
+  * indicating what function we want to call. A central loop repeatedly tries
+  * and catches these exceptions to force the computation.
+  */
 enum Throw[+A]:
   case Done(a: A)
   case More(thunk: () => Throw[A])
 
   @annotation.tailrec
   final def run: A = this match
-    case Done(a) => a
+    case Done(a)     => a
     case More(thunk) => Throw.force(thunk).run
 
 object Throw:
 
   /* Exception indicating that the central loop should call `f(a)`. */
-  case class Call[A,+B] private[Throw] (a: A, f: A => B) extends Exception:
+  case class Call[A, +B] private[Throw] (a: A, f: A => B) extends Exception:
     override def fillInStackTrace = this
 
   /* Defer evaluation of `f(a)` to the central evaluation loop. */
@@ -54,10 +52,12 @@ object Throw:
     extension [A](fa: Throw[A])
       def flatMap[B](f: A => Throw[B]): Throw[B] =
         fa match
-          case Done(a) => f(a)
+          case Done(a)     => f(a)
           case More(thunk) =>
             try thunk().flatMap(f)
             catch
-              case Call(a0, g) => more:
-                defer(a0)(g.asInstanceOf[Any => Throw[A]].
-                          andThen(_.flatMap(f)))
+              case Call(a0, g) =>
+                more:
+                  defer(a0)(
+                    g.asInstanceOf[Any => Throw[A]].andThen(_.flatMap(f))
+                  )

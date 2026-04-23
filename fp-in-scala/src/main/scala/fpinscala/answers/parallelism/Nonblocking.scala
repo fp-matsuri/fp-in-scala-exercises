@@ -11,12 +11,19 @@ object Nonblocking:
 
   object Par:
 
-    extension [A](p: Par[A]) def run(es: ExecutorService): A =
-      val ref = new AtomicReference[A] // A mutable, threadsafe reference, to use for storing the result
-      val latch = new CountDownLatch(1) // A latch which, when decremented, implies that `ref` has the result
-      p(es) { a => ref.set(a); latch.countDown } // Asynchronously set the result, and decrement the latch
-      latch.await // Block until the `latch.countDown` is invoked asynchronously
-      ref.get // Once we've passed the latch, we know `ref` has been set, and return its value
+    extension [A](p: Par[A])
+      def run(es: ExecutorService): A =
+        val ref = new AtomicReference[
+          A
+        ] // A mutable, threadsafe reference, to use for storing the result
+        val latch = new CountDownLatch(
+          1
+        ) // A latch which, when decremented, implies that `ref` has the result
+        p(es) { a =>
+          ref.set(a); latch.countDown
+        } // Asynchronously set the result, and decrement the latch
+        latch.await // Block until the `latch.countDown` is invoked asynchronously
+        ref.get // Once we've passed the latch, we know `ref` has been set, and return its value
 
     def unit[A](a: A): Par[A] =
       es => cb => cb(a)
@@ -28,46 +35,50 @@ object Nonblocking:
     def fork[A](a: => Par[A]): Par[A] =
       es => cb => eval(es)(a(es)(cb))
 
-    /**
-     * Helper function for constructing `Par` values out of calls to non-blocking continuation-passing-style APIs.
-     * This will come in handy in Chapter 13.
-     */
-    def async[A](f: (A => Unit) => Unit): Par[A] = 
+    /** Helper function for constructing `Par` values out of calls to
+      * non-blocking continuation-passing-style APIs. This will come in handy in
+      * Chapter 13.
+      */
+    def async[A](f: (A => Unit) => Unit): Par[A] =
       es => cb => f(cb)
 
-    /**
-     * Helper function, for evaluating an action
-     * asynchronously, using the given `ExecutorService`.
-     */
+    /** Helper function, for evaluating an action asynchronously, using the
+      * given `ExecutorService`.
+      */
     def eval(es: ExecutorService)(r: => Unit): Unit =
       es.submit(new Callable[Unit] { def call = r })
 
-    extension [A](p: Par[A]) def map2[B, C](p2: Par[B])(f: (A, B) => C): Par[C] =
-      es => cb =>
-        var ar: Option[A] = None
-        var br: Option[B] = None
-        // this implementation is a little too liberal in forking of threads -
-        // it forks a new logical thread for the actor and for stack-safety,
-        // forks evaluation of the callback `cb`
-        val combiner = Actor[Either[A,B]](es):
-          case Left(a) =>
-            if br.isDefined then Par.eval(es)(cb(f(a, br.get)))
-            else ar = Some(a)
-          case Right(b) =>
-            if ar.isDefined then Par.eval(es)(cb(f(ar.get, b)))
-            else br = Some(b)
-        p(es)(a => combiner ! Left(a))
-        p2(es)(b => combiner ! Right(b))
+    extension [A](p: Par[A])
+      def map2[B, C](p2: Par[B])(f: (A, B) => C): Par[C] =
+        es =>
+          cb =>
+            var ar: Option[A] = None
+            var br: Option[B] = None
+            // this implementation is a little too liberal in forking of threads -
+            // it forks a new logical thread for the actor and for stack-safety,
+            // forks evaluation of the callback `cb`
+            val combiner = Actor[Either[A, B]](es):
+              case Left(a) =>
+                if br.isDefined then Par.eval(es)(cb(f(a, br.get)))
+                else ar = Some(a)
+              case Right(b) =>
+                if ar.isDefined then Par.eval(es)(cb(f(ar.get, b)))
+                else br = Some(b)
+            p(es)(a => combiner ! Left(a))
+            p2(es)(b => combiner ! Right(b))
 
-    extension [A](p: Par[A]) def map[B](f: A => B): Par[B] =
-      es => cb => p(es)(a => eval(es)(cb(f(a))))
+    extension [A](p: Par[A])
+      def map[B](f: A => B): Par[B] =
+        es => cb => p(es)(a => eval(es)(cb(f(a))))
 
-    extension [A](p: Par[A]) def flatMap[B](f: A => Par[B]): Par[B] =
-      // Note: fork isn't strictly necessary but lets us avoid stack overflows
-      // when chaining lots of flatMap calls - we use this stack safety in part 4
-      fork(es => cb => p(es)(a => f(a)(es)(cb)))
+    extension [A](p: Par[A])
+      def flatMap[B](f: A => Par[B]): Par[B] =
+        // Note: fork isn't strictly necessary but lets us avoid stack overflows
+        // when chaining lots of flatMap calls - we use this stack safety in part 4
+        fork(es => cb => p(es)(a => f(a)(es)(cb)))
 
-    extension [A](p: Par[A]) def zip[B](b: Par[B]): Par[(A,B)] = p.map2(b)((_,_))
+    extension [A](p: Par[A])
+      def zip[B](b: Par[B]): Par[(A, B)] = p.map2(b)((_, _))
 
     def lazyUnit[A](a: => A): Par[A] =
       fork(unit(a))
@@ -77,7 +88,7 @@ object Nonblocking:
 
     def sequenceRight[A](as: List[Par[A]]): Par[List[A]] =
       as match
-        case Nil => unit(Nil)
+        case Nil    => unit(Nil)
         case h :: t => h.map2(fork(sequence(t)))(_ :: _)
 
     def sequenceBalanced[A](as: IndexedSeq[Par[A]]): Par[IndexedSeq[A]] = fork:
@@ -113,9 +124,11 @@ object Nonblocking:
      * about `t(es)`? What about `t(es)(cb)`?
      */
     def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
-      es => cb => cond(es): b =>
-        if b then eval(es)(t(es)(cb))
-        else eval(es)(f(es)(cb))
+      es =>
+        cb =>
+          cond(es): b =>
+            if b then eval(es)(t(es)(cb))
+            else eval(es)(f(es)(cb))
 
     /* The code here is very similar. */
     def choiceN[A](p: Par[Int])(ps: List[Par[A]]): Par[A] =
@@ -143,5 +156,5 @@ object Nonblocking:
     def joinViaFlatMap[A](ppa: Par[Par[A]]): Par[A] =
       ppa.flatMap(identity)
 
-    def flatMapViaJoin[A,B](pa: Par[A])(f: A => Par[B]): Par[B] =
+    def flatMapViaJoin[A, B](pa: Par[A])(f: A => Par[B]): Par[B] =
       join(pa.map(f))

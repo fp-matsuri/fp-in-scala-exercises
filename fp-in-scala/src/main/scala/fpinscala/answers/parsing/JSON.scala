@@ -15,30 +15,33 @@ object JSON:
     def token(s: String) = string(s).token
 
     def array: Parser[JSON] = (
-      token("[") *> value.sep(token(",")).map(vs => JArray(vs.toIndexedSeq)) <* token("]")
+      token("[") *> value
+        .sep(token(","))
+        .map(vs => JArray(vs.toIndexedSeq)) <* token("]")
     ).scope("array")
 
     def obj: Parser[JSON] = (
-      token("{") *> keyval.sep(token(",")).map(kvs => JObject(kvs.toMap)) <* token("}")
+      token("{") *> keyval
+        .sep(token(","))
+        .map(kvs => JObject(kvs.toMap)) <* token("}")
     ).scope("object")
 
     def keyval: Parser[(String, JSON)] = escapedQuoted ** (token(":") *> value)
 
     def lit: Parser[JSON] = (
       token("null").as(JNull) |
-      double.map(JNumber(_)) |
-      escapedQuoted.map(JString(_)) |
-      token("true").as(JBool(true)) |
-      token("false").as(JBool(false))
+        double.map(JNumber(_)) |
+        escapedQuoted.map(JString(_)) |
+        token("true").as(JBool(true)) |
+        token("false").as(JBool(false))
     ).scope("literal")
 
     def value: Parser[JSON] = lit | obj | array
 
     (whitespace *> (obj | array)).root
 
-/**
- * JSON parsing example.
- */
+/** JSON parsing example.
+  */
 @main def jsonExample =
   val jsonTxt = """
 {
@@ -66,7 +69,7 @@ object JSON:
 ]
 """
 
-  def printResult[E](e: Either[E,JSON]) =
+  def printResult[E](e: Either[E, JSON]) =
     e.fold(println, println)
 
   val parser = JSON.jsonParser(Reference)

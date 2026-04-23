@@ -5,12 +5,19 @@ import fpinscala.answers.testing.exhaustive.Gen.`**`
 import fpinscala.exercises.common.Common.*
 import fpinscala.exercises.common.PropSuite
 import fpinscala.exercises.gettingstarted.MyProgram.{factorial, fib}
-import fpinscala.exercises.gettingstarted.PolymorphicFunctions.{compose, curry, isSorted, uncurry}
+import fpinscala.exercises.gettingstarted.PolymorphicFunctions.{
+  compose,
+  curry,
+  isSorted,
+  uncurry
+}
 
 class GettingStartedSuite extends PropSuite:
-  private lazy val mulCurry: Int => Int => Int = curry[Int, Int, Int]((a: Int, b: Int) => a * b)
+  private lazy val mulCurry: Int => Int => Int =
+    curry[Int, Int, Int]((a: Int, b: Int) => a * b)
 
-  private lazy val mulUncurry: (Int, Int) => Int = uncurry[Int, Int, Int]((a: Int) => (b: Int) => a * b)
+  private lazy val mulUncurry: (Int, Int) => Int =
+    uncurry[Int, Int, Int]((a: Int) => (b: Int) => a * b)
 
   private val genSortedArray: Gen[Array[Int]] =
     genList(genShortNumber).map(_.sorted.toArray)
@@ -19,8 +26,8 @@ class GettingStartedSuite extends PropSuite:
     for
       n <- Gen.choose(2, 20)
       list <- Gen.listOfN(n, genShortNumber)
-    yield
-      list.zipWithIndex.map:
+    yield list.zipWithIndex
+      .map:
         case (num, i) =>
           if i % 2 == 0 then num + 100
           else num - 100
@@ -32,10 +39,12 @@ class GettingStartedSuite extends PropSuite:
   test("MyProgram.fib")(genLengthOfFibonacciSeq): i =>
     assertEquals(fib(i), theFirst21FibonacciNumbers(i))
 
-  test("PolymorphicFunctions.isSorted for sorted array case")(genSortedArray): array =>
-    assert(isSorted[Int](array, _ > _))
+  test("PolymorphicFunctions.isSorted for sorted array case")(genSortedArray):
+    array => assert(isSorted[Int](array, _ > _))
 
-  test("PolymorphicFunctions.isSorted for unsorted array case")(genUnsortedArray): array =>
+  test("PolymorphicFunctions.isSorted for unsorted array case")(
+    genUnsortedArray
+  ): array =>
     assert(!isSorted[Int](array, _ > _))
 
   test("PolymorphicFunctions.curry")(Gen.int ** Gen.int):

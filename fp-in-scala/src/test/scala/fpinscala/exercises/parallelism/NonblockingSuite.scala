@@ -14,11 +14,14 @@ class NonblockingSuite extends PropSuite:
   private val genParBoolean: Gen[Par[Boolean]] = Gen.boolean.map(Par.unit)
   private val genParInt: Gen[Par[Int]] = genShortNumber.map(Par.unit)
   private val genParString: Gen[Par[String]] = genString.map(Par.unit)
-  private val genParParString: Gen[Par[Par[String]]] = genString.map(str => Par.unit(Par.unit(str)))
+  private val genParParString: Gen[Par[Par[String]]] =
+    genString.map(str => Par.unit(Par.unit(str)))
   private val genListOfParString: Gen[List[Par[String]]] =
     genNonEmptyList[Par[String]](genParString)
   private val genMap: Gen[Map[Int, Par[String]]] =
-    Gen.listOfN(20, genParString).map(list => list.toIndexedSeq.indices.map(i => i -> list(i)).toMap)
+    Gen
+      .listOfN(20, genParString)
+      .map(list => list.toIndexedSeq.indices.map(i => i -> list(i)).toMap)
 
   test("Nonblocking.choice")(genParInt ** genParInt ** genParBoolean):
     case t ** f ** p =>
@@ -64,18 +67,24 @@ class NonblockingSuite extends PropSuite:
     case p ** ps =>
       checkFlatMap(p, ps)(Par.flatMapViaJoin[Int, String](p)(ps))
 
-  private def checkChoice(t: Par[Int], f: Par[Int], p: Par[Boolean])(choice: Par[Int]) =
+  private def checkChoice(t: Par[Int], f: Par[Int], p: Par[Boolean])(
+      choice: Par[Int]
+  ) =
     val actual = choice.run(es)
     val expected = if p.run(es) then t.run(es) else f.run(es)
     assertEquals(actual, expected)
 
-  private def checkChoiceN(p: Par[Int], ps: List[Par[String]])(choice: Par[String]) =
+  private def checkChoiceN(p: Par[Int], ps: List[Par[String]])(
+      choice: Par[String]
+  ) =
     val actual = choice.run(es)
     val i = p.run(es) % ps.length
     val expected = ps(i).run(es)
     assertEquals(actual, expected)
 
-  private def checkFlatMap(p: Par[Int], ps: Map[Int, Par[String]])(choice: Par[String]) =
+  private def checkFlatMap(p: Par[Int], ps: Map[Int, Par[String]])(
+      choice: Par[String]
+  ) =
     val actual: String = choice.run(es)
     val key = p.run(es)
     val expected: String = ps(key).run(es)

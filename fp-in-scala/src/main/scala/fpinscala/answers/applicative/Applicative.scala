@@ -38,7 +38,7 @@ trait Applicative[F[_]] extends Functor[F]:
   def sequence[A](fas: List[F[A]]): F[List[A]] =
     traverse(fas)(fa => fa)
 
-  def traverse[A,B](as: List[A])(f: A => F[B]): F[List[B]] =
+  def traverse[A, B](as: List[A])(f: A => F[B]): F[List[B]] =
     as.foldRight(unit(List[B]()))((a, acc) => f(a).map2(acc)(_ :: _))
 
   def replicateM[A](n: Int, fa: F[A]): F[List[A]] =
@@ -49,15 +49,15 @@ trait Applicative[F[_]] extends Functor[F]:
       fa.map2(fb)((_, _))
 
     def map3[B, C, D](
-      fb: F[B],
-      fc: F[C]
+        fb: F[B],
+        fc: F[C]
     )(f: (A, B, C) => D): F[D] =
       apply(apply(apply(unit(f.curried))(fa))(fb))(fc)
 
     def map4[B, C, D, E](
-      fb: F[B],
-      fc: F[C],
-      fd: F[D]
+        fb: F[B],
+        fc: F[C],
+        fd: F[D]
     )(f: (A, B, C, D) => E): F[E] =
       apply(apply(apply(apply(unit(f.curried))(fa))(fb))(fc))(fd)
 
@@ -100,14 +100,14 @@ object Applicative:
   enum Validated[+E, +A]:
     case Valid(get: A) extends Validated[Nothing, A]
     case Invalid(error: E) extends Validated[E, Nothing]
-  
+
   object Validated:
     given validatedApplicative[E: Monoid]: Applicative[Validated[E, _]] with
       def unit[A](a: => A) = Valid(a)
       extension [A](fa: Validated[E, A])
         override def map2[B, C](fb: Validated[E, B])(f: (A, B) => C) =
           (fa, fb) match
-            case (Valid(a), Valid(b)) => Valid(f(a, b))
+            case (Valid(a), Valid(b))       => Valid(f(a, b))
             case (Invalid(e1), Invalid(e2)) =>
               Invalid(summon[Monoid[E]].combine(e1, e2))
             case (e @ Invalid(_), _) => e
@@ -122,16 +122,19 @@ object Applicative:
 
     def validBirthdate(birthdate: String): Validated[List[String], LocalDate] =
       try Validated.Valid(LocalDate.parse(birthdate))
-      catch case _: java.time.format.DateTimeParseException =>
-        Validated.Invalid(List("Birthdate must be in the form yyyy-MM-dd"))
+      catch
+        case _: java.time.format.DateTimeParseException =>
+          Validated.Invalid(List("Birthdate must be in the form yyyy-MM-dd"))
 
     def validPhone(phoneNumber: String): Validated[List[String], String] =
       if phoneNumber.matches("[0-9]{10}") then Validated.Valid(phoneNumber)
       else Validated.Invalid(List("Phone number must be 10 digits"))
 
-    def validateWebForm(name: String,
-                        birthdate: String,
-                        phone: String): Validated[List[String], WebForm] =
+    def validateWebForm(
+        name: String,
+        birthdate: String,
+        phone: String
+    ): Validated[List[String], WebForm] =
       validName(name).map3(
         validBirthdate(birthdate),
         validPhone(phone)
@@ -149,7 +152,7 @@ object Applicative:
       extension [A](fa: Validated[E, A])
         override def map2[B, C](fb: Validated[E, B])(f: (A, B) => C) =
           (fa, fb) match
-            case (Valid(a), Valid(b)) => Valid(f(a, b))
+            case (Valid(a), Valid(b))       => Valid(f(a, b))
             case (Invalid(e1), Invalid(e2)) =>
               Invalid(summon[Semigroup[E]].combine(e1, e2))
             case (e @ Invalid(_), _) => e
@@ -171,20 +174,27 @@ object Applicative:
       if name != "" then Validated.Valid(name)
       else Validated.Invalid(NonEmptyList("Name cannot be empty"))
 
-    def validBirthdate(birthdate: String): Validated[NonEmptyList[String], LocalDate] =
-      try
-        Validated.Valid(LocalDate.parse(birthdate))
+    def validBirthdate(
+        birthdate: String
+    ): Validated[NonEmptyList[String], LocalDate] =
+      try Validated.Valid(LocalDate.parse(birthdate))
       catch
         case _: java.time.format.DateTimeParseException =>
-          Validated.Invalid(NonEmptyList("Birthdate must be in the form yyyy-MM-dd"))
+          Validated.Invalid(
+            NonEmptyList("Birthdate must be in the form yyyy-MM-dd")
+          )
 
-    def validPhone(phoneNumber: String): Validated[NonEmptyList[String], String] =
+    def validPhone(
+        phoneNumber: String
+    ): Validated[NonEmptyList[String], String] =
       if phoneNumber.matches("[0-9]{10}") then Validated.Valid(phoneNumber)
       else Validated.Invalid(NonEmptyList("Phone number must be 10 digits"))
 
-    def validateWebForm(name: String,
-                        birthdate: String,
-                        phone: String): Validated[NonEmptyList[String], WebForm] =
+    def validateWebForm(
+        name: String,
+        birthdate: String,
+        phone: String
+    ): Validated[NonEmptyList[String], WebForm] =
       validName(name).map3(
         validBirthdate(birthdate),
         validPhone(phone)
@@ -206,7 +216,7 @@ object Applicative:
     extension [A](eea: Either[E, A])
       override def flatMap[B](f: A => Either[E, B]) = eea match
         case Right(a) => f(a)
-        case Left(b) => Left(b)
+        case Left(b)  => Left(b)
 
   given stateMonad[S]: Monad[State[S, _]] with
     def unit[A](a: => A): State[S, A] = State(s => (a, s))

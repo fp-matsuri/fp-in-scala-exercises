@@ -4,11 +4,12 @@ import fpinscala.exercises.parsing.Parsers
 
 import scala.util.matching.Regex
 
-/** This is similar to `fpinscala.answers.parsing.Reference` but using `fpinscala.exercises.parsing.Parsers`.
- *
- * @see
- *   [[fpinscala.answers.parsing.Reference]]
- */
+/** This is similar to `fpinscala.answers.parsing.Reference` but using
+  * `fpinscala.exercises.parsing.Parsers`.
+  *
+  * @see
+  *   [[fpinscala.answers.parsing.Reference]]
+  */
 object UnitTestParser extends Parsers[UnitTestParser.Parser]:
   type Parser[+A] = Location => Result[A]
 
@@ -44,9 +45,9 @@ object UnitTestParser extends Parsers[UnitTestParser.Parser]:
   def fail(msg: String): Parser[Nothing] =
     l => Failure(l.toError(msg), true)
 
-  /** Returns -1 if s1.startsWith(s2), otherwise returns the first index where the two strings differed. If s2 is longer
-   * than s1, returns s1.length.
-   */
+  /** Returns -1 if s1.startsWith(s2), otherwise returns the first index where
+    * the two strings differed. If s2 is longer than s1, returns s1.length.
+    */
   def firstNonmatchingIndex(s1: String, s2: String, offset: Int): Int =
     var i = 0
     while i + offset < s1.length && i < s2.length do

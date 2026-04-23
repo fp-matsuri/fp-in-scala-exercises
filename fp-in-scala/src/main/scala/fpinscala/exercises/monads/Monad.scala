@@ -8,21 +8,21 @@ import state.*
 import parallelism.Par.*
 
 trait Functor[F[_]]:
-  extension [A](fa: F[A])
-    def map[B](f: A => B): F[B]
+  extension [A](fa: F[A]) def map[B](f: A => B): F[B]
 
-  extension [A, B](fab: F[(A, B)]) def distribute: (F[A], F[B]) =
-    (fab.map(_(0)), fab.map(_(1)))
+  extension [A, B](fab: F[(A, B)])
+    def distribute: (F[A], F[B]) =
+      (fab.map(_(0)), fab.map(_(1)))
 
-  extension [A, B](e: Either[F[A], F[B]]) def codistribute: F[Either[A, B]] =
-    e match
-      case Left(fa) => fa.map(Left(_))
-      case Right(fb) => fb.map(Right(_))
+  extension [A, B](e: Either[F[A], F[B]])
+    def codistribute: F[Either[A, B]] =
+      e match
+        case Left(fa)  => fa.map(Left(_))
+        case Right(fb) => fb.map(Right(_))
 
 object Functor:
   given listFunctor: Functor[List] with
-    extension [A](as: List[A])
-      def map[B](f: A => B): List[B] = as.map(f)
+    extension [A](as: List[A]) def map[B](f: A => B): List[B] = as.map(f)
 
 trait Monad[F[_]] extends Functor[F]:
   def unit[A](a: => A): F[A]
@@ -30,7 +30,7 @@ trait Monad[F[_]] extends Functor[F]:
   extension [A](fa: F[A])
     def flatMap[B](f: A => F[B]): F[B] =
       fa.map(f).join
-    
+
     def map[B](f: A => B): F[B] =
       fa.flatMap(a => unit(f(a)))
 
@@ -56,8 +56,9 @@ trait Monad[F[_]] extends Functor[F]:
   def filterM[A](as: List[A])(f: A => F[Boolean]): F[List[A]] =
     ???
 
-  extension [A](ffa: F[F[A]]) def join: F[A] =
-    ???
+  extension [A](ffa: F[F[A]])
+    def join: F[A] =
+      ???
 
   extension [A](fa: F[A])
     def flatMapViaJoinAndMap[B](f: A => F[B]): F[B] =
@@ -66,7 +67,7 @@ trait Monad[F[_]] extends Functor[F]:
   def composeViaJoinAndMap[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
     ???
 
-end Monad      
+end Monad
 
 object Monad:
   given genMonad: Monad[Gen] with
@@ -123,8 +124,7 @@ object Id:
 opaque type Reader[-R, +A] = R => A
 
 object Reader:
-  extension [R, A](ra: Reader[R, A])
-    def run(r: R): A = ra(r)
+  extension [R, A](ra: Reader[R, A]) def run(r: R): A = ra(r)
 
   given readerMonad[R]: Monad[Reader[R, _]] with
     def unit[A](a: => A): Reader[R, A] = ???

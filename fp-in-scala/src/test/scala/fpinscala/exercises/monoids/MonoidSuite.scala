@@ -55,7 +55,11 @@ class MonoidSuite extends PropSuite:
 
       assertEquals(m.combine(a, m.empty)(i0), a(i0), "identity")
       assertEquals(m.combine(m.empty, a)(i0), a(i0), "identity")
-      assertEquals(m.combine(a, m.combine(b, c))(i0), m.combine(m.combine(a, b), c)(i0), "associativity")
+      assertEquals(
+        m.combine(a, m.combine(b, c))(i0),
+        m.combine(m.combine(a, b), c)(i0),
+        "associativity"
+      )
 
   /* GenSuite from chapter 8 must be passed
   test("Monoid.monoidLaws")(Gen.unit(())): _ =>
@@ -70,7 +74,7 @@ class MonoidSuite extends PropSuite:
     assertEquals(monoidLaws(booleanOr, EGen.boolean).check(), Passed)
     assertEquals(monoidLaws(booleanAnd, EGen.boolean).check(), Passed)
     assertEquals(monoidLaws(optionMonoid[Int], genOption).check(), Passed)
-  */
+   */
 
   test("Monoid.combineAll")(genIntList ** genStringList ** genBooleanList):
     case ilist ** slist ** blist =>
@@ -84,13 +88,22 @@ class MonoidSuite extends PropSuite:
     assertEquals(foldMap(list, intAddition)(trueCounter), trueCounter(list))
 
   test("Monoid.foldRight")(genBooleanList): list =>
-    assertEquals(foldRight(list)(0)((b, acc) => trueCounter(b) + acc), trueCounter(list))
+    assertEquals(
+      foldRight(list)(0)((b, acc) => trueCounter(b) + acc),
+      trueCounter(list)
+    )
 
   test("Monoid.foldLeft")(genBooleanList): list =>
-    assertEquals(foldLeft(list)(0)((acc, b) => trueCounter(b) + acc), trueCounter(list))
+    assertEquals(
+      foldLeft(list)(0)((acc, b) => trueCounter(b) + acc),
+      trueCounter(list)
+    )
 
   test("Monoid.foldMapV")(genBooleanList): list =>
-    assertEquals(foldMapV(list.toIndexedSeq, intAddition)(trueCounter), trueCounter(list))
+    assertEquals(
+      foldMapV(list.toIndexedSeq, intAddition)(trueCounter),
+      trueCounter(list)
+    )
 
   test("Monoid.par")(genString ** genString ** genString):
     case s1 ** s2 ** s3 =>
@@ -99,12 +112,19 @@ class MonoidSuite extends PropSuite:
       val c = Par.unit(s3)
       val m = par(stringMonoid)
 
-      assertEquals(m.combine(a, m.combine(b, c)).run(es), m.combine(m.combine(a, b), c).run(es), "associativity")
+      assertEquals(
+        m.combine(a, m.combine(b, c)).run(es),
+        m.combine(m.combine(a, b), c).run(es),
+        "associativity"
+      )
       assertEquals(m.combine(a, m.empty).run(es), a.run(es), "identity")
       assertEquals(m.combine(m.empty, a).run(es), a.run(es), "identity")
 
   test("Monoid.parFoldMap")(genBooleanIndexedSeq): seq =>
-    assertEquals(parFoldMap(seq, intAddition)(trueCounter).run(es), trueCounter(seq))
+    assertEquals(
+      parFoldMap(seq, intAddition)(trueCounter).run(es),
+      trueCounter(seq)
+    )
 
   test("Monoid.ordered")(genIntIndexedSeq): ints =>
     assertEquals(ordered(ints), ints == ints.sorted)
@@ -131,7 +151,9 @@ class MonoidSuite extends PropSuite:
   given Monoid[Int] = intAddition
   given Monoid[String] = stringMonoid
 
-  test("Monoid.productMonoid")(genString ** genString ** genString ** Gen.int ** Gen.int ** Gen.int):
+  test("Monoid.productMonoid")(
+    genString ** genString ** genString ** Gen.int ** Gen.int ** Gen.int
+  ):
     case a1 ** b1 ** c1 ** a2 ** b2 ** c2 =>
       import Monoid.productMonoid
       assertMonoid(productMonoid[String, Int], (a1, a2), (b1, b2), (c1, c2))
@@ -153,20 +175,34 @@ class MonoidSuite extends PropSuite:
 
     assertEquals(m.combine(f, m.empty)(a), f(a), "identity")
     assertEquals(m.combine(m.empty, f)(a), f(a), "identity")
-    assertEquals(m.combine(f, m.combine(g, h))(a), m.combine(m.combine(f, g), h)(a), "associativity")
+    assertEquals(
+      m.combine(f, m.combine(g, h))(a),
+      m.combine(m.combine(f, g), h)(a),
+      "associativity"
+    )
 
   test("Monoid.bag")(Gen.unit(())): _ =>
     assertEquals(bag(IndexedSeq.empty[String]), Map.empty[String, Int])
     assertEquals(bag(IndexedSeq("rose")), Map("rose" -> 1))
     assertEquals(bag(IndexedSeq("rose", "rose", "rose")), Map("rose" -> 3))
-    assertEquals(bag(IndexedSeq("a", "rose", "is")), Map("a" -> 1, "rose" -> 1, "is" -> 1))
-    assertEquals(bag(IndexedSeq("a", "rose", "is", "a", "rose")), Map("a" -> 2, "rose" -> 2, "is" -> 1))
+    assertEquals(
+      bag(IndexedSeq("a", "rose", "is")),
+      Map("a" -> 1, "rose" -> 1, "is" -> 1)
+    )
+    assertEquals(
+      bag(IndexedSeq("a", "rose", "is", "a", "rose")),
+      Map("a" -> 2, "rose" -> 2, "is" -> 1)
+    )
 
   private def trueCounter(b: Boolean): Int = if b then 1 else 0
 
   private def trueCounter(list: Seq[Boolean]): Int = list.count(identity)
 
   private def assertMonoid[A](m: Monoid[A], a: A, b: A, c: A): Unit =
-    assertEquals(m.combine(a, m.combine(b, c)), m.combine(m.combine(a, b), c), "associativity")
+    assertEquals(
+      m.combine(a, m.combine(b, c)),
+      m.combine(m.combine(a, b), c),
+      "associativity"
+    )
     assertEquals(m.combine(a, m.empty), a, "identity")
     assertEquals(m.combine(m.empty, a), a, "identity")

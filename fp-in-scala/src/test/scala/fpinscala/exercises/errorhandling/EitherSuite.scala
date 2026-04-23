@@ -31,7 +31,8 @@ class EitherSuite extends PropSuite:
 
   test("Either.orElse")(genEither ** genEither):
     case (Left(l1), either2)  => assertEquals(Left(l1).orElse(either2), either2)
-    case (Right(r1), either2) => assertEquals(Right(r1).orElse(either2), Right(r1))
+    case (Right(r1), either2) =>
+      assertEquals(Right(r1).orElse(either2), Right(r1))
 
   case class Name(value: String)
   object Name:
@@ -99,12 +100,16 @@ class EitherSuite extends PropSuite:
   test("Either.map2All")(genName ** genAge):
     case name ** age =>
       val expected = (name, age) match
-        case ("", n) if n < 0 => Left(List("Name is empty.", "Age is out of range."))
-        case ("", _)          => Left(List("Name is empty."))
-        case (_, n) if n < 0  => Left(List("Age is out of range."))
-        case _                => Right(Person(Name(name), Age(age)))
+        case ("", n) if n < 0 =>
+          Left(List("Name is empty.", "Age is out of range."))
+        case ("", _)         => Left(List("Name is empty."))
+        case (_, n) if n < 0 => Left(List("Age is out of range."))
+        case _               => Right(Person(Name(name), Age(age)))
 
-      assertEquals(map2All(Name.make2(name), Age.make2(age), Person(_, _)), expected)
+      assertEquals(
+        map2All(Name.make2(name), Age.make2(age), Person(_, _)),
+        expected
+      )
 
   test("Either.traverseAll")(genAgesList): ageList =>
     val negCount = ageList.count(_ < 0)

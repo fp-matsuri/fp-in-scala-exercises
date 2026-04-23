@@ -39,7 +39,9 @@ trait Parsers[Parser[+_]]:
   /** Unescaped string literals, like "foo" or "bar". */
   def quoted: Parser[String] = string("\"") *> thru("\"").map(_.dropRight(1))
 
-  /** Unescaped or escaped string literals, like "An \n important \"Quotation\"" or "bar". */
+  /** Unescaped or escaped string literals, like "An \n important \"Quotation\""
+    * or "bar".
+    */
   def escapedQuoted: Parser[String] =
     // rather annoying to write, left as an exercise
     // we'll just use quoted (unescaped literals) for now
@@ -92,7 +94,7 @@ trait Parsers[Parser[+_]]:
     def product[B](p2: => Parser[B]): Parser[(A, B)] =
       p.flatMap(a => p2.map(b => (a, b)))
 
-    def **[B](p2: => Parser[B]): Parser[(A,B)] = product(p2)
+    def **[B](p2: => Parser[B]): Parser[(A, B)] = product(p2)
 
     def flatMap[B](f: A => Parser[B]): Parser[B]
 
@@ -100,32 +102,42 @@ trait Parsers[Parser[+_]]:
 
     def scope(msg: String): Parser[A]
 
-    /** Sequences two parsers, ignoring the result of the first.
-      * We wrap the ignored half in slice, since we don't care about its result.
+    /** Sequences two parsers, ignoring the result of the first. We wrap the
+      * ignored half in slice, since we don't care about its result.
       */
     def *>[B](p2: => Parser[B]) =
       p.slice.map2(p2)((_, b) => b)
 
-    /** Sequences two parsers, ignoring the result of the second.
-      * We wrap the ignored half in slice, since we don't care about its result.
+    /** Sequences two parsers, ignoring the result of the second. We wrap the
+      * ignored half in slice, since we don't care about its result.
       */
     def <*(p2: => Parser[Any]) =
       p.map2(p2.slice)((a, b) => a)
 
-    /** Attempts `p` and strips trailing whitespace, usually used for the tokens of a grammar. */
+    /** Attempts `p` and strips trailing whitespace, usually used for the tokens
+      * of a grammar.
+      */
     def token: Parser[A] = p.attempt <* whitespace
 
-    /** Zero or more repetitions of `p`, separated by `p2`, whose results are ignored. */
-    def sep(separator: Parser[Any]): Parser[List[A]] = // use `Parser[Any]` since don't care about result type of separator
+    /** Zero or more repetitions of `p`, separated by `p2`, whose results are
+      * ignored.
+      */
+    def sep(separator: Parser[Any]): Parser[
+      List[A]
+    ] = // use `Parser[Any]` since don't care about result type of separator
       p.sep1(separator) | succeed(Nil)
 
-    /** One or more repetitions of `p`, separated by `p2`, whose results are ignored. */
+    /** One or more repetitions of `p`, separated by `p2`, whose results are
+      * ignored.
+      */
     def sep1(separator: Parser[Any]): Parser[List[A]] =
       p.map2((separator *> p).many)(_ :: _)
 
     def as[B](b: B): Parser[B] = p.slice.map(_ => b)
 
-    /** Parses a sequence of left-associative binary operators with the same precedence. */
+    /** Parses a sequence of left-associative binary operators with the same
+      * precedence.
+      */
     def opL(op: Parser[(A, A) => A]): Parser[A] =
       p.map2((op ** p).many)((h, t) => t.foldLeft(h)((a, b) => b._1(a, b._2)))
 
@@ -139,7 +151,7 @@ trait Parsers[Parser[+_]]:
 
     def mapLaw[A](p: Parser[A])(in: Gen[String]): Prop =
       equal(p, p.map(a => a))(in)
-      
+
 end Parsers
 
 case class Location(input: String, offset: Int = 0):
@@ -147,7 +159,7 @@ case class Location(input: String, offset: Int = 0):
   lazy val line = input.slice(0, offset + 1).count(_ == '\n') + 1
 
   lazy val col = input.slice(0, offset + 1).lastIndexOf('\n') match
-    case -1 => offset + 1
+    case -1        => offset + 1
     case lineStart => offset - lineStart
 
   def toError(msg: String): ParseError =
@@ -176,43 +188,40 @@ case class ParseError(stack: List[(Location, String)] = Nil):
   def label(s: String): ParseError =
     ParseError(latestLoc.map((_, s)).toList)
 
-  def latest: Option[(Location,String)] =
+  def latest: Option[(Location, String)] =
     stack.lastOption
 
   def latestLoc: Option[Location] =
     latest map (_._1)
 
-  /**
-  Display collapsed error stack - any adjacent stack elements with the
-  same location are combined on one line. For the bottommost error, we
-  display the full line, with a caret pointing to the column of the error.
-  Example:
-
-  1.1 file 'companies.json'; array
-  5.1 object
-  5.2 key-value
-  5.10 ':'
-
-  { "MSFT" ; 24,
-           ^
-  */
+  /** Display collapsed error stack - any adjacent stack elements with the same
+    * location are combined on one line. For the bottommost error, we display
+    * the full line, with a caret pointing to the column of the error. Example:
+    *
+    * 1.1 file 'companies.json'; array 5.1 object 5.2 key-value 5.10 ':'
+    *
+    * { "MSFT" ; 24, ^
+    */
   override def toString =
     if stack.isEmpty then "no error message"
     else
       val collapsed = collapseStack(stack)
       val context =
         collapsed.lastOption.map("\n\n" + _._1.currentLine).getOrElse("") +
-        collapsed.lastOption.map("\n" + _._1.columnCaret).getOrElse("")
-      collapsed.map((loc, msg) => s"${formatLoc(loc)} $msg").mkString("\n") + context
+          collapsed.lastOption.map("\n" + _._1.columnCaret).getOrElse("")
+      collapsed
+        .map((loc, msg) => s"${formatLoc(loc)} $msg")
+        .mkString("\n") + context
 
   /* Builds a collapsed version of the given error stack -
    * messages at the same location have their messages merged,
    * separated by semicolons */
   def collapseStack(s: List[(Location, String)]): List[(Location, String)] =
-    s.groupBy(_._1).
-      view.
-      mapValues(_.map(_._2).mkString("; ")).
-      toList.sortBy(_._1.offset)
+    s.groupBy(_._1)
+      .view
+      .mapValues(_.map(_._2).mkString("; "))
+      .toList
+      .sortBy(_._1.offset)
 
   def formatLoc(l: Location): String = s"${l.line}.${l.col}"
 
@@ -224,12 +233,11 @@ class Examples[Parser[+_]](P: Parsers[Parser]):
       nString <- regex("[0-9]+".r)
       n <- nString.toIntOption match
         case Some(n) => succeed(n)
-        case None => fail("expected an integer")
+        case None    => fail("expected an integer")
     yield n
 
-  val nConsecutiveAs: Parser[Int] = 
+  val nConsecutiveAs: Parser[Int] =
     for
       n <- nonNegativeInt
       _ <- char('a').listOfN(n)
     yield n
-

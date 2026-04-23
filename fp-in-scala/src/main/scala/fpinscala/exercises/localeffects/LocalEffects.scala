@@ -6,7 +6,8 @@ import fpinscala.answers.monads.*
 
 object Mutable:
   def quicksort(xs: List[Int]): List[Int] =
-    if xs.isEmpty then xs else
+    if xs.isEmpty then xs
+    else
       val arr = xs.toArray
       def swap(x: Int, y: Int) =
         val tmp = arr(x)
@@ -56,14 +57,13 @@ object ST:
     su(())(0)
 
 final class STRef[S, A] private (private var cell: A):
-  def read: ST[S,A] = ST(cell)
-  def write(a: => A): ST[S, Unit] = ST.lift[S, Unit]:
-    s =>
-      cell = a
-      ((), s)
+  def read: ST[S, A] = ST(cell)
+  def write(a: => A): ST[S, Unit] = ST.lift[S, Unit]: s =>
+    cell = a
+    ((), s)
 
 object STRef:
-  def apply[S, A](a: A): ST[S, STRef[S,A]] =
+  def apply[S, A](a: A): ST[S, STRef[S, A]] =
     ST(new STRef[S, A](a))
 
 final class STArray[S, A] private (private var value: Array[A]):
@@ -71,10 +71,9 @@ final class STArray[S, A] private (private var value: Array[A]):
   def size: ST[S, Int] = ST(value.size)
 
   // Write a value at the give index of the array
-  def write(i: Int, a: A): ST[S, Unit] = ST.lift[S, Unit]:
-    s =>
-      value(i) = a
-      ((), s)
+  def write(i: Int, a: A): ST[S, Unit] = ST.lift[S, Unit]: s =>
+    value(i) = a
+    ((), s)
 
   // Read the value at the given index of the array
   def read(i: Int): ST[S, A] = ST(value(i))
@@ -108,15 +107,18 @@ object Immutable:
     ???
 
   // Exercise 14.2
-  def qs[S](a: STArray[S,Int], l: Int, r: Int): ST[S, Unit] =
+  def qs[S](a: STArray[S, Int], l: Int, r: Int): ST[S, Unit] =
     ???
 
   def quicksort(xs: List[Int]): List[Int] =
-    if xs.isEmpty then xs else ST.run([s] => () =>
-      for
-        arr    <- STArray.fromList[s, Int](xs)
-        size   <- arr.size
-        _      <- qs(arr, 0, size - 1)
-        sorted <- arr.freeze
-      yield sorted
-   )
+    if xs.isEmpty then xs
+    else
+      ST.run([s] =>
+        () =>
+          for
+            arr <- STArray.fromList[s, Int](xs)
+            size <- arr.size
+            _ <- qs(arr, 0, size - 1)
+            sorted <- arr.freeze
+          yield sorted
+      )

@@ -9,7 +9,9 @@ import scala.annotation.nowarn
 import scala.util.{Success, Try}
 
 trait PropSuite extends FunSuite:
-  def test[A](name: String)(a: Gen[A])(f: A => Unit)(implicit loc: Location): Unit =
+  def test[A](name: String)(a: Gen[A])(f: A => Unit)(implicit
+      loc: Location
+  ): Unit =
     val g: A => Boolean =
       a =>
         f(a)
@@ -27,7 +29,7 @@ trait PropSuite extends FunSuite:
         t.withBodyMap(
           _.transform {
             case Success(result: Result @nowarn) => resultToTry(result, t)
-            case r => r
+            case r                               => r
           }(munitExecutionContext)
         )
     )
@@ -35,7 +37,9 @@ trait PropSuite extends FunSuite:
   private def resultToTry(result: Result, test: Test): Try[Unit] =
     result match
       case Passed(status, n) =>
-        println(s"${test.name}: + OK, property ${status.toString.toLowerCase}, ran $n tests.")
+        println(
+          s"${test.name}: + OK, property ${status.toString.toLowerCase}, ran $n tests."
+        )
         Success(())
       case Falsified(msg) =>
         Try(fail(msg.string)(test.location))

@@ -37,33 +37,41 @@ object Prop:
     case Passed
     case Falsified(failure: FailedCase, successes: SuccessCount)
     case Proved
-  
+
     def isFalsified: Boolean = this match
-      case Passed => false
+      case Passed          => false
       case Falsified(_, _) => true
-      case Proved => false
-    
+      case Proved          => false
+
   /* Produce an infinite random lazy list from a `Gen` and a starting `RNG`. */
   def randomLazyList[A](g: Gen[A])(rng: RNG): LazyList[A] =
-   LazyList.unfold(rng)(rng => Some(g.run(rng)))
+    LazyList.unfold(rng)(rng => Some(g.run(rng)))
 
-  def forAll[A](as: Gen[A])(f: A => Boolean): Prop = Prop:
-    (n, rng) => randomLazyList(as)(rng).zip(LazyList.from(0)).take(n).map:
-      case (a, i) => 
-        try
-          if f(a) then Passed else Falsified(a.toString, i)
-        catch
-          case e: Exception => Falsified(buildMsg(a, e), i)
-    .find(_.isFalsified).getOrElse(Passed)
+  def forAll[A](as: Gen[A])(f: A => Boolean): Prop = Prop: (n, rng) =>
+    randomLazyList(as)(rng)
+      .zip(LazyList.from(0))
+      .take(n)
+      .map:
+        case (a, i) =>
+          try if f(a) then Passed else Falsified(a.toString, i)
+          catch case e: Exception => Falsified(buildMsg(a, e), i)
+      .find(_.isFalsified)
+      .getOrElse(Passed)
 
   @targetName("forAllSized")
   def forAll[A](g: SGen[A])(f: A => Boolean): Prop =
     (max, n, rng) =>
       val casesPerSize = (n.toInt - 1) / max.toInt + 1
       val props: LazyList[Prop] =
-        LazyList.from(0).take((n.toInt min max.toInt) + 1).map(i => forAll(g(i))(f))
+        LazyList
+          .from(0)
+          .take((n.toInt min max.toInt) + 1)
+          .map(i => forAll(g(i))(f))
       val prop: Prop =
-        props.map[Prop](p => (max, n, rng) => p(max, casesPerSize, rng)).toList.reduce(_ && _)
+        props
+          .map[Prop](p => (max, n, rng) => p(max, casesPerSize, rng))
+          .toList
+          .reduce(_ && _)
       prop(max, n, rng)
 
   // String interpolation syntax. A string starting with `s"` can refer to
@@ -71,56 +79,64 @@ object Prop:
   // This will be expanded to `v.toString` by the Scala compiler.
   def buildMsg[A](s: A, e: Exception): String =
     s"test case: $s\n" +
-    s"generated an exception: ${e.getMessage}\n" +
-    s"stack trace:\n ${e.getStackTrace.mkString("\n")}"
+      s"generated an exception: ${e.getMessage}\n" +
+      s"stack trace:\n ${e.getStackTrace.mkString("\n")}"
 
   def apply(f: (TestCases, RNG) => Result): Prop =
     (_, n, rng) => f(n, rng)
 
   extension (self: Prop)
-    def &&(that: Prop): Prop = 
-      (max, n, rng) => self.tag("and-left")(max, n, rng) match
-        case Passed | Proved => that.tag("and-right")(max, n, rng)
-        case x => x
+    def &&(that: Prop): Prop =
+      (max, n, rng) =>
+        self.tag("and-left")(max, n, rng) match
+          case Passed | Proved => that.tag("and-right")(max, n, rng)
+          case x               => x
 
     def ||(that: Prop): Prop =
-      (max, n, rng) => self.tag("or-left")(max, n, rng) match
-        // In case of failure, run the other prop.
-        case Falsified(msg, _) => that.tag("or-right").tag(msg.string)(max, n, rng)
-        case x => x
+      (max, n, rng) =>
+        self.tag("or-left")(max, n, rng) match
+          // In case of failure, run the other prop.
+          case Falsified(msg, _) =>
+            that.tag("or-right").tag(msg.string)(max, n, rng)
+          case x => x
 
     /* This is rather simplistic - in the event of failure, we simply wrap
      * the failure message with the given message.
      */
-    def tag(msg: String): Prop = 
-      (max, n, rng) => self(max, n, rng) match
-        case Falsified(e, c) => Falsified(FailedCase.fromString(s"$msg($e)"), c)
-        case x => x
+    def tag(msg: String): Prop =
+      (max, n, rng) =>
+        self(max, n, rng) match
+          case Falsified(e, c) =>
+            Falsified(FailedCase.fromString(s"$msg($e)"), c)
+          case x => x
 
     def check(
-      maxSize: MaxSize = 100,
-      testCases: TestCases = 100,
-      rng: RNG = RNG.Simple(System.currentTimeMillis)
+        maxSize: MaxSize = 100,
+        testCases: TestCases = 100,
+        rng: RNG = RNG.Simple(System.currentTimeMillis)
     ): Result =
       self(maxSize, testCases, rng)
 
-    def run(maxSize: MaxSize = 100,
-            testCases: TestCases = 100,
-            rng: RNG = RNG.Simple(System.currentTimeMillis)): Unit =
+    def run(
+        maxSize: MaxSize = 100,
+        testCases: TestCases = 100,
+        rng: RNG = RNG.Simple(System.currentTimeMillis)
+    ): Unit =
       self(maxSize, testCases, rng) match
         case Falsified(msg, n) =>
           println(s"! Falsified after $n passed tests:\n $msg")
         case Passed =>
           println(s"+ OK, passed $testCases tests.")
         case Proved =>
-          println(s"+ OK, proved property.")
+          println("+ OK, proved property.")
 
   val executor: ExecutorService = Executors.newCachedThreadPool
 
   val p1 = Prop.forAll(Gen.unit(Par.unit(1)))(pi =>
-    pi.map(_ + 1).run(executor).get == Par.unit(2).run(executor).get)
+    pi.map(_ + 1).run(executor).get == Par.unit(2).run(executor).get
+  )
 
-  def verify(p: => Boolean): Prop = 
+  def verify(p: => Boolean): Prop =
     (_, _, _) => if p then Passed else Falsified("()", 0)
 
   val p2 = verify:
@@ -144,8 +160,9 @@ object Prop:
     ).run(executor).get
 
   val executors: Gen[ExecutorService] = weighted(
-    choose(1,4).map(Executors.newFixedThreadPool) -> .75,
-    unit(Executors.newCachedThreadPool) -> .25) // `a -> b` is syntax sugar for `(a, b)`
+    choose(1, 4).map(Executors.newFixedThreadPool) -> .75,
+    unit(Executors.newCachedThreadPool) -> .25
+  ) // `a -> b` is syntax sugar for `(a, b)`
 
   def forAllPar[A](g: Gen[A])(f: A => Par[Boolean]): Prop =
     forAll(executors ** g)((s, a) => f(a).run(s).get)
@@ -163,16 +180,22 @@ object Prop:
   val gpy: Gen[Par[Int]] = Gen.choose(0, 10).map(Par.unit(_))
   val p5 = forAllPar(gpy)(py => equal(py.map(y => y), py))
 
-  val gpy2: Gen[Par[Int]] = choose(-100, 100).listOfN(choose(0, 20)).map(ys =>
-    ys.foldLeft(Par.unit(0))((p, y) =>
-      Par.fork(p.map2(Par.unit(y))(_ + _))))
+  val gpy2: Gen[Par[Int]] = choose(-100, 100)
+    .listOfN(choose(0, 20))
+    .map(ys =>
+      ys.foldLeft(Par.unit(0))((p, y) => Par.fork(p.map2(Par.unit(y))(_ + _)))
+    )
 
-  extension [A](self: List[A]) def parTraverse[B](f: A => Par[B]): Par[List[B]] =
-    self.foldRight(Par.unit(Nil: List[B]))((a, pacc) => Par.fork(f(a).map2(pacc)(_ :: _)))
+  extension [A](self: List[A])
+    def parTraverse[B](f: A => Par[B]): Par[List[B]] =
+      self.foldRight(Par.unit(Nil: List[B]))((a, pacc) =>
+        Par.fork(f(a).map2(pacc)(_ :: _))
+      )
 
-  val gpy3: Gen[Par[Int]] = 
-    choose(-100, 100).listOfN(choose(0, 20)).map(ys =>
-      ys.parTraverse(Par.unit).map(_.sum))
+  val gpy3: Gen[Par[Int]] =
+    choose(-100, 100)
+      .listOfN(choose(0, 20))
+      .map(ys => ys.parTraverse(Par.unit).map(_.sum))
 
   val forkProp = Prop.forAllPar(gpy2)(y => equal(Par.fork(y), y))
 
@@ -185,7 +208,7 @@ object Gen:
     def map[B](f: A => B): Gen[B] =
       State.map(self)(f)
 
-    def map2[B,C](that: Gen[B])(f: (A, B) => C): Gen[C] =
+    def map2[B, C](that: Gen[B])(f: (A, B) => C): Gen[C] =
       State.map2(self)(that)(f)
 
     def flatMap[B](f: A => Gen[B]): Gen[B] =
@@ -202,7 +225,7 @@ object Gen:
     def list: SGen[List[A]] =
       n => listOfN(n)
 
-    def nonEmptyList: SGen[List[A]] = 
+    def nonEmptyList: SGen[List[A]] =
       n => listOfN(n.max(1))
 
     def unsized: SGen[A] = _ => self
@@ -239,12 +262,16 @@ object Gen:
    * integer in the range.
    */
   def even(start: Int, stopExclusive: Int): Gen[Int] =
-    choose(start, if stopExclusive % 2 == 0 then stopExclusive - 1 else stopExclusive).
-    map(n => if n % 2 != 0 then n + 1 else n)
+    choose(
+      start,
+      if stopExclusive % 2 == 0 then stopExclusive - 1 else stopExclusive
+    ).map(n => if n % 2 != 0 then n + 1 else n)
 
   def odd(start: Int, stopExclusive: Int): Gen[Int] =
-    choose(start, if stopExclusive % 2 != 0 then stopExclusive - 1 else stopExclusive).
-    map(n => if n % 2 == 0 then n + 1 else n)
+    choose(
+      start,
+      if stopExclusive % 2 != 0 then stopExclusive - 1 else stopExclusive
+    ).map(n => if n % 2 == 0 then n + 1 else n)
 
   def sameParity(from: Int, to: Int): Gen[(Int, Int)] =
     for
@@ -291,9 +318,11 @@ object Gen:
 
   def genStringFn[A](g: Gen[A]): Gen[String => A] =
     State[RNG, String => A]: rng =>
-      val (seed, rng2) = rng.nextInt // we still use `rng` to produce a seed, so we get a new function each time
-      val f = (s: String) => g.run(RNG.Simple(seed.toLong ^ s.hashCode.toLong))._1
-      (f, rng2) 
+      val (seed, rng2) =
+        rng.nextInt // we still use `rng` to produce a seed, so we get a new function each time
+      val f =
+        (s: String) => g.run(RNG.Simple(seed.toLong ^ s.hashCode.toLong))._1
+      (f, rng2)
 
 end Gen
 
@@ -330,8 +359,12 @@ object Cogen:
 
   // We can now write properties that depend on arbitrary functions
   def takeWhilePropInt =
-    forAll(Gen.int.list ** fn(cogenInt, Gen.boolean).unsized)((ys, f) => ys.takeWhile(f).forall(f))
+    forAll(Gen.int.list ** fn(cogenInt, Gen.boolean).unsized)((ys, f) =>
+      ys.takeWhile(f).forall(f)
+    )
 
   // And we can further generalize those properties to be parameterized by types which are not relevant
   def takeWhileProp[A](ga: Gen[A], ca: Cogen[A]) =
-    forAll(ga.list ** fn(ca, Gen.boolean).unsized)((ys, f) => ys.takeWhile(f).forall(f))
+    forAll(ga.list ** fn(ca, Gen.boolean).unsized)((ys, f) =>
+      ys.takeWhile(f).forall(f)
+    )

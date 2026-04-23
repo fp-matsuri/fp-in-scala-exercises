@@ -8,22 +8,24 @@ object SimplePulls:
   enum Pull[+O, +R]:
     case Result[+R](result: R) extends Pull[Nothing, R]
     case Output[+O](value: O) extends Pull[O, Unit]
-    case FlatMap[X, +O, +R](source: Pull[O, X], f: X => Pull[O, R]) extends Pull[O, R]
+    case FlatMap[X, +O, +R](source: Pull[O, X], f: X => Pull[O, R])
+        extends Pull[O, R]
 
     def step: Either[R, (O, Pull[O, R])] = this match
-      case Result(r) => Left(r)
-      case Output(o) => Right(o, Pull.done)
-      case FlatMap(source, f) => 
+      case Result(r)          => Left(r)
+      case Output(o)          => Right(o, Pull.done)
+      case FlatMap(source, f) =>
         source match
           case FlatMap(s2, g) => s2.flatMap(x => g(x).flatMap(y => f(y))).step
-          case other => other.step match
-            case Left(r) => f(r).step
-            case Right((hd, tl)) => Right((hd, tl.flatMap(f)))
+          case other          =>
+            other.step match
+              case Left(r)         => f(r).step
+              case Right((hd, tl)) => Right((hd, tl.flatMap(f)))
 
     @annotation.tailrec
-    final def fold[A](init: A)(f: (A, O) => A): (R, A) = 
+    final def fold[A](init: A)(f: (A, O) => A): (R, A) =
       step match
-        case Left(r) => (r, init)
+        case Left(r)         => (r, init)
         case Right((hd, tl)) => tl.fold(f(init, hd))(f)
 
     def toList: List[O] =
@@ -46,9 +48,10 @@ object SimplePulls:
 
     def take(n: Int): Pull[O, Option[R]] =
       if n <= 0 then Result(None)
-      else uncons.flatMap:
-        case Left(r) => Result(Some(r))
-        case Right((hd, tl)) => Output(hd) >> tl.take(n - 1)
+      else
+        uncons.flatMap:
+          case Left(r)         => Result(Some(r))
+          case Right((hd, tl)) => Output(hd) >> tl.take(n - 1)
 
     // Exercise 15.3
     def drop(n: Int): Pull[O, R] =
@@ -57,26 +60,26 @@ object SimplePulls:
     // Exercise 15.3
     def takeWhile(f: O => Boolean): Pull[O, Pull[O, R]] =
       ???
-    
+
     // Exercise 15.3
     def dropWhile(f: O => Boolean): Pull[Nothing, Pull[O, R]] =
       ???
 
     def mapOutput[O2](f: O => O2): Pull[O2, R] =
       uncons.flatMap:
-        case Left(r) => Result(r)
+        case Left(r)         => Result(r)
         case Right((hd, tl)) => Output(f(hd)) >> tl.mapOutput(f)
 
     def filter(p: O => Boolean): Pull[O, R] =
       uncons.flatMap:
-        case Left(r) => Result(r)
+        case Left(r)         => Result(r)
         case Right((hd, tl)) =>
           (if p(hd) then Output(hd) else Pull.done) >> tl.filter(p)
 
     def count: Pull[Int, R] =
       def go(total: Int, p: Pull[O, R]): Pull[Int, R] =
         p.uncons.flatMap:
-          case Left(r) => Result(r)
+          case Left(r)        => Result(r)
           case Right((_, tl)) =>
             val newTotal = total + 1
             Output(newTotal) >> go(newTotal, tl)
@@ -88,7 +91,7 @@ object SimplePulls:
 
     def mapAccumulate[S, O2](init: S)(f: (S, O) => (S, O2)): Pull[O2, (S, R)] =
       uncons.flatMap:
-        case Left(r) => Result((init, r))
+        case Left(r)         => Result((init, r))
         case Right((hd, tl)) =>
           val (s, out) = f(init, hd)
           Output(out) >> tl.mapAccumulate(s)(f)
@@ -106,17 +109,17 @@ object SimplePulls:
 
     def fromList[O](os: List[O]): Pull[O, Unit] =
       os match
-        case Nil => done
+        case Nil      => done
         case hd :: tl => Output(hd) >> fromList(tl)
 
     def fromLazyList[O](os: LazyList[O]): Pull[O, Unit] =
       os match
         case LazyList() => done
-        case hd #:: tl => Output(hd) >> fromLazyList(tl)
+        case hd #:: tl  => Output(hd) >> fromLazyList(tl)
 
     def unfold[O, R](init: R)(f: R => Either[R, (O, R)]): Pull[O, R] =
       f(init) match
-        case Left(r) => Result(r)
+        case Left(r)        => Result(r)
         case Right((o, r2)) => Output(o) >> unfold(r2)(f)
 
     // Exercise 15.1
@@ -155,7 +158,7 @@ object SimplePulls:
     extension [O](self: Pull[O, Unit])
       def flatMapOutput[O2](f: O => Pull[O2, Unit]): Pull[O2, Unit] =
         self.uncons.flatMap:
-          case Left(()) => Result(())
+          case Left(())        => Result(())
           case Right((hd, tl)) =>
             f(hd) >> tl.flatMapOutput(f)
     val outputMonad: Monad[[x] =>> Pull[x, Unit]] = new:
@@ -164,9 +167,8 @@ object SimplePulls:
         def flatMap[B](f: A => Pull[B, Unit]): Pull[B, Unit] =
           pa.flatMapOutput(f)
 
-    extension [O](self: Pull[O, Unit])
-      def toStream: Stream[O] = self
-  
+    extension [O](self: Pull[O, Unit]) def toStream: Stream[O] = self
+
   opaque type Stream[+O] = Pull[O, Unit]
   object Stream:
     def apply[O](os: O*): Stream[O] =
@@ -174,7 +176,7 @@ object SimplePulls:
     extension [O](self: Stream[O])
       def toPull: Pull[O, Unit] = self
 
-      def fold[A](init: A)(f: (A, O) => A): A = 
+      def fold[A](init: A)(f: (A, O) => A): A =
         self.fold(init)(f)(1)
 
       def toList: List[O] =
@@ -231,14 +233,17 @@ object SimplePullExamples:
     count andThen existsHalting(_ > 40000)
 
   def fromIterator[O](itr: Iterator[O]): Stream[O] =
-    Pull.unfold(itr)(itr =>
-      if itr.hasNext then Right((itr.next(), itr))
-      else Left(itr)
-    ).void.toStream
+    Pull
+      .unfold(itr)(itr =>
+        if itr.hasNext then Right((itr.next(), itr))
+        else Left(itr)
+      )
+      .void
+      .toStream
 
   def processFile[A](
-    file: java.io.File,
-    p: Pipe[String, A],
+      file: java.io.File,
+      p: Pipe[String, A]
   )(using m: Monoid[A]): IO[A] = IO:
     val source = scala.io.Source.fromFile(file)
     try fromIterator(source.getLines).pipe(p).fold(m.empty)(m.combine)

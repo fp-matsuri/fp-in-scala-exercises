@@ -6,7 +6,8 @@ import fpinscala.answers.monads.*
 
 object Mutable:
   def quicksort(xs: List[Int]): List[Int] =
-    if xs.isEmpty then xs else
+    if xs.isEmpty then xs
+    else
       val arr = xs.toArray
       def swap(x: Int, y: Int) =
         val tmp = arr(x)
@@ -56,13 +57,13 @@ object ST:
     su(())(0)
 
 final class STRef[S, A] private (private var cell: A):
-  def read: ST[S,A] = ST(cell)
+  def read: ST[S, A] = ST(cell)
   def write(a: => A): ST[S, Unit] = ST.lift[S, Unit]: s =>
     cell = a
     ((), s)
 
 object STRef:
-  def apply[S, A](a: A): ST[S, STRef[S,A]] =
+  def apply[S, A](a: A): ST[S, STRef[S, A]] =
     ST(new STRef[S, A](a))
 
 final class STArray[S, A] private (private var value: Array[A]):
@@ -110,51 +111,58 @@ object Immutable:
         for
           _ <- s
           vi <- a.read(i)
-          _  <-if vi < vp then
-            for
-              vj <- j.read
-              _  <- a.swap(i, vj)
-              _  <- j.write(vj + 1)
-            yield ()
-          else ST[S, Unit](())
-        yield ())
+          _ <-
+            if vi < vp then
+              for
+                vj <- j.read
+                _ <- a.swap(i, vj)
+                _ <- j.write(vj + 1)
+              yield ()
+            else ST[S, Unit](())
+        yield ()
+      )
       x <- j.read
       _ <- a.swap(x, r)
     yield x
 
-  def qs[S](a: STArray[S,Int], l: Int, r: Int): ST[S, Unit] =
-    if l < r then for
-      pi <- partition(a, l, r, l + (r - l) / 2)
-      _ <- qs(a, l, pi - 1)
-      _ <- qs(a, pi + 1, r)
-    yield () else ST[S, Unit](())
+  def qs[S](a: STArray[S, Int], l: Int, r: Int): ST[S, Unit] =
+    if l < r then
+      for
+        pi <- partition(a, l, r, l + (r - l) / 2)
+        _ <- qs(a, l, pi - 1)
+        _ <- qs(a, pi + 1, r)
+      yield ()
+    else ST[S, Unit](())
 
   def quicksort(xs: List[Int]): List[Int] =
-    if xs.isEmpty then xs else ST.run([s] => () =>
-      for
-        arr    <- STArray.fromList[s, Int](xs)
-        size   <- arr.size
-        _      <- qs(arr, 0, size - 1)
-        sorted <- arr.freeze
-      yield sorted
-   )
+    if xs.isEmpty then xs
+    else
+      ST.run([s] =>
+        () =>
+          for
+            arr <- STArray.fromList[s, Int](xs)
+            size <- arr.size
+            _ <- qs(arr, 0, size - 1)
+            sorted <- arr.freeze
+          yield sorted
+      )
 
 import scala.collection.mutable.HashMap
 
 final class STMap[S, K, V] private (private val table: HashMap[K, V]):
-  def size: ST[S,Int] = ST(table.size)
+  def size: ST[S, Int] = ST(table.size)
 
   // Get the value under a key
-  def apply(k: K): ST[S,V] = ST(table(k))
+  def apply(k: K): ST[S, V] = ST(table(k))
 
   // Get the value under a key, or None if the key does not exist
   def get(k: K): ST[S, Option[V]] = ST(table.get(k))
 
   // Add a value under a key
-  def +=(kv: (K, V)): ST[S,Unit] = ST(table += kv)
+  def +=(kv: (K, V)): ST[S, Unit] = ST(table += kv)
 
   // Remove a key
-  def -=(k: K): ST[S,Unit] = ST(table -= k)
+  def -=(k: K): ST[S, Unit] = ST(table -= k)
 
 object STMap:
   def empty[S, K, V]: ST[S, STMap[S, K, V]] =

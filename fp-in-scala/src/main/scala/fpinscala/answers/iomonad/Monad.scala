@@ -4,8 +4,7 @@ import scala.util.control.TailCalls.TailRec
 import scala.util.control.TailCalls
 
 trait Functor[F[_]]:
-  extension [A](fa: F[A])
-    def map[B](f: A => B): F[B]
+  extension [A](fa: F[A]) def map[B](f: A => B): F[B]
 
 trait Monad[F[_]] extends Functor[F]:
   def unit[A](a: => A): F[A]
@@ -15,7 +14,7 @@ trait Monad[F[_]] extends Functor[F]:
 
     def map[B](f: A => B): F[B] = flatMap(a => unit(f(a)))
 
-    def map2[B,C](fb: F[B])(f: (A, B) => C): F[C] =
+    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
       fa.flatMap(a => fb.map(b => f(a, b)))
 
     def **[B](fb: F[B]): F[(A, B)] = map2(fb)((_, _))
@@ -41,8 +40,7 @@ trait Monad[F[_]] extends Functor[F]:
     def replicateM_(n: Int): F[Unit] =
       foreachM(LazyList.fill(n)(fa))(_.void)
 
-  extension [A](ffa: F[F[A]])
-    def flatten: F[A] = ffa.flatMap(identity)
+  extension [A](ffa: F[F[A]]) def flatten: F[A] = ffa.flatMap(identity)
 
   def sequence_[A](fs: LazyList[F[A]]): F[Unit] = foreachM(fs)(_.void)
 
@@ -58,17 +56,16 @@ trait Monad[F[_]] extends Functor[F]:
   def foldM[A, B](l: LazyList[A])(z: B)(f: (B, A) => F[B]): F[B] =
     l match
       case h #:: t => f(z, h).flatMap(z2 => foldM(t)(z2)(f))
-      case _ => unit(z)
+      case _       => unit(z)
 
-  def foldM_[A,B](l: LazyList[A])(z: B)(f: (B,A) => F[B]): F[Unit] =
+  def foldM_[A, B](l: LazyList[A])(z: B)(f: (B, A) => F[B]): F[Unit] =
     foldM(l)(z)(f).void
 
   def foreachM[A](l: LazyList[A])(f: A => F[Unit]): F[Unit] =
-    foldM_(l)(())((u,a) => f(a).void)
+    foldM_(l)(())((u, a) => f(a).void)
 
-  def seq[A,B,C](f: A => F[B])(g: B => F[C]): A => F[C] =
+  def seq[A, B, C](f: A => F[B])(g: B => F[C]): A => F[C] =
     a => f(a).flatMap(g)
-
 
 object Monad:
 
@@ -83,7 +80,6 @@ object Monad:
     extension [A](fa: TailRec[A])
       def flatMap[B](f: A => TailRec[B]) =
         fa.flatMap(f)
-
 
   import fpinscala.answers.parallelism.Nonblocking.Par
   given parMonad: Monad[Par] with

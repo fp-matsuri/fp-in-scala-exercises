@@ -3,7 +3,11 @@ package fpinscala.exercises.datastructures
 import fpinscala.answers.testing.exhaustive.*
 import fpinscala.answers.testing.exhaustive.Gen.`**`
 import fpinscala.answers.testing.exhaustive.Prop.*
-import fpinscala.exercises.common.Common.{genShortNumber, genDoubleList as genDoubleSList, genIntList as genIntSList}
+import fpinscala.exercises.common.Common.{
+  genShortNumber,
+  genDoubleList as genDoubleSList,
+  genIntList as genIntSList
+}
 import fpinscala.exercises.common.PropSuite
 import fpinscala.exercises.datastructures.*
 import fpinscala.exercises.datastructures.List.*
@@ -13,7 +17,8 @@ import scala.{List as SList, Nil as SNil}
 
 class ListSuite extends PropSuite:
   private val genIntList: Gen[List[Int]] = genIntSList.map(scalaListToList)
-  private val genDoubleList: Gen[List[Double]] = genDoubleSList.map(scalaListToList)
+  private val genDoubleList: Gen[List[Double]] =
+    genDoubleSList.map(scalaListToList)
   private val genListOfLists: Gen[List[List[Int]]] =
     for
       length <- genShortNumber
@@ -32,22 +37,32 @@ class ListSuite extends PropSuite:
 
   test("List.drop")(genIntList ** genSmallNum):
     case list ** n =>
-      assertEquals(List.drop(list, n), scalaListToList(listToScalaList(list).drop(n)))
+      assertEquals(
+        List.drop(list, n),
+        scalaListToList(listToScalaList(list).drop(n))
+      )
 
   test("List.dropWhile")(genIntList ** genSmallNum):
     case list ** n =>
       val f: Int => Boolean = _ <= n
-      assertEquals(List.dropWhile(list, f), scalaListToList(listToScalaList(list).dropWhile(f)))
+      assertEquals(
+        List.dropWhile(list, f),
+        scalaListToList(listToScalaList(list).dropWhile(f))
+      )
 
   test("List.init")(genIntList):
     case Nil  => intercept[java.lang.Exception](List.init(Nil))
-    case list => assertEquals(List.init(list), scalaListToList(listToScalaList(list).init))
+    case list =>
+      assertEquals(List.init(list), scalaListToList(listToScalaList(list).init))
 
   test("List.length")(genIntList): list =>
     assertEquals(List.length(list), listToScalaList(list).length)
 
   test("List.foldLeft")(genIntList): list =>
-    assertEquals(List.foldLeft(list, "", _ + _.toString), listToScalaList(list).foldLeft("")(_ + _.toString))
+    assertEquals(
+      List.foldLeft(list, "", _ + _.toString),
+      listToScalaList(list).foldLeft("")(_ + _.toString)
+    )
 
   test("List.sumViaFoldLeft")(genIntList): list =>
     assertEquals(List.sumViaFoldLeft(list), listToScalaList(list).sum)
@@ -59,7 +74,10 @@ class ListSuite extends PropSuite:
     assertEquals(List.lengthViaFoldLeft(list), listToScalaList(list).length)
 
   test("List.reverse")(genIntList): list =>
-    assertEquals(List.reverse(list), scalaListToList(listToScalaList(list).reverse))
+    assertEquals(
+      List.reverse(list),
+      scalaListToList(listToScalaList(list).reverse)
+    )
 
   test("List.appendViaFoldRight")(genIntList ** genIntList):
     case list1 ** list2 =>
@@ -112,9 +130,14 @@ class ListSuite extends PropSuite:
 
   test("List.addPairwise")(genIntList ** genIntList):
     case list1 ** list2 =>
-      val expectedSList = listToScalaList(list1).zip(listToScalaList(list2)).map:
-        case (a, b) => a + b
-      assertEquals(List.addPairwise(list1, list2), scalaListToList(expectedSList))
+      val expectedSList = listToScalaList(list1)
+        .zip(listToScalaList(list2))
+        .map:
+          case (a, b) => a + b
+      assertEquals(
+        List.addPairwise(list1, list2),
+        scalaListToList(expectedSList)
+      )
 
   /*
   test("List.zipWith")(genIntList ** genIntList):
