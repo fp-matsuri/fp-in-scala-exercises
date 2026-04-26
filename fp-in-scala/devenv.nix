@@ -13,14 +13,13 @@
 
   packages = with pkgs; [
     sbt
-    scalafmt
     metals
   ];
 
   scripts = {
     tests.exec = "sbt test";
     lint.exec = "sbt scalafix";
-    fmt.exec = "scalafmt";
+    fmt.exec = "sbt scalafmt";
     repl.exec = "sbt console";
   };
 }
