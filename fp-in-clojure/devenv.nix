@@ -3,7 +3,7 @@
 {
   languages.java = {
     enable = true;
-    jdk.package = pkgs.jdk21;
+    jdk.package = pkgs.jdk25;
   };
 
   languages.clojure.enable = true;
@@ -18,7 +18,7 @@
   scripts = {
     tests.exec = ''clj -X:test "$@"'';
     lint.exec = "make lint";
-    fmt.exec = "cljstyle fix";
+    fmt.exec = "make cljstyle-fix";
     repl.exec = "clj -M:test";
   };
 }
