@@ -1,0 +1,18 @@
+{
+  "name": "FP in Scala Exercises",
+  "image": "ghcr.io/fp-matsuri/fp-in-scala-exercises/devcontainer:latest",
+  "containerEnv": {
+    "MISE_TRUSTED_CONFIG_PATHS": "/workspaces"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "betterthantomorrow.calva",
+        "clj-kondo.clj-kondo",
+        "scalameta.metals",
+        "haskell.haskell",
+        "usernamehw.errorlens"
+      ]
+    }
+  }
+}
