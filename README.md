@@ -41,7 +41,23 @@ cf. FP in Scalaの公式リポジトリ: https://github.com/fpinscala/fpinscala
 
 ## 利用者向けガイド
 
-実装言語別ディレクトリ配下のREADME.mdを参照
+### Dev Container を使う（推奨）
+
+このリポジトリは Dev Container に対応しています。以下のいずれかの方法で、ツールのインストール不要ですぐに演習を始められます。
+
+**VS Code で開く場合**
+
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop/) と VS Code の [Dev Containers 拡張](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) をインストール
+2. このリポジトリをクローン
+3. VS Code でリポジトリを開き、右下の通知または左下の `><` メニューから「コンテナーで再度開く」を選択
+
+**GitHub Codespaces で開く場合**
+
+GitHub のリポジトリページから「Code → Codespaces → Create codespace」を選択するだけで使えます。
+
+### ローカル環境で使う
+
+Dev Container を使わない場合、各言語ディレクトリ配下の README.md を参照してください。
 
 ## 問題作成者向けガイド
 

@@ -81,6 +81,24 @@ FP in Scala演習問題の{言語名}移植版
 ...
 ```
 
+## Dev Container イメージの更新
+
+演習問題で使用するツールを追加・変更する場合は、Dev Container イメージの更新が必要です。
+
+### 更新が必要なケース
+
+- `mise.toml` にツールを追加・変更した
+- `Dockerfile` を変更した
+
+### 更新手順
+
+1. `mise.toml` または `.devcontainer-image/Dockerfile` を変更してコミット・プッシュ
+2. GitHub Actions の `Build and Push Dev Container Image` ワークフローを手動実行
+3. ワークフローが自動で `.devcontainer/devcontainer.json` を新しいイメージタグに更新してコミット
+4. そのコミットを pull して Dev Container を再ビルド
+
+仕組みの詳細は [DEVCONTAINER.md](DEVCONTAINER.md) を参照してください。
+
 ## pull requestの出し方
 
 pull requestのテンプレートを参照。
