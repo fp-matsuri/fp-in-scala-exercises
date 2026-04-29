@@ -52,6 +52,7 @@ jobs:
         with:
           context: .
           file: .devcontainer-image/Dockerfile
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.hash.outputs.image }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:cache

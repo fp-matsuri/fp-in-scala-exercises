@@ -10,6 +10,7 @@ IMAGE="ghcr.io/fp-matsuri/fp-in-scala-exercises/devcontainer:$CONTENT_HASH"
 echo "Building image: $IMAGE"
 
 docker buildx build \
+  --platform linux/amd64 \
   --load \
   --file "$SCRIPT_DIR/Dockerfile" \
   --tag "$IMAGE" \
