@@ -1,0 +1,13 @@
+.DS_Store
+
+# Claude Code
+.claude/settings.local.json
+
+# clj-kondo
+.clj-kondo/.cache/
+
+# LSP
+.lsp/.cache/
+
+# Metals (Scala LSP)
+.metals/
