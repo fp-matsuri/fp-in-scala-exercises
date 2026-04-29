@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 
 USER vscode
 
-RUN curl https://mise.run | sh && \
+RUN curl -fsSL https://mise.run | sh && \
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc && \
     echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 
