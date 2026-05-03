@@ -83,7 +83,7 @@ FP in Scala演習問題の{言語名}移植版
 
 ## Dev Container イメージの更新
 
-演習問題で使用するツールを追加・変更する場合は、Dev Container イメージの更新が必要です。
+演習問題で使用するツールを追加・変更する場合は、Dev Container イメージの更新が必要。
 
 ### 更新が必要なケース
 
@@ -97,7 +97,7 @@ FP in Scala演習問題の{言語名}移植版
 3. ワークフローが自動で `.devcontainer/devcontainer.json` を新しいイメージタグに更新してコミット
 4. そのコミットを pull して Dev Container を再ビルド
 
-仕組みの詳細は [DEVCONTAINER.md](DEVCONTAINER.md) を参照してください。
+仕組みの詳細は [DEVCONTAINER.md](DEVCONTAINER.md) を参照。
 
 ## pull requestの出し方
 
