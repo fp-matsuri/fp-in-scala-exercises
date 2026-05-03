@@ -1,0 +1,77 @@
+name: Build and Push Dev Container Image
+
+on:
+  workflow_dispatch:
+  # 自動化する場合はコメントインする
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - .devcontainer-image/Dockerfile
+  #     - mise.toml
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute content hash
+        id: hash
+        run: |
+          HASH=$(.devcontainer-image/content-hash.sh)
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+          echo "image=ghcr.io/${{ github.repository }}/devcontainer:$HASH" >> $GITHUB_OUTPUT
+
+      - name: Check if image already exists
+        id: check
+        run: |
+          if docker manifest inspect "${{ steps.hash.outputs.image }}" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Docker Buildx
+        if: steps.check.outputs.exists == 'false'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        if: steps.check.outputs.exists == 'false'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .devcontainer-image/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.hash.outputs.image }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:cache,mode=max
+
+      - name: Update devcontainer.json
+        run: |
+          jq --arg image "${{ steps.hash.outputs.image }}" '.image = $image' \
+            .devcontainer/devcontainer.json > tmp.json
+          mv tmp.json .devcontainer/devcontainer.json
+
+      - name: Commit and push devcontainer.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .devcontainer/devcontainer.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update devcontainer image to ${{ steps.hash.outputs.hash }}"
+            git push
+          fi

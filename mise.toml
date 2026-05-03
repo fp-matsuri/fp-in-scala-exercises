@@ -1,0 +1,16 @@
+[tools]
+# fp-in-clojure
+java = "25.0.2"
+clojure = "1.12.4.1629"
+clj-kondo = "2026.04.15"
+cljstyle = "0.17.642"
+"github:candid82/joker" = "1.7.1"
+
+# fp-in-scala
+sbt = "1.12.10"
+coursier = {version = "2.1.24", postinstall = "cs install scalafix:0.14.6 --install-dir ~/.local/bin" }
+"github:scalameta/scalafmt" = "3.8.1"
+
+# fp-in-haskell
+ghc = "9.14.1"
+cabal = "3.16.1.0"
