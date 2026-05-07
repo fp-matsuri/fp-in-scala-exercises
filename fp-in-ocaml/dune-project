@@ -1,0 +1,17 @@
+(lang dune 3.20)
+
+(name fp_in_ocaml)
+
+(implicit_transitive_deps false)
+
+(package
+ (name fp_in_ocaml)
+ (allow_empty)
+ (synopsis "FP in Scala exercises ported to OCaml")
+ (description "FP in Scala 演習問題の OCaml 移植版")
+ (depends
+  (ocaml
+   (>= 5.4))
+  (alcotest :with-test)
+  (qcheck-core :with-test)
+  (qcheck-alcotest :with-test)))

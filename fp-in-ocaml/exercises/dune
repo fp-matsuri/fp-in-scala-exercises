@@ -1,0 +1,5 @@
+(library
+ (name getting_started)
+ (modules getting_started)
+ (flags
+  (:standard -w -unused-var-strict -w -unused-rec-flag)))

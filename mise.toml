@@ -14,3 +14,6 @@ coursier = {version = "2.1.24", postinstall = "cs install scalafix:0.14.6 --inst
 # fp-in-haskell
 ghc = "9.14.1"
 cabal = "3.16.1.0"
+
+# fp-in-ocaml
+opam = {version = "2.5.1", postinstall = "opam init -y --disable-sandboxing && opam install -y dune" }
