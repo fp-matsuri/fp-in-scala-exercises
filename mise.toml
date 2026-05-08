@@ -11,9 +11,11 @@ sbt = "1.12.11"
 coursier = {version = "2.1.24", postinstall = "cs install scalafix:0.14.6 --install-dir ~/.local/bin" }
 "github:scalameta/scalafmt" = "3.11.0"
 
+# CI がコケているので一時的にコメントアウトします
+# haskell 実装時に修正をお願いします。
 # fp-in-haskell
-ghc = "9.14.1"
-cabal = "3.16.1.0"
+# ghc = "9.14.1"
+# cabal = "3.16.1.0"
 
 # fp-in-ocaml
 opam = {version = "2.5.1", postinstall = "opam init -y --disable-sandboxing && opam install -y dune" }
