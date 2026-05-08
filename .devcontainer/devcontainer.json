@@ -12,6 +12,7 @@
         "clj-kondo.clj-kondo",
         "scalameta.metals",
         "haskell.haskell",
+        "ocamllabs.ocaml-platform",
         "usernamehw.errorlens"
       ]
     }

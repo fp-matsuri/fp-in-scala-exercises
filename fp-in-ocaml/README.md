@@ -1,14 +1,3 @@
-
-- 「必要なツール」セクション
-    - 開発/実行に必要なツールの名前/公式ページURLとそのコマンドの列挙
-        - プロジェクト管理/ビルドツール、リンター、フォーマッターなど
-    - ⚠️ ツールのインストール手順は記載不要
-- 「使い方」セクション
-    - REPL: コマンドラインからの起動方法と利用例
-    - テスト/リント/フォーマット: コマンドラインからの実行方法
-- 「プロジェクト構成」セクション
-    - プロジェクトのルート階層に配置されている主なディレクトリ/ファイルについての簡単な説明(`tree` コマンドの出力をコメント補足するなど)
-
 # fp-in-ocaml
 
 FP in Scala演習問題の[OCaml](https://ocaml.org/)移植版
@@ -17,6 +6,11 @@ FP in Scala演習問題の[OCaml](https://ocaml.org/)移植版
 
 - 公式コンパイラ/ランタイム: [OCaml](https://ocaml.org/) (コマンド: `ocaml`, `ocamlfind` など) — 5.4 以降
 - ビルドシステム: [Dune](https://dune.build/) (コマンド: `dune`) — 3.20 以降
+
+opam で dune をインストールした場合は以下のコマンドでパスを通してください
+```shell
+eval `opam env`
+```
 
 依存ライブラリは [`dune-project`](dune-project) で宣言し、[Dune Package Management](https://dune.readthedocs.io/en/stable/package-management.html) (`dune pkg lock`) によって `dune.lock/` 配下にロックファイルが生成される。
 
