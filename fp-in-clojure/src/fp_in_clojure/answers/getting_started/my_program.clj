@@ -72,6 +72,8 @@
   :args (s/cat :n integer?)
   :ret integer?)
 
+;; 0と1が数列の最初の2つの数なので、アキュムレータ(累積変数)をそこから始める。
+;; 繰り返しのたびに2つの数を加えて次の数とする。
 (defn fib [n]
   (loop [n n
          prev 0
