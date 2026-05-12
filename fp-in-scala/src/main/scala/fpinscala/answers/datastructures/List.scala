@@ -28,6 +28,8 @@ object List: // `List` companion object. Contains functions for creating and wor
     if as.isEmpty then Nil
     else Cons(as.head, apply(as.tail*))
 
+  // Exercise 3.1: 以下の式 `result `の評価結果は何になるか? (推測してからREPLで確認してみよう)
+
   @annotation.nowarn // Scala gives a hint here via a warning, so let's disable that
   val result = List(1, 2, 3, 4, 5) match
     case Cons(x, Cons(2, Cons(4, _)))          => x
@@ -35,6 +37,9 @@ object List: // `List` companion object. Contains functions for creating and wor
     case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
     case Cons(h, t)                            => h + sum(t)
     case _                                     => 101
+  /*
+  3. The third case is the first that matches, with `x` bound to 1 and `y` bound to 2.
+   */
 
   def append[A](a1: List[A], a2: List[A]): List[A] =
     a1 match
@@ -60,9 +65,7 @@ object List: // `List` companion object. Contains functions for creating and wor
       _ * _
     ) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
-  /*
-  3. The third case is the first that matches, with `x` bound to 1 and `y` bound to 2.
-   */
+  // Exercise 3.2: 先頭要素以外のリストを返す関数 `tail` を定義せよ。
 
   /*
   Although we could return `Nil` when the input list is empty, we choose to throw an exception instead. This is
@@ -77,6 +80,8 @@ object List: // `List` companion object. Contains functions for creating and wor
       case Nil        => sys.error("tail of empty list")
       case Cons(_, t) => t
 
+  // Exercise 3.3: リストの先頭要素を別の値に置き換える関数 `setHead` を定義せよ。
+
   /*
   If a function body consists solely of a match expression, we'll often put the match on the same line as the
   function signature, rather than introducing another level of nesting.
@@ -84,6 +89,8 @@ object List: // `List` companion object. Contains functions for creating and wor
   def setHead[A](l: List[A], h: A): List[A] = l match
     case Nil        => sys.error("setHead on empty list")
     case Cons(_, t) => Cons(h, t)
+
+  // Exercise 3.4: リストの先頭から `n` 個の要素を取り除く関数 `drop` を定義せよ。
 
   /*
   Again, it's somewhat subjective whether to throw an exception when asked to drop more elements than the list
@@ -99,6 +106,8 @@ object List: // `List` companion object. Contains functions for creating and wor
         case Nil        => Nil
         case Cons(_, t) => drop(t, n - 1)
 
+  // Exercise 3.5: リストの先頭から条件を満たす限り続けて要素を取り除く関数 `dropWhile` を定義せよ。
+
   /*
   Somewhat overkill, but to illustrate the feature we're using a _pattern guard_, to only match a `Cons` whose head
   satisfies our predicate, `f`. The syntax is to add `if <cond>` after the pattern, before the `=>`, where `<cond>` can
@@ -108,6 +117,8 @@ object List: // `List` companion object. Contains functions for creating and wor
     l match
       case Cons(h, t) if f(h) => dropWhile(t, f)
       case _                  => l
+
+  // Exercise 3.6: 末尾要素以外のリストを返す関数 `init` を定義せよ。
 
   /*
   Note that we're copying the entire list up until the last element. Besides being inefficient, the natural recursive
@@ -135,11 +146,15 @@ object List: // `List` companion object. Contains functions for creating and wor
       case Cons(h, t)   => buf += h; go(t)
     go(l)
 
+  // Exercise 3.7: `foldRight` によるリストの走査を途中で打ち切る(短絡的に結果を返す)ことは可能か? それはなぜか?
+
   /*
   No, this is not possible! The reason is because _before_ we ever call our function, `f`, we evaluate its argument,
   which in the case of `foldRight` means traversing the list all the way to the end. We need _non-strict_ evaluation
   to support early termination---we discuss this in chapter 5.
    */
+
+  // Exercise 3.8: `foldRight` の引数 `acc` に `Nil` 、 `f` に `Cons(_, _)` を与えるとどのような結果が得られるか? (推測してからREPLで確認してみよう)
 
   /*
   We get back the original list! Why is that? As we mentioned earlier, one way of thinking about what `foldRight` "does"
@@ -153,8 +168,12 @@ object List: // `List` companion object. Contains functions for creating and wor
   Cons(1, Cons(2, Cons(3, Nil)))
    */
 
+  // Exercise 3.9: リストの要素数を数える関数 `length` を定義せよ。
+
   def length[A](l: List[A]): Int =
     foldRight(l, 0, (_, acc) => acc + 1)
+
+  // Exercise 3.10: リストを左端から畳み込む `foldLeft` 関数を末尾再帰関数として定義せよ。
 
   /*
   It's common practice to annotate functions you expect to be tail-recursive with the `tailrec` annotation. If the
@@ -166,14 +185,21 @@ object List: // `List` companion object. Contains functions for creating and wor
     case Nil        => acc
     case Cons(h, t) => foldLeft(t, f(acc, h), f)
 
+  // Exercise 3.11: `foldLeft` を用いて `sum`, `product`, `length` を定義せよ。
+
   def sumViaFoldLeft(l: List[Int]) = foldLeft(l, 0, _ + _)
+
   def productViaFoldLeft(l: List[Double]) = foldLeft(l, 1.0, _ * _)
 
   def lengthViaFoldLeft[A](l: List[A]): Int =
     foldLeft(l, 0, (acc, h) => acc + 1)
 
+  // Exercise 3.12: `foldLeft` を用いてリストを逆順にする関数 `reverse` を定義せよ。
+
   def reverse[A](l: List[A]): List[A] =
     foldLeft(l, List[A](), (acc, h) => Cons(h, acc))
+
+  // Exercise 3.13: `foldLeft` を用いて `foldRight` を定義することは可能か? 可能であれば定義せよ。
 
   /*
   The implementation of `foldRight` in terms of `reverse` and `foldLeft` is a common trick for avoiding stack overflows
@@ -195,12 +221,16 @@ object List: // `List` companion object. Contains functions for creating and wor
   def foldLeftViaFoldRight[A, B](l: List[A], acc: B, f: (B, A) => B): B =
     foldRight(l, (b: B) => b, (a, g) => b => g(f(b, a)))(acc)
 
+  // Exercise 3.14: `foldRight` を用いて `append` を定義せよ。
+
   /*
   `append` simply replaces the `Nil` constructor of the first list with the second list, which is exactly the operation
   performed by `foldRight`.
    */
   def appendViaFoldRight[A](l: List[A], r: List[A]): List[A] =
     foldRight(l, r, Cons(_, _))
+
+  // Exercise 3.15: `foldRight` を用いてリストのリストを1つのリストに連結する関数 `concat` を定義せよ。
 
   /*
   Since `append` takes time proportional to its first argument, and this first argument never grows because of the
@@ -217,11 +247,17 @@ object List: // `List` companion object. Contains functions for creating and wor
   def concat[A](l: List[List[A]]): List[A] =
     foldRight(l, Nil: List[A], append)
 
+  // Exercise 3.16: `foldRight` を用いてリストの各要素に1を加える関数 `incrementEach` を定義せよ。
+
   def incrementEach(l: List[Int]): List[Int] =
     foldRight(l, Nil: List[Int], (i, acc) => Cons(i + 1, acc))
 
+  // Exercise 3.17: `foldRight` を用いてリストの各要素の数値を文字列に変換する関数 `doubleToString` を定義せよ。
+
   def doubleToString(l: List[Double]): List[String] =
     foldRight(l, Nil: List[String], (d, acc) => Cons(d.toString, acc))
+
+  // Exercise 3.18: `doubleToString` を一般化して、リストの各要素に関数 `f` を適用する関数 `map` を定義せよ。
 
   /*
   A natural solution is using `foldRight`, but our implementation of `foldRight` is not stack-safe. We can
@@ -244,6 +280,8 @@ object List: // `List` companion object. Contains functions for creating and wor
     List(
       buf.toList*
     ) // converting from the standard Scala list to the list we've defined here
+
+  // Exercise 3.19: リストの各要素を述語関数 `f` に従ってフィルタリングする関数 `filter` を定義せよ。
 
   /*
   The discussion about `map` also applies here.
@@ -268,14 +306,20 @@ object List: // `List` companion object. Contains functions for creating and wor
       buf.toList*
     ) // converting from the standard Scala list to the list we've defined here
 
+  // Exercise 3.20: リストの各要素を関数 `f` に適用して得られるリストのリストを1つのリストに連結する関数 `flatMap` を定義せよ。
+
   /*
   This could also be implemented directly using `foldRight`.
    */
   def flatMap[A, B](l: List[A], f: A => List[B]): List[B] =
     concat(map(l, f))
 
+  // Exercise 3.21: `flatMap` を用いて `filter` を定義せよ。
+
   def filterViaFlatMap[A](l: List[A], f: A => Boolean): List[A] =
     flatMap(l, a => if f(a) then List(a) else Nil)
+
+  // Exercise 3.22: リスト `a`, `b` をそれぞれ先頭から順に取り出して対応する要素を足し合わせたリストを返す関数 `addPairwise` を定義せよ。 `a`, `b` の長さが異なる場合、返すリストの長さは短いほうに一致する。
 
   /*
   To match on multiple values, we can put the values into a pair and match on the pair, as shown next, and the same
@@ -290,6 +334,8 @@ object List: // `List` companion object. Contains functions for creating and wor
     case (Nil, _)                     => Nil
     case (_, Nil)                     => Nil
     case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1 + h2, addPairwise(t1, t2))
+
+  // Exercise 3.23: `addPairwise` を一般化して、リスト `a`, `b` をそれぞれ先頭から順に取り出して対応する要素に関数 `f` を適用して得られたリストを返す関数 `zipWith` を定義せよ。
 
   /*
   This function is usually called `zipWith`. The discussion about stack usage from the explanation of `map` also
@@ -313,6 +359,9 @@ object List: // `List` companion object. Contains functions for creating and wor
         case (Cons(h1, t1), Cons(h2, t2)) => loop(t1, t2, Cons(f(h1, h2), acc))
     reverse(loop(a, b, Nil))
 
+  // Exercise 3.24: リスト `sup` の中にリスト `sub` が部分列として含まれているかどうかを判定する関数 `hasSubsequence` を定義せよ。
+  // 例えば、 `List(1, 2, 3, 4)` は `List(1, 2)`, `List(2, 3)`, `List(4)` を部分列として含むが、 `List(1, 4)` は部分列として含まない。
+
   /*
   There's nothing particularly bad about this implementation,
   except that it's somewhat monolithic and easy to get wrong.
@@ -323,10 +372,10 @@ object List: // `List` companion object. Contains functions for creating and wor
   loops early. In Chapter 5 we'll discuss ways of composing functions
   like this from simpler components, without giving up the efficiency
   of having the resulting functions work in one pass over the data.
-  
+
   It's good to specify some properties about these functions.
   For example, do you expect these expressions to be true?
-  
+
   (xs append ys) startsWith xs
   xs startsWith Nil
   (xs append ys append zs) hasSubsequence ys

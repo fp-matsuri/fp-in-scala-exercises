@@ -8,6 +8,8 @@ enum Either[+E, +A]:
   case Left(get: E)
   case Right(get: A)
 
+  // Exercise 4.6: Optionに準じて `map`, `flatMap`, `orElse`, `map2` を実装せよ。
+
   def map[B](f: A => B): Either[E, B] = ???
 
   def flatMap[EE >: E, B](f: A => Either[EE, B]): Either[EE, B] = ???
@@ -17,6 +19,8 @@ enum Either[+E, +A]:
   def map2[EE >: E, B, C](b: Either[EE, B])(f: (A, B) => C): Either[EE, C] = ???
 
 object Either:
+  // Exercise 4.7: Optionに準じて `traverse`, `sequence` を実装せよ。
+
   def traverse[E, A, B](es: List[A])(f: A => Either[E, B]): Either[E, List[B]] =
     ???
 

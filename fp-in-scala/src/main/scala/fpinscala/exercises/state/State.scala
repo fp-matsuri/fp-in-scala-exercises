@@ -32,9 +32,16 @@ object RNG:
       val (a, rng2) = s(rng)
       (f(a), rng2)
 
+  // Exercise 6.1: 非負整数をランダム生成する関数 `nonNegativeInt` を実装せよ。
+
   def nonNegativeInt(rng: RNG): (Int, RNG) = ???
 
+  // Exercise 6.2: 0以上1未満の浮動小数点数をランダム生成する関数 `double` を実装せよ。
+
   def double(rng: RNG): (Double, RNG) = ???
+
+  // Exercise 6.3: 整数と浮動小数点数の組をランダム生成する関数 `intDouble` と `doubleInt` を実装せよ。
+  // また、浮動小数点数の3つ組をランダム生成する関数 `double3` を実装せよ。
 
   def intDouble(rng: RNG): ((Int, Double), RNG) = ???
 
@@ -42,13 +49,25 @@ object RNG:
 
   def double3(rng: RNG): ((Double, Double, Double), RNG) = ???
 
+  // Exercise 6.4: 引数で指定された要素数の整数リストをランダム生成する関数 `ints` を実装せよ。
+
   def ints(count: Int)(rng: RNG): (List[Int], RNG) = ???
+
+  // Exercise 6.5: `map` を用いて `double` を実装せよ。
+
+  // Exercise 6.6: 関数 `map2` を実装せよ。
 
   def map2[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = ???
 
+  // Exercise 6.7: 関数 `sequence` を実装せよ。
+
   def sequence[A](rs: List[Rand[A]]): Rand[List[A]] = ???
 
+  // Exercise 6.8: 関数 `flatMap` を実装せよ。
+
   def flatMap[A, B](r: Rand[A])(f: A => Rand[B]): Rand[B] = ???
+
+  // Exercise 6.9: `flatMap` を用いて `map`, `map2` を実装せよ。
 
   def mapViaFlatMap[A, B](r: Rand[A])(f: A => B): Rand[B] = ???
 
@@ -62,6 +81,9 @@ object State:
   extension [S, A](underlying: State[S, A])
     def run(s: S): (A, S) = underlying(s)
 
+    // Exercise 6.10: 拡張メソッド `map`, `map2`, `flatMap` を実装せよ。
+    // また、関数 `unit`, `sequence`, `traverse` を実装せよ。
+
     def map[B](f: A => B): State[S, B] =
       ???
 
@@ -72,6 +94,25 @@ object State:
       ???
 
   def apply[S, A](f: S => (A, S)): State[S, A] = f
+
+  def modify[S](f: S => S): State[S, Unit] =
+    for
+      s <- get // Gets the current state and assigns it to `s`.
+      _ <- set(f(s)) // Sets the new state to `f` applied to `s`.
+    yield ()
+
+  def get[S]: State[S, S] = s => (s, s)
+
+  def set[S](s: S): State[S, Unit] = _ => ((), s)
+
+// Exercise 6.11: Stateを用いて以下のルールを満たすキャンディ販売機の振る舞いをシミュレートする関数 `simulateMachine` を実装せよ。
+// `simulateMachine` は入力リストを受け取って販売機の最終的なキャンディの個数とコインの枚数のペアを返す。
+// ルール:
+//   - 販売機がロックされている(`locked = true`)とき、ノブを回し(Input.Turn)ても販売機は反応しない
+//   - 販売機がロックされている(`locked = true`)とき、コインを投入する(Input.Coin)と販売機のロックが外れてコインが1枚増える
+//   - 販売機がロックされていない(`locked = false`)とき、ノブを回す(Input.Turn)と販売機のロックが掛かってキャンディが1個減る
+//   - 販売機がロックされていない(`locked = false`)とき、コインを投入し(Input.Coin)ても販売機は反応しない
+//   - 販売機にキャンディが残っていない(`candies = 0`)とき、コインを投入し(Input.Coin)てもノブを回し(Input.Turn)ても販売機は反応しない
 
 enum Input:
   case Coin, Turn

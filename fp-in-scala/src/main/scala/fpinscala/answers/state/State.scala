@@ -20,6 +20,20 @@ object RNG:
         nextRNG
       ) // The return value is a tuple containing both a pseudo-random integer and the next `RNG` state.
 
+  type Rand[+A] = RNG => (A, RNG)
+
+  val int: Rand[Int] = _.nextInt
+
+  def unit[A](a: A): Rand[A] =
+    rng => (a, rng)
+
+  def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
+    rng =>
+      val (a, rng2) = s(rng)
+      (f(a), rng2)
+
+  // Exercise 6.1: 非負整数をランダム生成する関数 `nonNegativeInt` を実装せよ。
+
   // We need to be quite careful not to skew the generator.
   // Since `Int.Minvalue` is 1 smaller than `-(Int.MaxValue)`,
   // it suffices to increment the negative numbers by 1 and make them positive.
@@ -27,6 +41,8 @@ object RNG:
   def nonNegativeInt(rng: RNG): (Int, RNG) =
     val (i, r) = rng.nextInt
     (if i < 0 then -(i + 1) else i, r)
+
+  // Exercise 6.2: 0以上1未満の浮動小数点数をランダム生成する関数 `double` を実装せよ。
 
   // We generate an integer >= 0 and divide it by one higher than the
   // maximum. This is just one possible solution.
@@ -37,6 +53,9 @@ object RNG:
   def boolean(rng: RNG): (Boolean, RNG) =
     rng.nextInt match
       case (i, rng2) => (i % 2 == 0, rng2)
+
+  // Exercise 6.3: 整数と浮動小数点数の組をランダム生成する関数 `intDouble` と `doubleInt` を実装せよ。
+  // また、浮動小数点数の3つ組をランダム生成する関数 `double3` を実装せよ。
 
   def intDouble(rng: RNG): ((Int, Double), RNG) =
     val (i, r1) = rng.nextInt
@@ -57,6 +76,8 @@ object RNG:
   // every time. What could we do to eliminate some of this duplication
   // of effort?
 
+  // Exercise 6.4: 引数で指定された要素数の整数リストをランダム生成する関数 `ints` を実装せよ。
+
   // A simple recursive solution
   def ints(count: Int)(rng: RNG): (List[Int], RNG) =
     if count <= 0 then (List(), rng)
@@ -74,20 +95,12 @@ object RNG:
         go(count - 1, r2, x :: xs)
     go(count, rng, List())
 
-  type Rand[+A] = RNG => (A, RNG)
-
-  val int: Rand[Int] = _.nextInt
-
-  def unit[A](a: A): Rand[A] =
-    rng => (a, rng)
-
-  def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
-    rng =>
-      val (a, rng2) = s(rng)
-      (f(a), rng2)
+  // Exercise 6.5: `map` を用いて `double` を実装せよ。
 
   val _double: Rand[Double] =
     map(nonNegativeInt)(_ / (Int.MaxValue.toDouble + 1))
+
+  // Exercise 6.6: 関数 `map2` を実装せよ。
 
   // This implementation of map2 passes the initial RNG to the first argument
   // and the resulting RNG to the second argument. It's not necessarily wrong
@@ -112,6 +125,8 @@ object RNG:
   val randDoubleInt: Rand[(Double, Int)] =
     both(double, int)
 
+  // Exercise 6.7: 関数 `sequence` を実装せよ。
+
   // In `sequence`, the base case of the fold is a `unit` action that returns
   // the empty list. At each step in the fold, we accumulate in `acc`
   // and `r` is the current element in the list.
@@ -131,6 +146,8 @@ object RNG:
   def _ints(count: Int): Rand[List[Int]] =
     sequence(List.fill(count)(int))
 
+  // Exercise 6.8: 関数 `flatMap` を実装せよ。
+
   def flatMap[A, B](r: Rand[A])(f: A => Rand[B]): Rand[B] =
     rng0 =>
       val (a, rng1) = r(rng0)
@@ -140,6 +157,8 @@ object RNG:
     flatMap(nonNegativeInt): i =>
       val mod = i % n
       if i + (n - 1) - mod >= 0 then unit(mod) else nonNegativeLessThan(n)
+
+  // Exercise 6.9: `flatMap` を用いて `map`, `map2` を実装せよ。
 
   def mapViaFlatMap[A, B](r: Rand[A])(f: A => B): Rand[B] =
     flatMap(r)(a => unit(f(a)))
@@ -154,6 +173,9 @@ opaque type State[S, +A] = S => (A, S)
 object State:
   extension [S, A](underlying: State[S, A])
     def run(s: S): (A, S) = underlying(s)
+
+    // Exercise 6.10: 拡張メソッド `map`, `map2`, `flatMap` を実装せよ。
+    // また、関数 `unit`, `sequence`, `traverse` を実装せよ。
 
     def map[B](f: A => B): State[S, B] =
       flatMap(a => unit(f(a)))
@@ -189,6 +211,15 @@ object State:
   def get[S]: State[S, S] = s => (s, s)
 
   def set[S](s: S): State[S, Unit] = _ => ((), s)
+
+// Exercise 6.11: Stateを用いて以下のルールを満たすキャンディ販売機の振る舞いをシミュレートする関数 `simulateMachine` を実装せよ。
+// `simulateMachine` は入力リストを受け取って販売機の最終的なキャンディの個数とコインの枚数のペアを返す。
+// ルール:
+//   - 販売機がロックされている(`locked = true`)とき、ノブを回し(Input.Turn)ても販売機は反応しない
+//   - 販売機がロックされている(`locked = true`)とき、コインを投入する(Input.Coin)と販売機のロックが外れてコインが1枚増える
+//   - 販売機がロックされていない(`locked = false`)とき、ノブを回す(Input.Turn)と販売機のロックが掛かってキャンディが1個減る
+//   - 販売機がロックされていない(`locked = false`)とき、コインを投入し(Input.Coin)ても販売機は反応しない
+//   - 販売機にキャンディが残っていない(`candies = 0`)とき、コインを投入し(Input.Coin)てもノブを回し(Input.Turn)ても販売機は反応しない
 
 enum Input:
   case Coin, Turn

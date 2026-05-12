@@ -7,6 +7,10 @@ enum Option[+A]:
   case Some(get: A)
   case None
 
+  // Exercise 4.1: メソッド `map` 、 `getOrElse` 、 `flatMap` 、 `orElse` 、 `filter` を実装せよ。
+  // `getOrElse` は `Some` ならその中身の値を返し、 `None` なら引数のデフォルト値を返す。
+  // `orElse` は `Some` ならそのまま返し、 `None` なら引数のOption値を返す。
+
   def map[B](f: A => B): Option[B] = ???
 
   def getOrElse[B >: A](default: => B): B = ???
@@ -42,10 +46,19 @@ object Option:
     if xs.isEmpty then None
     else Some(xs.sum / xs.length)
 
+  // Exercise 4.2: 分散(平均からの偏差の2乗の平均)を計算する関数 `variance` を定義せよ。
+
   def variance(xs: Seq[Double]): Option[Double] = ???
+
+  // Exercise 4.3: 2つのOption値がともに `Some` なら、2つの値に関数 `f` を適用する関数 `map2` を定義せよ。
+  // どちらかが `None` なら結果も `None` になる。
 
   def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = ???
 
+  // Exercise 4.4: OptionのリストをリストのOptionに変換する関数 `sequence` を定義せよ。
+
   def sequence[A](as: List[Option[A]]): Option[List[A]] = ???
+
+  // Exercise 4.5: リストの要素に関数 `f` を適用した結果をリストのOptionに変換する関数 `traverse` を定義せよ。
 
   def traverse[A, B](as: List[A])(f: A => Option[B]): Option[List[B]] = ???

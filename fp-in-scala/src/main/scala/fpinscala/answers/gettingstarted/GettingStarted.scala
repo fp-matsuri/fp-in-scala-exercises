@@ -31,7 +31,7 @@ object MyProgram:
     while i > 0 do { acc *= i; i -= 1 }
     acc
 
-  // Exercise 1: Write a function to compute the nth fibonacci number
+  // Exercise 2.1: n番目のフィボナッチ数を計算する関数 `fib` を定義せよ。
 
   // 0 and 1 are the first two numbers in the sequence,
   // so we start the accumulators with those.
@@ -116,8 +116,9 @@ object PolymorphicFunctions:
 
     loop(0)
 
-  // Exercise 2: Implement a polymorphic function to check whether
-  // an `Array[A]` is sorted
+  // Exercise 2.2: `Array[A]` がソート済みかどうかを判定する多相関数を定義せよ。
+  // 第2引数 `gt` は `as` の隣接する2要素をとって最初の要素が2番目の要素より大きいかどうかを判定する述語関数。
+
   def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean =
     @annotation.tailrec
     def go(n: Int): Boolean =
@@ -133,7 +134,7 @@ object PolymorphicFunctions:
   def partial1[A, B, C](a: A, f: (A, B) => C): B => C =
     (b: B) => f(a, b)
 
-  // Exercise 3: Implement `curry`.
+  // Exercise 2.3: `curry` を実装せよ。
 
   // Note that `=>` associates to the right, so we could
   // write the return type as `A => B => C`
@@ -142,7 +143,8 @@ object PolymorphicFunctions:
 
   // NB: The `Function2` trait has a `curried` method already
 
-  // Exercise 4: Implement `uncurry`
+  // Exercise 2.4: `uncurry` を実装せよ。
+
   def uncurry[A, B, C](f: A => B => C): (A, B) => C =
     (a, b) => f(a)(b)
 
@@ -156,7 +158,7 @@ object PolymorphicFunctions:
   a term we inherit from category theory.
    */
 
-  // Exercise 5: Implement `compose`
+  // Exercise 2.5: `compose` を実装せよ。
 
   def compose[A, B, C](f: B => C, g: A => B): A => C =
     a => f(g(a))

@@ -8,6 +8,8 @@ enum Either[+E, +A]:
   case Left(get: E)
   case Right(get: A)
 
+  // Exercise 4.6: Optionに準じて `map`, `flatMap`, `orElse`, `map2` を実装せよ。
+
   def map[B](f: A => B): Either[E, B] = this match
     case Right(a) => Right(f(a))
     case Left(e)  => Left(e)
@@ -28,17 +30,7 @@ enum Either[+E, +A]:
     yield f(a, b1)
 
 object Either:
-  def mean(xs: IndexedSeq[Double]): Either[String, Double] =
-    if xs.isEmpty then Left("mean of empty list!")
-    else Right(xs.sum / xs.length)
-
-  def safeDiv(x: Int, y: Int): Either[Throwable, Int] =
-    try Right(x / y)
-    catch case NonFatal(t) => Left(t)
-
-  def catchNonFatal[A](a: => A): Either[Throwable, A] =
-    try Right(a)
-    catch case NonFatal(t) => Left(t)
+  // Exercise 4.7: Optionに準じて `traverse`, `sequence` を実装せよ。
 
   def traverse[E, A, B](as: List[A])(f: A => Either[E, B]): Either[E, List[B]] =
     as match
@@ -52,6 +44,18 @@ object Either:
 
   def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] =
     traverse(es)(x => x)
+
+  def mean(xs: IndexedSeq[Double]): Either[String, Double] =
+    if xs.isEmpty then Left("mean of empty list!")
+    else Right(xs.sum / xs.length)
+
+  def safeDiv(x: Int, y: Int): Either[Throwable, Int] =
+    try Right(x / y)
+    catch case NonFatal(t) => Left(t)
+
+  def catchNonFatal[A](a: => A): Either[Throwable, A] =
+    try Right(a)
+    catch case NonFatal(t) => Left(t)
 
 object AccumulatingErrors:
   import Either.{Left, Right}

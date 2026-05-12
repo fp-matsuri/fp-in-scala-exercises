@@ -8,13 +8,20 @@ enum Tree[+A]:
     case Leaf(_)      => 1
     case Branch(l, r) => 1 + l.size + r.size
 
+  // Exercise 3.26: ツリーの深さを計算するメソッド `depth` を定義せよ。深さは、ルートから最も遠いリーフまでのパスの長さである。
+
   def depth: Int = this match
     case Leaf(_)      => 0
     case Branch(l, r) => 1 + (l.depth.max(r.depth))
 
+  // Exercise 3.27: ツリーの各リーフに関数 `f` を適用するメソッド `map` を定義せよ。
+
   def map[B](f: A => B): Tree[B] = this match
     case Leaf(a)      => Leaf(f(a))
     case Branch(l, r) => Branch(l.map(f), r.map(f))
+
+  // Exercise 3.28: ツリーのリーフの値を変換する関数 `f` とブランチの左右の値をまとめる関数 `g` を受け取ってツリーを畳み込むメソッド `fold` を定義せよ。
+  // また、 `fold` を用いて `size` 、 `depth` 、 `map` を定義せよ。
 
   /*
   Like `foldRight` for lists, `fold` receives a "handler" for each of the data constructors of the type, and recursively
@@ -47,9 +54,12 @@ object Tree:
         val lpos = l.firstPositive
         if lpos > 0 then lpos else r.firstPositive
 
+  // Exercise 3.25: ツリーのリーフの最大値を計算する拡張メソッド `maximum` を定義せよ。
+  // また、 `fold` を用いて `maximum` を定義せよ。
+
   /*
   We're using the method `max` that exists on all `Int` values rather than an explicit `if` expression.
-  
+
   Note how similar the implementation is to `size`. We'll abstract out the common pattern in a later exercise.
    */
   extension (t: Tree[Int])

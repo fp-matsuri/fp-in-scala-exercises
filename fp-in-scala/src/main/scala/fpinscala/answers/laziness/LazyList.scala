@@ -6,6 +6,8 @@ enum LazyList[+A]:
   case Empty
   case Cons(h: () => A, t: () => LazyList[A])
 
+  // Exercise 5.1: 遅延リストをリストに変換するメソッド `toList` を定義せよ。
+
   // The natural recursive solution
   def toListRecursive: List[A] = this match
     case Cons(h, t) => h() :: t().toListRecursive
@@ -41,6 +43,29 @@ enum LazyList[+A]:
       case Empty => buf.toList
     go(this)
 
+  def foldRight[B](z: => B)(
+      f: (A, => B) => B
+  ): B = // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name and may choose not to evaluate it.
+    this match
+      case Cons(h, t) =>
+        f(
+          h(),
+          t().foldRight(z)(f)
+        ) // If `f` doesn't evaluate its second argument, the recursion never occurs.
+      case _ => z
+
+  def exists(p: A => Boolean): Boolean =
+    foldRight(false)((a, b) =>
+      p(a) || b
+    ) // Here `b` is the unevaluated recursive step that folds the tail of the lazy list. If `p(a)` returns `true`, `b` will never be evaluated and the computation terminates early.
+
+  @annotation.tailrec
+  final def find(f: A => Boolean): Option[A] = this match
+    case Empty      => None
+    case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
+
+  // Exercise 5.2: 遅延リストの先頭から最初の `n` 要素を返すメソッド `take` 、先頭から最初の `n` 要素をスキップするメソッド `drop` を定義せよ。
+
   /*
     Create a new LazyList[A] from taking the n first elements from this. We can achieve that by recursively
     calling take on the invoked tail of a cons cell. We make sure that the tail is not invoked unless
@@ -61,25 +86,13 @@ enum LazyList[+A]:
     case Cons(_, t) if n > 0 => t().drop(n - 1)
     case _                   => this
 
+  // Exercise 5.3: 遅延リストの先頭から条件を満たす限り続けて要素を返すメソッド `takeWhile` を定義せよ。
+
   def takeWhile(f: A => Boolean): LazyList[A] = this match
     case Cons(h, t) if f(h()) => cons(h(), t().takeWhile(f))
     case _                    => empty
 
-  def foldRight[B](z: => B)(
-      f: (A, => B) => B
-  ): B = // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name and may choose not to evaluate it.
-    this match
-      case Cons(h, t) =>
-        f(
-          h(),
-          t().foldRight(z)(f)
-        ) // If `f` doesn't evaluate its second argument, the recursion never occurs.
-      case _ => z
-
-  def exists(p: A => Boolean): Boolean =
-    foldRight(false)((a, b) =>
-      p(a) || b
-    ) // Here `b` is the unevaluated recursive step that folds the tail of the lazy list. If `p(a)` returns `true`, `b` will never be evaluated and the computation terminates early.
+  // Exercise 5.4: 遅延リストのすべての要素が条件を満たすかどうかを判定するメソッド `forAll` を定義せよ。
 
   /*
   Since `&&` is non-strict in its second argument, this terminates the traversal as soon as a nonmatching element is found.
@@ -87,11 +100,17 @@ enum LazyList[+A]:
   def forAll(p: A => Boolean): Boolean =
     foldRight(true)((a, b) => p(a) && b)
 
+  // Exercise 5.5: `foldRight` を用いて `takeWhile` を実装せよ。
+
   def takeWhile_1(p: A => Boolean): LazyList[A] =
     foldRight(empty)((a, b) => if p(a) then cons(a, b) else empty)
 
+  // Exercise 5.6: `foldRight` を用いて先頭要素を返すメソッド `headOption` を実装せよ。
+
   def headOption: Option[A] =
     foldRight(None: Option[A])((h, _) => Some(h))
+
+  // Exercise 5.7: `foldRight` を用いて `map`, `filter`, `append`, `flatMap` を実装せよ。
 
   def map[B](f: A => B): LazyList[B] =
     foldRight(empty[B])((a, acc) => cons(f(a), acc))
@@ -104,6 +123,9 @@ enum LazyList[+A]:
 
   def flatMap[B](f: A => LazyList[B]): LazyList[B] =
     foldRight(empty[B])((a, acc) => f(a).append(acc))
+
+  // Exercise 5.13: `unfold` を用いて `map`, `take`, `takeWhile`, `zipWith`, `zipAll` を実装せよ。
+  // `zipAll` は2つの遅延リストが両方とも尽きるまでそれぞれ先頭から順に取り出して対応する要素をペアにして返す。
 
   def mapViaUnfold[B](f: A => B): LazyList[B] =
     unfold(this):
@@ -154,15 +176,20 @@ enum LazyList[+A]:
         Some(f(Some(h1()), Some(h2())) -> (t1() -> t2()))
 
   def zipAllViaZipWithAll[B](
-      s2: LazyList[B]
+      that: LazyList[B]
   ): LazyList[(Option[A], Option[B])] =
-    zipWithAll(s2)((_, _))
+    zipWithAll(that)((_, _))
+
+  // Exercise 5.14: 定義済みのメソッドを用いて遅延リストが `prefix` で始まるかどうか判定するメソッド `startsWith` を定義せよ。
 
   /*
   `s.startsWith(s2)` when corresponding elements of `s` and `s2` are all equal, until the point that `s2` is exhausted. If `s` is exhausted first, or we find an element that doesn't match, we terminate early. Using non-strictness, we can compose these three separate logical steps--the zipping, the termination when the second lazy list is exhausted, and the termination if a nonmatching element is found or the first lazy list is exhausted.
    */
   def startsWith[A](prefix: LazyList[A]): Boolean =
     zipAll(prefix).takeWhile(_(1).isDefined).forAll((a1, a2) => a1 == a2)
+
+  // Exercise 5.15: `unfold` を用いて遅延リストに `tail` を繰り返し適用した結果を返すメソッド `tails` を定義せよ。
+  // 例えば `LazyList(1, 2, 3).tails` は `LazyList(LazyList(1, 2, 3), LazyList(2, 3), LazyList(3), LazyList())` を返す。
 
   /*
   The last element of `tails` is always the empty `LazyList`, so we handle this as a special case, by appending it to the output.
@@ -176,6 +203,8 @@ enum LazyList[+A]:
   def hasSubsequence[A](s: LazyList[A]): Boolean =
     tails.exists(_.startsWith(s))
 
+  // Exercise 5.16: `tails` を一般化して、 `foldRight` の累積値を要素とする遅延リストを返すメソッド `scanRight` を定義せよ。
+
   /*
   The function can't be implemented using `unfold`, since `unfold` generates elements of the `LazyList` from left to right. It can be implemented using `foldRight` though.
 
@@ -188,11 +217,6 @@ enum LazyList[+A]:
       val b2 = f(a, b1(0))
       (b2, cons(b2, b1(1)))
     ._2
-
-  @annotation.tailrec
-  final def find(f: A => Boolean): Option[A] = this match
-    case Empty      => None
-    case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
 
 object LazyList:
   def cons[A](hd: => A, tl: => LazyList[A]): LazyList[A] =
@@ -208,19 +232,27 @@ object LazyList:
 
   val ones: LazyList[Int] = LazyList.cons(1, ones)
 
+  // Exercise 5.8: 任意の値を無限に繰り返す遅延リストを生成する関数 `continually` を定義せよ。
+
   // This is more efficient than `cons(a, continually(a))` since it's just
   // one object referencing itself.
   def continually[A](a: A): LazyList[A] =
     lazy val single: LazyList[A] = cons(a, single)
     single
 
+  // Exercise 5.9: `n` から1ずつ増える無限の遅延リストを生成する関数 `from` を定義せよ。
+
   def from(n: Int): LazyList[Int] =
     cons(n, from(n + 1))
+
+  // Exercise 5.10: フィボナッチ数の無限の遅延リストを生成する関数 `fibs` を定義せよ。
 
   val fibs =
     def go(current: Int, next: Int): LazyList[Int] =
       cons(current, go(next, current + next))
     go(0, 1)
+
+  // Exercise 5.11: は初期状態 `state` 、状態から次の要素と次の状態を返す関数 `f` を受け取って遅延リストを生成する一般的な関数 `unfold` を定義せよ。
 
   def unfold[A, S](state: S)(f: S => Option[(A, S)]): LazyList[A] =
     f(state) match
@@ -235,6 +267,8 @@ object LazyList:
 
   def unfoldViaMap[A, S](z: S)(f: S => Option[(A, S)]): LazyList[A] =
     f(z).map((p: (A, S)) => cons(p(0), unfold(p(1))(f))).getOrElse(empty[A])
+
+  // Exercise 5.12: `unfold` を用いて `fibs`, `from`, `continually`, `ones` を実装せよ。
 
   /*
   Scala provides shorter syntax when the first action of a function literal is to match on an expression.  The function passed to `unfold` in `fibsViaUnfold` is equivalent to `p => p match { case (f0,f1) => ... }`, but we avoid having to choose a name for `p`, only to pattern match on it.
