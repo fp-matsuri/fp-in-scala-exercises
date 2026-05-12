@@ -74,6 +74,9 @@
   ;; TODO
   )
 
+;; これら2つの形式を行き来できることに注目しよう。curryしてuncurryすることができ、これら2つの形式はある意味で「同じ」だといえる。
+;; FPの専門用語では、これらは _同型(isomorphic)_ ("iso" = same; "morphe" = shape, form)であると言い、圏論(category theory)から引き継がれた用語だ。
+
 ;; Exercise 2.5: `compose` を実装せよ。
 ;; 引数 `f`, `g` 、戻り値はいずれも引数を1つとる関数。
 ;; Scala風の型表記: `compose: (f: B => C, g: A => B) => (A => C)`
