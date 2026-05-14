@@ -20,7 +20,7 @@ enum Tree[+A]:
     case Leaf(a)      => Leaf(f(a))
     case Branch(l, r) => Branch(l.map(f), r.map(f))
 
-  // Exercise 3.28: ツリーのリーフの値を変換する関数 `f` とブランチの左右の値をまとめる関数 `g` を受け取ってツリーを畳み込むメソッド `fold` を定義せよ。
+  // Exercise 3.28-1: ツリーのリーフの値を変換する関数 `f` とブランチの左右の値をまとめる関数 `g` を受け取ってツリーを畳み込むメソッド `fold` を定義せよ。
   // また、 `fold` を用いて `size` 、 `depth` 、 `map` を定義せよ。
 
   /*
@@ -55,7 +55,6 @@ object Tree:
         if lpos > 0 then lpos else r.firstPositive
 
   // Exercise 3.25: ツリーのリーフの最大値を計算する拡張メソッド `maximum` を定義せよ。
-  // また、 `fold` を用いて `maximum` を定義せよ。
 
   /*
   We're using the method `max` that exists on all `Int` values rather than an explicit `if` expression.
@@ -66,6 +65,8 @@ object Tree:
     def maximum: Int = t match
       case Leaf(n)      => n
       case Branch(l, r) => l.maximum.max(r.maximum)
+
+  // Exercise 3.28-2: `fold` を用いて `maximum` を定義せよ。
 
   extension (t: Tree[Int])
     def maximumViaFold: Int =
