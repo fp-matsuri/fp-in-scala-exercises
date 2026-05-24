@@ -1,4 +1,8 @@
-(tests
- (names
-  getting_started_test)
+(test
+ (name getting_started_test)
  (libraries alcotest exercises answers))
+
+(subdir datastructures
+ (tests
+  (names list_test tree_test)
+  (libraries alcotest exercises answers)))
