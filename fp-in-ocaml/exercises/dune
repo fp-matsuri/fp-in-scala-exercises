@@ -3,4 +3,4 @@
 (library
  (name exercises)
  (flags
-  (:standard -w -unused-var-strict -w -unused-rec-flag)))
+  (:standard -w -unused-rec-flag)))

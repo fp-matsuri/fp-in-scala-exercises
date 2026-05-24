@@ -34,8 +34,9 @@ end = struct
     done;
     !acc
 
-  (** Exercise 2.1: n番目のフィボナッチ数を計算する関数[fib]を定義せよ。 *)
-  let rec fib n = failwith "Not implemented"
+  (** Exercise 2.1: n番目のフィボナッチ数を計算する関数[fib]を定義せよ。 なお、unused
+      警告を避けるために引数を[_n]としているが、実装時には[n]に修正すること。以降の演習も同様。*)
+  let rec fib _n = failwith "Not implemented"
 
   (** [formatAbs]とよく似た定義。これも利用されないサンプル実装。 *)
   let _format_factorial n =
@@ -120,7 +121,7 @@ module Polymorphic_functions = struct
   (** Exercise 2.2: 配列がソート済みかどうかを判定する多相関数を定義せよ。
       @param array ソート済みか判定する対象の配列
       @param gt 配列[array]の隣接する2要素をとって最初の要素が2番目の要素より大きいかどうかを判定する述語関数。 *)
-  let sorted (array : 'a array) (gt : 'a -> 'a -> bool) : bool =
+  let sorted (_array : 'a array) (_gt : 'a -> 'a -> bool) : bool =
     failwith "Not implemented"
 
   (** 多相関数はたいてい型によって制約されているため、対応する実装がひとつしかないことがある。[partial1]はその一例。
@@ -128,12 +129,12 @@ module Polymorphic_functions = struct
   let partial1 (a : 'a) (f : 'a -> 'b -> 'c) : 'b -> 'c = fun b -> f a b
 
   (** Exercise 2.3: [curry]を実装せよ。*)
-  let curry (f : 'a * 'b -> 'c) : 'a -> 'b -> 'c = failwith "Not implemented"
+  let curry (_f : 'a * 'b -> 'c) : 'a -> 'b -> 'c = failwith "Not implemented"
 
   (** Exercise 2.4: [uncurry]を実装せよ。*)
-  let uncurry (f : 'a -> 'b -> 'c) : 'a * 'b -> 'c = failwith "Not implemented"
+  let uncurry (_f : 'a -> 'b -> 'c) : 'a * 'b -> 'c = failwith "Not implemented"
 
   (** Exercise 2.5: [compose]を実装せよ。*)
-  let compose (f : 'b -> 'c) (g : 'a -> 'b) : 'a -> 'c =
+  let compose (_f : 'b -> 'c) (_g : 'a -> 'b) : 'a -> 'c =
     failwith "Not implemented"
 end
