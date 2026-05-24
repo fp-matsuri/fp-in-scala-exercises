@@ -1,5 +1,6 @@
+(include_subdirs qualified)
+
 (library
- (name getting_started)
- (modules getting_started)
+ (name exercises)
  (flags
   (:standard -w -unused-var-strict -w -unused-rec-flag)))

@@ -1,6 +1,9 @@
-(* 下のコメントを外すと正答版の動作を確認できます *)
-(* open Answers *)
+(*
+[open Exercises]を[open Answers]に差し替えると正答版の動作を確認できます。
 
+open Answers
+*)
+open Exercises
 open Getting_started
 
 let factorial_reference n =
