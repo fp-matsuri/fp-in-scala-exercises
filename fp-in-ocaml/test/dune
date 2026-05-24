@@ -1,3 +1,4 @@
-(test
- (name getting_started_test)
- (libraries alcotest qcheck-core qcheck-alcotest exercises answers))
+(tests
+ (names
+  getting_started_test)
+ (libraries alcotest exercises answers))

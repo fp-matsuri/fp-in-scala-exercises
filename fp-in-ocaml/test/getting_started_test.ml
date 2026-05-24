@@ -6,94 +6,105 @@ open Answers
 open Exercises
 open Getting_started
 
+let case n f = Alcotest.test_case n `Quick f
+
 let factorial_reference n =
   let rec go i acc = if i <= 0 then acc else go (i - 1) (i * acc) in
   go n 1
 
-let factorial_test =
-  QCheck.Test.make ~count:1000 ~name:"factorial"
-    QCheck.(int_range 1 20)
-    (fun n -> My_program.factorial n = factorial_reference n)
+let test_factorial () =
+  List.iter
+    (fun n ->
+      Alcotest.(check int)
+        (Printf.sprintf "factorial %d" n)
+        (factorial_reference n) (My_program.factorial n))
+    [ 1; 2; 3; 5; 10; 15; 20 ]
 
 let test_fib () =
-  [|
-    0;
-    1;
-    1;
-    2;
-    3;
-    5;
-    8;
-    13;
-    21;
-    34;
-    55;
-    89;
-    144;
-    233;
-    377;
-    610;
-    987;
-    1597;
-    2584;
-    4181;
-    6765;
-  |]
-  |> Array.iteri (fun i expected ->
-      Alcotest.(check int)
-        (Printf.sprintf "fib %d" i)
-        expected (My_program.fib i))
+  let expected =
+    [|
+      0;
+      1;
+      1;
+      2;
+      3;
+      5;
+      8;
+      13;
+      21;
+      34;
+      55;
+      89;
+      144;
+      233;
+      377;
+      610;
+      987;
+      1597;
+      2584;
+      4181;
+      6765;
+    |]
+  in
+  Array.iteri
+    (fun i e ->
+      Alcotest.(check int) (Printf.sprintf "fib %d" i) e (My_program.fib i))
+    expected
 
-let sorted_seq_arb =
-  QCheck.(make ~print:Print.(list int) Gen.(list int >|= List.sort compare))
+let test_sorted_for_sorted () =
+  List.iter
+    (fun xs ->
+      Alcotest.(check bool)
+        (Printf.sprintf "sorted? %s"
+           (String.concat ";" (List.map string_of_int xs)))
+        true
+        (Polymorphic_functions.sorted (Array.of_list xs) ( > )))
+    [ []; [ 1 ]; [ 1; 2; 3; 4; 5 ]; [ -3; -1; 0; 2; 5 ]; [ 0; 0; 1 ] ]
 
-let unsorted_seq_arb =
-  QCheck.(
-    make
-      ~print:Print.(list int)
-      Gen.(
-        list_size (int_range 2 19) (int_range 0 19)
-        >|= List.mapi (fun i x -> if i mod 2 = 0 then x + 100 else x - 100)))
+let test_sorted_for_unsorted () =
+  List.iter
+    (fun xs ->
+      Alcotest.(check bool)
+        (Printf.sprintf "unsorted? %s"
+           (String.concat ";" (List.map string_of_int xs)))
+        false
+        (Polymorphic_functions.sorted (Array.of_list xs) ( > )))
+    [ [ 2; 1 ]; [ 1; 3; 2; 4 ]; [ 5; 4; 3; 2; 1 ]; [ 0; -1 ] ]
 
-let sorted_for_sorted_test =
-  QCheck.Test.make ~count:1000 ~name:"sorted? for sorted" sorted_seq_arb
-    (fun xs -> Polymorphic_functions.sorted (Array.of_list xs) ( > ))
-
-let sorted_for_unsorted_test =
-  QCheck.Test.make ~count:1000 ~name:"sorted? for unsorted" unsorted_seq_arb
-    (fun xs -> not (Polymorphic_functions.sorted (Array.of_list xs) ( > )))
-
-let curry_test =
-  QCheck.Test.make ~count:1000 ~name:"curry"
-    QCheck.(pair int int)
+let test_curry () =
+  let mul = Polymorphic_functions.curry (fun (a, b) -> a * b) in
+  List.iter
     (fun (n, m) ->
-      let mul = Polymorphic_functions.curry (fun (a, b) -> a * b) in
-      mul n m = n * m)
+      Alcotest.(check int) (Printf.sprintf "%d * %d" n m) (n * m) (mul n m))
+    [ (3, 4); (-2, 5); (0, 100); (7, 0); (-3, -7) ]
 
-let uncurry_test =
-  QCheck.Test.make ~count:1000 ~name:"uncurry"
-    QCheck.(pair int int)
+let test_uncurry () =
+  let mul = Polymorphic_functions.uncurry (fun a b -> a * b) in
+  List.iter
     (fun (n, m) ->
-      let mul = Polymorphic_functions.uncurry (fun a b -> a * b) in
-      mul (n, m) = n * m)
+      Alcotest.(check int) (Printf.sprintf "%d * %d" n m) (n * m) (mul (n, m)))
+    [ (3, 4); (-2, 5); (0, 100); (7, 0); (-3, -7) ]
 
-let compose_test =
-  QCheck.Test.make ~count:1000 ~name:"compose"
-    QCheck.(pair int int)
+let test_compose () =
+  List.iter
     (fun (n, m) ->
       let f = Polymorphic_functions.compose (fun b -> n * b) (fun a -> m * a) in
-      f 1 = n * m)
-
-let to_alco = QCheck_alcotest.to_alcotest
+      Alcotest.(check int)
+        (Printf.sprintf "compose with (%d,%d)" n m)
+        (n * m) (f 1))
+    [ (3, 4); (-2, 5); (0, 100); (7, 0); (-3, -7) ]
 
 let () =
   Alcotest.run "getting_started"
     [
-      ("My_program.factorial", [ to_alco factorial_test ]);
-      ("My_program.fib", [ Alcotest.test_case "0..20" `Quick test_fib ]);
+      ("My_program.factorial", [ case "samples" test_factorial ]);
+      ("My_program.fib", [ case "0..20" test_fib ]);
       ( "Polymorphic_functions.sorted",
-        [ to_alco sorted_for_sorted_test; to_alco sorted_for_unsorted_test ] );
-      ("Polymorphic_functions.curry", [ to_alco curry_test ]);
-      ("Polymorphic_functions.uncurry", [ to_alco uncurry_test ]);
-      ("Polymorphic_functions.compose", [ to_alco compose_test ]);
+        [
+          case "sorted? for sorted" test_sorted_for_sorted;
+          case "sorted? for unsorted" test_sorted_for_unsorted;
+        ] );
+      ("Polymorphic_functions.curry", [ case "curry" test_curry ]);
+      ("Polymorphic_functions.uncurry", [ case "uncurry" test_uncurry ]);
+      ("Polymorphic_functions.compose", [ case "compose" test_compose ]);
     ]
