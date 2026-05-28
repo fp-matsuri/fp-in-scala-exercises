@@ -38,6 +38,7 @@ end = struct
   let rec fib = function
     | 0 -> 0
     | 1 -> 1
+    (* パターンマッチ時にガードを付けられる。キーワードが[if]じゃなくて[when]なことに注意。 *)
     | n when n > 1 -> fib (n - 1) + fib (n - 2)
     | _ -> failwith "Negative input is not allowed"
 

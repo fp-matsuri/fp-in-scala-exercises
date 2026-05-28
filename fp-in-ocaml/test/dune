@@ -6,3 +6,8 @@
  (tests
   (names list_test tree_test)
   (libraries alcotest exercises answers)))
+
+(subdir errorhandling
+ (tests
+  (names option_test either_test)
+  (libraries alcotest exercises answers)))

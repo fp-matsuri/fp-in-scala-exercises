@@ -42,7 +42,10 @@ let rec product (floats : float t) : float =
       x *. product xs (* OCamlの四則演算の演算子は単相のため、[float]に対しては[*.]を使用する必要がある *)
 
 (* OCaml には variadic function がない。代わりに標準ライブラリのリストから変換する関数を作っておく *)
-let rec make = function [] -> Nil | x :: xs -> Cons (x, make xs)
+let rec make = function
+  (* function は fun x -> match x with と同じで、引数に対するパターンマッチを記述できる *)
+  | [] -> Nil
+  | x :: xs -> Cons (x, make xs)
 
 (** Exercise 3.1: 以下の式 `result `の評価結果は何になるか? (推測してからREPLで確認してみよう) *)
 let[@warning "-11"] result =
