@@ -1,0 +1,5 @@
+dist-newstyle
+result
+.mcp.json
+.direnv
+.pre-commit-config.yaml
