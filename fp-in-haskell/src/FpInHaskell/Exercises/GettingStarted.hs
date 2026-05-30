@@ -1,4 +1,4 @@
-module FpInHaskell.Answers.GettingStarted
+module FpInHaskell.Exercises.GettingStarted
   ( abs
   , formatAbs
   , printAbs
@@ -40,10 +40,9 @@ factorial2 :: Int -> Int
 factorial2 n = product [1 .. n]
 
 -- Exercise 2.1: n番目のフィボナッチ数を計算する関数 `fib` を定義せよ。
+
 fib :: Int -> Int
-fib n = go n 0 1
-  where
-    go n' current next = if n' <= 0 then current else go (n' - 1) next (current + next)
+fib = undefined
 
 formatFactorial :: Int -> String
 formatFactorial n = printf "The factorial of %d is %d." n (factorial n)
@@ -95,26 +94,26 @@ findFirst as p = go as 0
 
 -- Exercise 2.2: `[a]` がソート済みかどうかを判定する多相関数を定義せよ。
 -- 第2引数 `gt` は `as` の隣接する2要素をとって最初の要素が2番目の要素より大きいかどうかを判定する述語関数。
+
 isSorted :: [a] -> (a -> a -> Bool) -> Bool
-isSorted as gt = go as
-  where
-    go [] = True
-    go [_] = True
-    go (x : y : rest) = if gt x y then False else go (y : rest)
+isSorted = undefined
 
 partial1 :: a -> ((a, b) -> c) -> b -> c
 partial1 a f b = f (a, b)
 
 -- Exercise 2.3: `curry` を実装せよ。
+
 -- Note that `=>` associates to the right, so we could
 -- write the return type as `a => b => c`
 curry :: ((a, b) -> c) -> a -> b -> c
-curry f a b = f (a, b)
+curry = undefined
 
 -- Exercise 2.4: `uncurry` を実装せよ。
+
 uncurry :: (a -> b -> c) -> (a, b) -> c
-uncurry f (a, b) = f a b
+uncurry = undefined
 
 -- Exercise 2.5: `compose` を実装せよ。
+
 compose :: (b -> c) -> (a -> b) -> a -> c
-compose f g a = f (g a)
+compose = undefined

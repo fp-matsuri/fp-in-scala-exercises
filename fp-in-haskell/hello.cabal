@@ -29,6 +29,7 @@ library
   hs-source-dirs:   src
   exposed-modules:
     FpInHaskell.Answers.GettingStarted
+    FpInHaskell.Exercises.GettingStarted
   build-depends:    base >=4.2 && <5
   default-language: Haskell2010
 
