@@ -27,7 +27,7 @@ formatAbs x = "The absolute value of " ++ show x ++ " is " ++ show (myAbs x)
 printAbs :: IO ()
 printAbs = putStrLn (formatAbs (-42))
 
--- A definition of factorial, using a local, tail recursive function
+-- ローカルな末尾再帰関数を使った factorial の定義
 factorial :: Int -> Int
 factorial n = go n 1
   where
@@ -39,12 +39,11 @@ fib n = go n 0 1
   where
     go n' current next = if n' <= 0 then current else go (n' - 1) next (current + next)
 
--- This definition and `formatAbs` are very similar..
+-- この定義は `formatAbs` とよく似ている。
 formatFactorial :: Int -> String
 formatFactorial n = "The factorial of " ++ show n ++ " is " ++ show (factorial n) ++ "."
 
--- We can generalize `formatAbs` and `formatFactorial` to
--- accept a _function_ as a parameter
+-- `formatAbs` と `formatFactorial` を一般化して、_関数_ をパラメータとして受け取るようにする
 formatResult :: String -> Int -> (Int -> Int) -> String
 formatResult name n f = "The " ++ name ++ " of " ++ show n ++ " is " ++ show (f n) ++ "."
 
@@ -73,10 +72,9 @@ printFib = do
             ++ show (fib 6)
         )
 
--- Functions get passed around so often in FP that it's
--- convenient to have syntax for constructing a function
--- without having to give it a name
--- Some examples of anonymous functions:
+-- 関数型プログラミングでは関数を取り回すことが多いため、
+-- 名前を付けることなく関数を組み立てる構文があると便利だ
+-- 無名関数の例:
 printAnonymousFunctions :: IO ()
 printAnonymousFunctions = do
     putStrLn (formatResult "absolute value" (-42) myAbs)
@@ -87,31 +85,26 @@ printAnonymousFunctions = do
     putStrLn (formatResult "increment4" 7 (+ 1))
     putStrLn (formatResult "increment5" 7 (\x -> let r = x + 1 in r))
 
--- First, a findFirst, specialized to String.
--- Ideally, we could generalize this to work for any Array type.
+-- まずは String に特化した findFirst。理想的には任意の配列型に対して動作するよう一般化できる。
 findFirstString :: [String] -> String -> Int
 findFirstString ss key = go ss 0
   where
-    -- If n is past the end of the array, return -1
-    -- indicating the key doesn't exist in the array.
+    -- n が配列の末尾を過ぎたら、キーが配列に存在しないことを示す -1 を返す
     go [] _ = -1
-    -- ss(n) extracts the n'th element of the array ss.
-    -- If the element at n is equal to the key, return n
-    -- indicating that the element appears in the array at that index.
-    -- Otherwise increment n and keep looking.
+    -- ss(n) は配列 ss の n 番目の要素を取り出す。
+    -- n 番目の要素がキーと等しければ、その要素がそのインデックスに存在することを示す n を返す。
+    -- そうでなければ n をインクリメントして探し続ける。
     go (x : xs) n = if x == key then n else go xs (n + 1)
 
--- Here's a polymorphic version of `findFirst`, parameterized on
--- a function for testing whether an `A` is the element we want to find.
--- Instead of hard-coding `String`, we take a type `A` as a parameter.
--- And instead of hard-coding an equality check for a given key,
--- we take a function with which to test each element of the array.
+-- こちらは多相版の `findFirst`。探している要素かどうかをテストする関数でパラメータ化されている。
+-- `String` をハードコードせず、型 `A` をパラメータとして受け取る。
+-- また、特定のキーとの等値チェックをハードコードする代わりに、
+-- 配列の各要素をテストする関数を受け取る。
 findFirst :: [a] -> (a -> Bool) -> Int
 findFirst as p = go as 0
   where
     go [] _ = -1
-    -- If the function `p` matches the current element,
-    -- we've found a match and we return its index in the array.
+    -- 関数 `p` が現在の要素にマッチしたら、合うものが見つかったということで配列のそのインデックスを返す。
     go (x : xs) n = if p x then n else go xs (n + 1)
 
 -- Exercise 2.2: `[a]` がソート済みかどうかを判定する多相関数を定義せよ。
@@ -123,8 +116,7 @@ isSorted as gt = go as
     go [_] = True
     go (x : y : rest) = if gt x y then False else go (y : rest)
 
--- Polymorphic functions are often so constrained by their type
--- that they only have one implementation! Here's an example:
+-- 多相関数はたいてい型によって強く制約されているため、実装がひとつしかないことがある。その例:
 partial1 :: a -> (a -> b -> c) -> b -> c
 partial1 x f y = f x y
 
@@ -137,13 +129,12 @@ myCurry f x y = f (x, y)
 myUncurry :: (a -> b -> c) -> (a, b) -> c
 myUncurry f (x, y) = f x y
 
--- NB: There is a method on the `Function` object in the standard library,
--- `Function.uncurried` that you can use for uncurrying.
+-- 補足: 標準ライブラリの `Function` オブジェクトには uncurrying に使える
+-- `Function.uncurried` メソッドがある。
 --
--- Note that we can go back and forth between the two forms. We can curry
--- and uncurry and the two forms are in some sense "the same". In FP jargon,
--- we say that they are _isomorphic_ ("iso" = same; "morphe" = shape, form),
--- a term we inherit from category theory.
+-- カリー化とアンカリー化は行き来できる。両者はある意味で「同じ」であり、
+-- FP の用語では _同型_ ("iso" = 同じ; "morphe" = 形、形式) と呼ぶ。
+-- これは圏論から受け継いだ用語だ。
 
 -- Exercise 2.5: `compose` を実装せよ。
 compose :: (b -> c) -> (a -> b) -> a -> c
