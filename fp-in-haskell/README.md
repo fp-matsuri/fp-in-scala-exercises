@@ -17,7 +17,7 @@ FP in Scala演習問題の[Haskell](https://www.haskell.org/)版
 [cabal](https://www.haskell.org/cabal/) から REPL が利用できる。
 
 ```shell
-cabal repl
+make repl
 ```
 
 ```haskell
@@ -34,12 +34,6 @@ factorial :: Int -> Int
 ### テスト
 
 ```shell
-cabal test
-```
-
-または
-
-```shell
 make test
 ```
 
@@ -48,11 +42,7 @@ make test
 リンターとして[HLint](https://github.com/ndmitchell/hlint) (コマンド: `hlint`)が利用できる。
 
 ```shell
-# Makefile 経由(推奨)
 make lint
-
-# 直接実行
-hlint src
 ```
 
 ### フォーマット
@@ -61,13 +51,8 @@ hlint src
 
 ```shell
 # フォーマットのチェック
-fourmolu --mode check src test
-# または
 make format-check
-
 # フォーマットの修正
-fourmolu --mode inplace src test
-# または
 make format
 ```
 

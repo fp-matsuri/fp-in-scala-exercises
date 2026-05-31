@@ -13,6 +13,10 @@ format-check:
 format:
 	@fourmolu --mode inplace src test
 
+.PHONY: repl
+repl:
+	@cabal repl
+
 .PHONY: build
 build:
 	@cabal build
