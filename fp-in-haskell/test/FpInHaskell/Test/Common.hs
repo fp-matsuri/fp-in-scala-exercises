@@ -1,10 +1,10 @@
-module FpInHaskell.Test.Common
-  ( firstFibs
-  , genLengthOfFibonacciSeq
-  , genSmallInt
-  , genSorted
-  , genUnsorted
-  ) where
+module FpInHaskell.Test.Common (
+    firstFibs,
+    genLengthOfFibonacciSeq,
+    genSmallInt,
+    genSorted,
+    genUnsorted,
+) where
 
 import Data.List (sort)
 import Test.QuickCheck
@@ -20,12 +20,12 @@ genSmallInt = choose (0, 20)
 
 genSorted :: Gen [Int]
 genSorted = do
-  n <- choose (0, 20)
-  xs <- vectorOf n (choose (0, 20))
-  return (sort xs)
+    n <- choose (0, 20)
+    xs <- vectorOf n (choose (0, 20))
+    return (sort xs)
 
 genUnsorted :: Gen [Int]
 genUnsorted = do
-  n <- choose (2, 20)
-  xs <- vectorOf n (choose (0, 20))
-  return (zipWith (\x i -> if even i then x + 100 else x - 100) xs [0 ..])
+    n <- choose (2, 20)
+    xs <- vectorOf n (choose (0, 20))
+    return (zipWith (\x i -> if even i then x + 100 else x - 100) xs [0 ..])

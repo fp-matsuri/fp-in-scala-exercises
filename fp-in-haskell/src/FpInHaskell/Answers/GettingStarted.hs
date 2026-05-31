@@ -1,22 +1,22 @@
-module FpInHaskell.Answers.GettingStarted
-  ( myAbs
-  , formatAbs
-  , printAbs
-  , factorial
-  , fib
-  , formatFactorial
-  , formatResult
-  , printAbsAndFactorial
-  , printFib
-  , printAnonymousFunctions
-  , findFirstString
-  , findFirst
-  , isSorted
-  , partial1
-  , myCurry
-  , myUncurry
-  , compose
-  ) where
+module FpInHaskell.Answers.GettingStarted (
+    myAbs,
+    formatAbs,
+    printAbs,
+    factorial,
+    fib,
+    formatFactorial,
+    formatResult,
+    printAbsAndFactorial,
+    printFib,
+    printAnonymousFunctions,
+    findFirstString,
+    findFirst,
+    isSorted,
+    partial1,
+    myCurry,
+    myUncurry,
+    compose,
+) where
 
 myAbs :: Int -> Int
 myAbs n = if n < 0 then -n else n
@@ -46,32 +46,38 @@ formatResult name n f = "The " ++ name ++ " of " ++ show n ++ " is " ++ show (f 
 
 printAbsAndFactorial :: IO ()
 printAbsAndFactorial = do
-  putStrLn (formatResult "absolute value" (-42) myAbs)
-  putStrLn (formatResult "factorial" 7 factorial)
+    putStrLn (formatResult "absolute value" (-42) myAbs)
+    putStrLn (formatResult "factorial" 7 factorial)
 
 printFib :: IO ()
 printFib = do
-  putStrLn "Expected: 0, 1, 1, 2, 3, 5, 8"
-  putStrLn
-    ( "Actual:   "
-        ++ show (fib 0)
-        ++ ", " ++ show (fib 1)
-        ++ ", " ++ show (fib 2)
-        ++ ", " ++ show (fib 3)
-        ++ ", " ++ show (fib 4)
-        ++ ", " ++ show (fib 5)
-        ++ ", " ++ show (fib 6)
-    )
+    putStrLn "Expected: 0, 1, 1, 2, 3, 5, 8"
+    putStrLn
+        ( "Actual:   "
+            ++ show (fib 0)
+            ++ ", "
+            ++ show (fib 1)
+            ++ ", "
+            ++ show (fib 2)
+            ++ ", "
+            ++ show (fib 3)
+            ++ ", "
+            ++ show (fib 4)
+            ++ ", "
+            ++ show (fib 5)
+            ++ ", "
+            ++ show (fib 6)
+        )
 
 printAnonymousFunctions :: IO ()
 printAnonymousFunctions = do
-  putStrLn (formatResult "absolute value" (-42) myAbs)
-  putStrLn (formatResult "factorial" 7 factorial)
-  putStrLn (formatResult "increment" 7 (\x -> x + 1))
-  putStrLn (formatResult "increment2" 7 (\x -> x + 1))
-  putStrLn (formatResult "increment3" 7 (\x -> x + 1))
-  putStrLn (formatResult "increment4" 7 (+ 1))
-  putStrLn (formatResult "increment5" 7 (\x -> let r = x + 1 in r))
+    putStrLn (formatResult "absolute value" (-42) myAbs)
+    putStrLn (formatResult "factorial" 7 factorial)
+    putStrLn (formatResult "increment" 7 (\x -> x + 1))
+    putStrLn (formatResult "increment2" 7 (\x -> x + 1))
+    putStrLn (formatResult "increment3" 7 (\x -> x + 1))
+    putStrLn (formatResult "increment4" 7 (+ 1))
+    putStrLn (formatResult "increment5" 7 (\x -> let r = x + 1 in r))
 
 findFirstString :: [String] -> String -> Int
 findFirstString ss key = go ss 0
