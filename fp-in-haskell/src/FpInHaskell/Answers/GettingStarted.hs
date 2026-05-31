@@ -1,9 +1,8 @@
 module FpInHaskell.Answers.GettingStarted
-  ( abs
+  ( myAbs
   , formatAbs
   , printAbs
   , factorial
-  , factorial2
   , fib
   , formatFactorial
   , formatResult
@@ -14,19 +13,16 @@ module FpInHaskell.Answers.GettingStarted
   , findFirst
   , isSorted
   , partial1
-  , curry
-  , uncurry
+  , myCurry
+  , myUncurry
   , compose
   ) where
 
-import Prelude hiding (abs, curry, uncurry)
-import Text.Printf (printf)
-
-abs :: Int -> Int
-abs n = if n < 0 then -n else n
+myAbs :: Int -> Int
+myAbs n = if n < 0 then -n else n
 
 formatAbs :: Int -> String
-formatAbs x = printf "The absolute value of %d is %d" x (abs x)
+formatAbs x = "The absolute value of " ++ show x ++ " is " ++ show (myAbs x)
 
 printAbs :: IO ()
 printAbs = putStrLn (formatAbs (-42))
@@ -36,9 +32,6 @@ factorial n = go n 1
   where
     go n' acc = if n' <= 0 then acc else go (n' - 1) (n' * acc)
 
-factorial2 :: Int -> Int
-factorial2 n = product [1 .. n]
-
 -- Exercise 2.1: n番目のフィボナッチ数を計算する関数 `fib` を定義せよ。
 fib :: Int -> Int
 fib n = go n 0 1
@@ -46,34 +39,33 @@ fib n = go n 0 1
     go n' current next = if n' <= 0 then current else go (n' - 1) next (current + next)
 
 formatFactorial :: Int -> String
-formatFactorial n = printf "The factorial of %d is %d." n (factorial n)
+formatFactorial n = "The factorial of " ++ show n ++ " is " ++ show (factorial n) ++ "."
 
 formatResult :: String -> Int -> (Int -> Int) -> String
-formatResult name n f = printf "The %s of %d is %d." name n (f n)
+formatResult name n f = "The " ++ name ++ " of " ++ show n ++ " is " ++ show (f n) ++ "."
 
 printAbsAndFactorial :: IO ()
 printAbsAndFactorial = do
-  putStrLn (formatResult "absolute value" (-42) abs)
+  putStrLn (formatResult "absolute value" (-42) myAbs)
   putStrLn (formatResult "factorial" 7 factorial)
 
 printFib :: IO ()
 printFib = do
   putStrLn "Expected: 0, 1, 1, 2, 3, 5, 8"
   putStrLn
-    ( printf
-        "Actual:   %d, %d, %d, %d, %d, %d, %d"
-        (fib 0)
-        (fib 1)
-        (fib 2)
-        (fib 3)
-        (fib 4)
-        (fib 5)
-        (fib 6)
+    ( "Actual:   "
+        ++ show (fib 0)
+        ++ ", " ++ show (fib 1)
+        ++ ", " ++ show (fib 2)
+        ++ ", " ++ show (fib 3)
+        ++ ", " ++ show (fib 4)
+        ++ ", " ++ show (fib 5)
+        ++ ", " ++ show (fib 6)
     )
 
 printAnonymousFunctions :: IO ()
 printAnonymousFunctions = do
-  putStrLn (formatResult "absolute value" (-42) abs)
+  putStrLn (formatResult "absolute value" (-42) myAbs)
   putStrLn (formatResult "factorial" 7 factorial)
   putStrLn (formatResult "increment" 7 (\x -> x + 1))
   putStrLn (formatResult "increment2" 7 (\x -> x + 1))
@@ -102,19 +94,18 @@ isSorted as gt = go as
     go [_] = True
     go (x : y : rest) = if gt x y then False else go (y : rest)
 
-partial1 :: a -> ((a, b) -> c) -> b -> c
-partial1 a f b = f (a, b)
+partial1 :: a -> (a -> b -> c) -> b -> c
+partial1 x f y = f x y
 
--- Exercise 2.3: `curry` を実装せよ。
--- Note that `=>` associates to the right, so we could
--- write the return type as `a => b => c`
-curry :: ((a, b) -> c) -> a -> b -> c
-curry f a b = f (a, b)
+-- Exercise 2.3: `myCurry` を実装せよ。
+-- `->` は右結合なので、戻り値の型は `a -> (b -> c)` とも書ける。
+myCurry :: ((a, b) -> c) -> a -> b -> c
+myCurry f x y = f (x, y)
 
--- Exercise 2.4: `uncurry` を実装せよ。
-uncurry :: (a -> b -> c) -> (a, b) -> c
-uncurry f (a, b) = f a b
+-- Exercise 2.4: `myUncurry` を実装せよ。
+myUncurry :: (a -> b -> c) -> (a, b) -> c
+myUncurry f (x, y) = f x y
 
 -- Exercise 2.5: `compose` を実装せよ。
 compose :: (b -> c) -> (a -> b) -> a -> c
-compose f g a = f (g a)
+compose f g x = f (g x)
