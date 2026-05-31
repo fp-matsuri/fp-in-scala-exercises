@@ -23,4 +23,4 @@ build:
 
 .PHONY: test
 test:
-	@cabal test
+	@cabal update && cabal test
