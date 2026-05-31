@@ -38,8 +38,8 @@ props :: [(String, Property)]
 props =
     [ ("MyProgram.factorial", prop_factorial)
     , ("MyProgram.fib", prop_fib)
-    , ("PolymorphicFunctions.isSorted（ソート済みリスト）", prop_isSorted_sorted)
-    , ("PolymorphicFunctions.isSorted（未ソートリスト）", prop_isSorted_unsorted)
+    , ("PolymorphicFunctions.isSorted (sorted)", prop_isSorted_sorted)
+    , ("PolymorphicFunctions.isSorted (unsorted)", prop_isSorted_unsorted)
     , ("PolymorphicFunctions.myCurry", prop_curry)
     , ("PolymorphicFunctions.myUncurry", prop_uncurry)
     , ("PolymorphicFunctions.compose", prop_compose)
