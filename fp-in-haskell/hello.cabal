@@ -22,9 +22,6 @@ source-repository head
   type:     darcs
   location: http://darcs.haskell.org/hello/
 
-flag threaded
-  default: False
-
 library
   hs-source-dirs:   src
   exposed-modules:
@@ -45,11 +42,3 @@ test-suite getting-started-test
     QuickCheck,
     hello
   default-language: Haskell2010
-
-executable hello
-  hs-source-dirs: src
-  main-is:        hello.hs
-  build-depends:  base >=4.2 && <5
-
-  if flag(threaded)
-    ghc-options: -threaded
