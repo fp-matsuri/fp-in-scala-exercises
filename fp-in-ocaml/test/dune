@@ -11,3 +11,7 @@
  (tests
   (names option_test either_test)
   (libraries alcotest exercises answers)))
+
+(test
+  (name laziness_lazy_list_test)
+  (libraries alcotest exercises answers))
