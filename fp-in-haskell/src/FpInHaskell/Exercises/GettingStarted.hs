@@ -84,26 +84,25 @@ printAnonymousFunctions = do
     putStrLn (formatResult "increment4" 7 (+ 1))
     putStrLn (formatResult "increment5" 7 (\x -> let r = x + 1 in r))
 
--- まずは String に特化した findFirst。理想的には任意の配列型に対して動作するよう一般化できる。
+-- まずは String に特化した findFirst。理想的には任意のリスト型に対して動作するよう一般化できる。
 findFirstString :: [String] -> String -> Int
 findFirstString ss key = go ss 0
   where
-    -- n が配列の末尾を過ぎたら、キーが配列に存在しないことを示す -1 を返す
+    -- リストが空になったら、キーが存在しないことを示す -1 を返す。
     go [] _ = -1
-    -- ss(n) は配列 ss の n 番目の要素を取り出す。
-    -- n 番目の要素がキーと等しければ、その要素がそのインデックスに存在することを示す n を返す。
-    -- そうでなければ n をインクリメントして探し続ける。
+    -- 先頭要素 `x` を取り出し、`key` と一致すれば現在の位置 `n` を返す。
+    -- そうでなければ残りのリスト `xs` で探し続ける。
     go (x : xs) n = if x == key then n else go xs (n + 1)
 
 -- こちらは多相版の `findFirst`。探している要素かどうかをテストする関数でパラメータ化されている。
--- `String` をハードコードせず、型 `A` をパラメータとして受け取る。
+-- `String` をハードコードせず、型 `a` をパラメータとして受け取る。
 -- また、特定のキーとの等値チェックをハードコードする代わりに、
--- 配列の各要素をテストする関数を受け取る。
+-- リストの各要素をテストする関数を受け取る。
 findFirst :: [a] -> (a -> Bool) -> Int
 findFirst as p = go as 0
   where
     go [] _ = -1
-    -- 関数 `p` が現在の要素にマッチしたら、合うものが見つかったということで配列のそのインデックスを返す。
+    -- 関数 `p` が現在の要素にマッチしたら、合うものが見つかったということでリストのそのインデックスを返す。
     go (x : xs) n = if p x then n else go xs (n + 1)
 
 -- Exercise 2.2: `[a]` がソート済みかどうかを判定する多相関数を定義せよ。
@@ -127,8 +126,7 @@ myCurry = undefined
 myUncurry :: (a -> b -> c) -> (a, b) -> c
 myUncurry = undefined
 
--- 補足: 標準ライブラリの `Function` オブジェクトには uncurrying に使える
--- `Function.uncurried` メソッドがある。
+-- 補足: Prelude には `curry` と `uncurry` が用意されている。
 --
 -- カリー化とアンカリー化は行き来できる。両者はある意味で「同じ」であり、
 -- FP の用語では _同型_ ("iso" = 同じ; "morphe" = 形、形式) と呼ぶ。
