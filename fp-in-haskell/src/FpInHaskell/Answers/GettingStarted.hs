@@ -27,6 +27,7 @@ formatAbs x = "The absolute value of " ++ show x ++ " is " ++ show (myAbs x)
 printAbs :: IO ()
 printAbs = putStrLn (formatAbs (-42))
 
+-- A definition of factorial, using a local, tail recursive function
 factorial :: Int -> Int
 factorial n = go n 1
   where
@@ -38,9 +39,12 @@ fib n = go n 0 1
   where
     go n' current next = if n' <= 0 then current else go (n' - 1) next (current + next)
 
+-- This definition and `formatAbs` are very similar..
 formatFactorial :: Int -> String
 formatFactorial n = "The factorial of " ++ show n ++ " is " ++ show (factorial n) ++ "."
 
+-- We can generalize `formatAbs` and `formatFactorial` to
+-- accept a _function_ as a parameter
 formatResult :: String -> Int -> (Int -> Int) -> String
 formatResult name n f = "The " ++ name ++ " of " ++ show n ++ " is " ++ show (f n) ++ "."
 
@@ -69,6 +73,10 @@ printFib = do
             ++ show (fib 6)
         )
 
+-- Functions get passed around so often in FP that it's
+-- convenient to have syntax for constructing a function
+-- without having to give it a name
+-- Some examples of anonymous functions:
 printAnonymousFunctions :: IO ()
 printAnonymousFunctions = do
     putStrLn (formatResult "absolute value" (-42) myAbs)
@@ -79,16 +87,31 @@ printAnonymousFunctions = do
     putStrLn (formatResult "increment4" 7 (+ 1))
     putStrLn (formatResult "increment5" 7 (\x -> let r = x + 1 in r))
 
+-- First, a findFirst, specialized to String.
+-- Ideally, we could generalize this to work for any Array type.
 findFirstString :: [String] -> String -> Int
 findFirstString ss key = go ss 0
   where
+    -- If n is past the end of the array, return -1
+    -- indicating the key doesn't exist in the array.
     go [] _ = -1
+    -- ss(n) extracts the n'th element of the array ss.
+    -- If the element at n is equal to the key, return n
+    -- indicating that the element appears in the array at that index.
+    -- Otherwise increment n and keep looking.
     go (x : xs) n = if x == key then n else go xs (n + 1)
 
+-- Here's a polymorphic version of `findFirst`, parameterized on
+-- a function for testing whether an `A` is the element we want to find.
+-- Instead of hard-coding `String`, we take a type `A` as a parameter.
+-- And instead of hard-coding an equality check for a given key,
+-- we take a function with which to test each element of the array.
 findFirst :: [a] -> (a -> Bool) -> Int
 findFirst as p = go as 0
   where
     go [] _ = -1
+    -- If the function `p` matches the current element,
+    -- we've found a match and we return its index in the array.
     go (x : xs) n = if p x then n else go xs (n + 1)
 
 -- Exercise 2.2: `[a]` がソート済みかどうかを判定する多相関数を定義せよ。
@@ -100,6 +123,8 @@ isSorted as gt = go as
     go [_] = True
     go (x : y : rest) = if gt x y then False else go (y : rest)
 
+-- Polymorphic functions are often so constrained by their type
+-- that they only have one implementation! Here's an example:
 partial1 :: a -> (a -> b -> c) -> b -> c
 partial1 x f y = f x y
 
@@ -111,6 +136,14 @@ myCurry f x y = f (x, y)
 -- Exercise 2.4: `myUncurry` を実装せよ。
 myUncurry :: (a -> b -> c) -> (a, b) -> c
 myUncurry f (x, y) = f x y
+
+-- NB: There is a method on the `Function` object in the standard library,
+-- `Function.uncurried` that you can use for uncurrying.
+--
+-- Note that we can go back and forth between the two forms. We can curry
+-- and uncurry and the two forms are in some sense "the same". In FP jargon,
+-- we say that they are _isomorphic_ ("iso" = same; "morphe" = shape, form),
+-- a term we inherit from category theory.
 
 -- Exercise 2.5: `compose` を実装せよ。
 compose :: (b -> c) -> (a -> b) -> a -> c
