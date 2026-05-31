@@ -2,16 +2,24 @@
  (name getting_started_test)
  (libraries alcotest exercises answers))
 
-(subdir datastructures
+(subdir
+ datastructures
  (tests
   (names list_test tree_test)
   (libraries alcotest exercises answers)))
 
-(subdir errorhandling
+(subdir
+ errorhandling
  (tests
   (names option_test either_test)
   (libraries alcotest exercises answers)))
 
 (test
-  (name laziness_lazy_list_test)
-  (libraries alcotest exercises answers))
+ (name laziness_lazy_list_test)
+ (libraries alcotest exercises answers))
+
+(subdir
+ state
+ (tests
+  (names rng_test monad_test candy_test)
+  (libraries alcotest exercises answers)))
