@@ -1,0 +1,11 @@
+# ラムダ式を簡略化する警告を抑制
+# 例: `\x -> x + 1` → `(+ 1)`
+- ignore: { name: "Avoid lambda using `infix`" }
+
+# イータ簡約の警告を抑制
+# 例: `partial1 x f y = f x y` → `partial1 x f = f x`
+- ignore: { name: "Eta reduce" }
+
+# 冗長な if 式の警告を抑制
+# 例: `if c then False else e` → `not c && e`
+- ignore: { name: "Redundant if" }

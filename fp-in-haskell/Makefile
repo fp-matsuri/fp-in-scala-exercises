@@ -3,7 +3,7 @@ lint: format-check hlint
 
 .PHONY: hlint
 hlint:
-	@hlint --no-exit-code src
+	@hlint src
 
 .PHONY: format-check
 format-check:

@@ -51,8 +51,8 @@ make test
 # Makefile 経由(推奨)
 make lint
 
-# 直接実行(コマンドラインで hint を詳細表示)
-hlint --no-exit-code src
+# 直接実行
+hlint src
 ```
 
 ### フォーマット
