@@ -77,11 +77,15 @@ trait Parsers[Parser[+_]]:
     def map[B](f: A => B): Parser[B] =
       p.flatMap(f andThen succeed)
 
+    // Exercise 9.1-1: `product` を用いて `map2` を実装せよ。
+
     def map2[B, C](p2: => Parser[B])(f: (A, B) => C): Parser[C] =
       p.product(p2).map((a, b) => f(a, b))
 
     def many: Parser[List[A]] =
       p.map2(p.many)(_ :: _) | succeed(Nil)
+
+    // Exercise 9.1-2: `map2` を用いて `many1` を実装せよ。
 
     def many1: Parser[List[A]] =
       p.map2(p.many)(_ :: _)
