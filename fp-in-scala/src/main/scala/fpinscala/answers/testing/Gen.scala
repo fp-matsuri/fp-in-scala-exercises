@@ -10,6 +10,40 @@ import Gen.*
 import Prop.*
 import Prop.Result.{Passed, Falsified, Proved}
 
+// Exercise 8.1: 関数 `sum: List[Int] => Int` について常に成り立つプロパティ(性質)を検討せよ。
+
+/*
+ * 例えば以下のプロパティが考えられる:
+ * - 空リストの和は0 -- `sum(Nil) == 0`
+ *  要素がすべて `x` のリストの和はリストの要素数の `x` 倍 -- `sum(List.fill(n)(x)) == n * x`
+ * - 任意のリスト `xs` について、その和は `xs.reverse` の和に一致する -- `sum(xs) == sum(xs.reverse)`
+ *     - これは加法が可換(commutative, 交換法則を満たす)なため成り立つ
+ * - 任意のリスト `xs` について、2つのリストに分割してそれぞれの和を計算してから足し合わせたものは `xs` の和に一致する
+ *     - これは加法が結合的(associative, 結合法則を満たす)なため成り立つ
+ * - 1, 2, 3...`n` を要素とするリストの和は `n*(n+1)/2`
+ */
+
+// Exercise 8.2: `List[Int]` の最大値を返す関数について常に成り立つプロパティ(性質)を見つけよ。
+
+/*
+ * 例えば以下のプロパティが考えられる:
+ * - 空リストの最大値は未定義のためエラー
+ * - 要素が1つだけのリストの最大値はその要素
+ * - 要素がすべて `x` のリストの最大値は `x`
+ * - リストの最大値はそのリストの要素
+ * - リストの最大値はそのリストのいずれの要素より大きいまたは等しい
+ */
+
+// Exercise 8.3: プロパティを以下のように表現する場合のメソッド `&&` を実装せよ。
+/*
+trait Prop:
+  self =>
+  def check: Boolean
+  def &&(that: Prop): Prop =
+    new Prop:
+      def check = self.check && that.check
+ */
+
 opaque type Prop = (MaxSize, TestCases, RNG) => Result
 
 object Prop:
@@ -86,6 +120,8 @@ object Prop:
     (_, n, rng) => f(n, rng)
 
   extension (self: Prop)
+    // Exercise 8.9: `&&`, `||` を実装せよ。
+
     def &&(that: Prop): Prop =
       (max, n, rng) =>
         self.tag("and-left")(max, n, rng) match
@@ -139,6 +175,12 @@ object Prop:
   def verify(p: => Boolean): Prop =
     (_, _, _) => if p then Passed else Falsified("()", 0)
 
+  // Exercise 8.15: プロパティ `verify` ではBoolean値の2択であるため振る舞いを網羅的に確かめるのは容易であるのに対して、
+  // プロパティ `forAll` ではジェネレータが生成する値の定義域が有限である(もしくは無限であってもサイズ付きのジェネレータである)場合に網羅的に確かめることができる。
+  // 我々が実装しているプロパティベーステストライブラリにそのような網羅的なチェックを組み込むにはどのようにすればよいか検討せよ。
+
+  // 実装例: ./Exhaustive.scala
+
   val p2 = verify:
     val p = Par.unit(1).map(_ + 1)
     val p2 = Par.unit(2)
@@ -180,6 +222,8 @@ object Prop:
   val gpy: Gen[Par[Int]] = Gen.choose(0, 10).map(Par.unit(_))
   val p5 = forAllPar(gpy)(py => equal(py.map(y => y), py))
 
+  // Exercise 8.16: ジェネレータ `gpy` をネストした複数の並列計算を生成するように改良せよ。
+
   val gpy2: Gen[Par[Int]] = choose(-100, 100)
     .listOfN(choose(0, 20))
     .map(ys =>
@@ -197,6 +241,8 @@ object Prop:
       .listOfN(choose(0, 20))
       .map(ys => ys.parTraverse(Par.unit).map(_.sum))
 
+  // Exercise 8.17: Chapter 7 (parallelism)の `fork` に関するプロパティ `fork(x) == x` を実装せよ。
+
   val forkProp = Prop.forAllPar(gpy2)(y => equal(Par.fork(y), y))
 
 end Prop
@@ -211,6 +257,8 @@ object Gen:
     def map2[B, C](that: Gen[B])(f: (A, B) => C): Gen[C] =
       State.map2(self)(that)(f)
 
+    // Exercise 8.6-1: `flatMap` を実装せよ。
+
     def flatMap[B](f: A => Gen[B]): Gen[B] =
       State.flatMap(self)(f)
 
@@ -218,15 +266,22 @@ object Gen:
     def listOfN(size: Int): Gen[List[A]] =
       Gen.listOfN(size, self)
 
-    /* A version of `listOfN` that generates the size to use dynamically. */
+    // Exercise 8.6-2: `flatMap` を用いて、サイズを動的に生成する `listOfN` を実装せよ。
+
     def listOfN(size: Gen[Int]): Gen[List[A]] =
       size.flatMap(listOfN)
+
+    // Exercise 8.12: 指定サイズのリストを生成する `SGen` を返す関数 `list` を実装せよ。
 
     def list: SGen[List[A]] =
       n => listOfN(n)
 
+    // Exercise 8.13: 空でないリストを生成する `SGen` を返す関数 `nonEmptyList` を実装せよ。
+
     def nonEmptyList: SGen[List[A]] =
       n => listOfN(n.max(1))
+
+    // Exercise 8.10: サイズの引数を無視して `SGen` に変換する関数 `unsized` を実装せよ。
 
     def unsized: SGen[A] = _ => self
 
@@ -236,14 +291,20 @@ object Gen:
 
   def apply[A](s: State[RNG, A]): Gen[A] = s
 
+  // Exercise 8.5-1: `unit`, `boolean` を実装せよ。
+
   def unit[A](a: => A): Gen[A] =
     State.unit(a)
 
   val boolean: Gen[Boolean] =
     State(RNG.boolean)
 
+  // Exercise 8.4: `start` から `stopExclusive` までの範囲の整数をランダム生成する関数 `choose` を実装せよ。
+
   def choose(start: Int, stopExclusive: Int): Gen[Int] =
     State(RNG.nonNegativeInt).map(n => start + n % (stopExclusive - start))
+
+  // Exercise 8.5-2: `listOfN` を実装せよ。
 
   def listOfN[A](n: Int, g: Gen[A]): Gen[List[A]] =
     State.sequence(List.fill(n)(g))
@@ -279,8 +340,12 @@ object Gen:
       j <- if i % 2 == 0 then even(from, to) else odd(from, to)
     yield (i, j)
 
+  // Exercise 8.7: 2つのジェネレータから等しい確率で一方の値を取り出すようにジェネレータをまとめる `union` を実装せよ。
+
   def union[A](g1: Gen[A], g2: Gen[A]): Gen[A] =
     boolean.flatMap(b => if b then g1 else g2)
+
+  // Exercise 8.8: 2つのジェネレータから重み付きの確率で一方の値を取り出すようにジェネレータをまとめる `weighted` を実装せよ。
 
   def weighted[A](g1: (Gen[A], Double), g2: (Gen[A], Double)): Gen[A] =
     /* The probability we should pull from `g1`. */
@@ -304,6 +369,8 @@ object Gen:
   val maxProp1 = Prop.forAll(smallInt.nonEmptyList): l =>
     val max = l.max
     l.forall(_ <= max)
+
+  // Exercise 8.14: [List.sorted](https://www.scala-lang.org/api/current/scala/collection/immutable/List.html#sorted-ffffff34)の振る舞いに関するプロパティを実装せよ。
 
   val sortedProp = Prop.forAll(smallInt.list): l =>
     val ls = l.sorted
@@ -333,6 +400,8 @@ object SGen:
 
     def apply(n: Int): Gen[A] = self(n)
 
+    // Exercise 8.11: `map`, `flatMap` を実装せよ。
+
     def map[B](f: A => B): SGen[B] =
       self(_).map(f)
 
@@ -343,6 +412,19 @@ object SGen:
       n => Gen.**(apply(n))(s2(n))
 
   def apply[A](f: Int => Gen[A]): SGen[A] = f
+
+// Exercise 8.18: 高階関数[List.takeWhile](https://www.scala-lang.org/api/current/scala/collection/immutable/List.html#takeWhile-5a1)に関するプロパティを見つけよ。
+
+/*
+ * 任意のリスト `as: List[A]`, 述語関数 `p: A => Boolean` について、例えば以下のプロパティが考えられる:
+ * - `as.takeWhile(p).forall(p) == true`
+ * - `as.size > as.takeWhile(p).size` のとき `!p(as(as.takeWhile(p).size))`
+ * - `as.takeWhile(p) ++ as.dropWhile(p) == as`
+ */
+
+// Exercise 8.19: 引数を何らかの形で利用して戻り値を決めるような関数のジェネレータを実装したい。我々のライブラリをどのように拡張すれば実現できそうか検討せよ。
+
+// 例えば `Gen.genStringFn` のようにジェネレータを実装することができ、一般化すると以下のようになる。
 
 opaque type Cogen[-A] = (A, RNG) => RNG
 
@@ -368,3 +450,10 @@ object Cogen:
     forAll(ga.list ** fn(ca, Gen.boolean).unsized)((ys, f) =>
       ys.takeWhile(f).forall(f)
     )
+
+// Exercise 8.20: 我々のライブラリを利用して、例えば以下のような課題に取り組んでみよ。
+// - List/LazyListのtake, drop, filter, unfoldなどのメソッドに関するプロパティを実装する
+// - Treeを生成するサイズ付きジェネレータを実装し、foldメソッドに関するプロパティで利用する
+// - Option/Eitherのsequenceに関するプロパティを実装する
+
+// 解答例なし(自由に試してみよう)
