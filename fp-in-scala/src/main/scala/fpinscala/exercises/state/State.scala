@@ -40,6 +40,10 @@ object RNG:
 
   def double(rng: RNG): (Double, RNG) = ???
 
+  def boolean(rng: RNG): (Boolean, RNG) =
+    rng.nextInt match
+      case (i, rng2) => (i % 2 == 0, rng2)
+
   // Exercise 6.3: 整数と浮動小数点数の組をランダム生成する関数 `intDouble` と `doubleInt` を実装せよ。
   // また、浮動小数点数の3つ組をランダム生成する関数 `double3` を実装せよ。
 
@@ -94,6 +98,15 @@ object State:
       ???
 
   def apply[S, A](f: S => (A, S)): State[S, A] = f
+
+  def unit[S, A](a: A): State[S, A] =
+    s => (a, s)
+
+  def sequence[S, A](actions: List[State[S, A]]): State[S, List[A]] =
+    actions.foldRight(unit[S, List[A]](Nil))((f, acc) => f.map2(acc)(_ :: _))
+
+  def traverse[S, A, B](as: List[A])(f: A => State[S, B]): State[S, List[B]] =
+    as.foldRight(unit[S, List[B]](Nil))((a, acc) => f(a).map2(acc)(_ :: _))
 
   def modify[S](f: S => S): State[S, Unit] =
     for
