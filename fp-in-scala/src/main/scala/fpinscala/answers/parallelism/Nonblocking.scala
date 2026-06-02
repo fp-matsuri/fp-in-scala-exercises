@@ -11,20 +11,6 @@ object Nonblocking:
 
   object Par:
 
-    extension [A](p: Par[A])
-      def run(es: ExecutorService): A =
-        val ref = new AtomicReference[
-          A
-        ] // A mutable, threadsafe reference, to use for storing the result
-        val latch = new CountDownLatch(
-          1
-        ) // A latch which, when decremented, implies that `ref` has the result
-        p(es) { a =>
-          ref.set(a); latch.countDown
-        } // Asynchronously set the result, and decrement the latch
-        latch.await // Block until the `latch.countDown` is invoked asynchronously
-        ref.get // Once we've passed the latch, we know `ref` has been set, and return its value
-
     def unit[A](a: A): Par[A] =
       es => cb => cb(a)
 
@@ -49,6 +35,24 @@ object Nonblocking:
       es.submit(new Callable[Unit] { def call = r })
 
     extension [A](p: Par[A])
+      def run(es: ExecutorService): A =
+        val ref = new AtomicReference[
+          A
+        ] // A mutable, threadsafe reference, to use for storing the result
+        val latch = new CountDownLatch(
+          1
+        ) // A latch which, when decremented, implies that `ref` has the result
+        p(es) { a =>
+          ref.set(a); latch.countDown
+        } // Asynchronously set the result, and decrement the latch
+        latch.await // Block until the `latch.countDown` is invoked asynchronously
+        ref.get // Once we've passed the latch, we know `ref` has been set, and return its value
+
+      // Exercise 7.10: 現在の `run` 実装では例外がスローされると `latch` がカウントダウンされなくなってしまう。
+      // 修正案を検討せよ。
+
+      // Futureの第2引数としてエラーハンドラーを受け取れるようにし、エラー時にも `latch.countDown` が呼び出されるようにする案がある。
+
       def map2[B, C](p2: Par[B])(f: (A, B) => C): Par[C] =
         es =>
           cb =>
@@ -67,17 +71,17 @@ object Nonblocking:
             p(es)(a => combiner ! Left(a))
             p2(es)(b => combiner ! Right(b))
 
-    extension [A](p: Par[A])
       def map[B](f: A => B): Par[B] =
         es => cb => p(es)(a => eval(es)(cb(f(a))))
 
-    extension [A](p: Par[A])
+      // Exercise 7.13-1: `flatMap` を実装せよ。
+
+      /* `chooser` is usually called `flatMap` or `bind`. */
       def flatMap[B](f: A => Par[B]): Par[B] =
         // Note: fork isn't strictly necessary but lets us avoid stack overflows
         // when chaining lots of flatMap calls - we use this stack safety in part 4
         fork(es => cb => p(es)(a => f(a)(es)(cb)))
 
-    extension [A](p: Par[A])
       def zip[B](b: Par[B]): Par[(A, B)] = p.map2(b)((_, _))
 
     def lazyUnit[A](a: => A): Par[A] =
@@ -107,8 +111,6 @@ object Nonblocking:
     def parMap[A, B](as: IndexedSeq[A])(f: A => B): Par[IndexedSeq[B]] =
       sequenceBalanced(as.map(asyncF(f)))
 
-    // exercise answers
-
     /*
      * We can implement `choice` as a new primitive.
      *
@@ -130,6 +132,8 @@ object Nonblocking:
             if b then eval(es)(t(es)(cb))
             else eval(es)(f(es)(cb))
 
+    // Exercise 7.11: `choiceN` を実装し、それを用いて `choice` を実装せよ。
+
     /* The code here is very similar. */
     def choiceN[A](p: Par[Int])(ps: List[Par[A]]): Par[A] =
       es => cb => p(es)(ind => eval(es)(ps(ind % ps.length)(es)(cb)))
@@ -137,18 +141,21 @@ object Nonblocking:
     def choiceViaChoiceN[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
       choiceN(cond.map(b => if b then 0 else 1))(List(t, f))
 
+    // Exercise 7.12: `choiceMap` を実装せよ。
+
     def choiceMap[K, V](key: Par[K])(choices: Map[K, Par[V]]): Par[V] =
       es => cb => key(es)(k => choices(k)(es)(cb))
 
-    /* `chooser` is usually called `flatMap` or `bind`. */
-    def chooser[A, B](p: Par[A])(f: A => Par[B]): Par[B] =
-      p.flatMap(f)
+    // Exercise 7.13-2: `flatMap` を用いて `choice` と `choiceN` を実装せよ。
 
     def choiceViaFlatMap[A](p: Par[Boolean])(f: Par[A], t: Par[A]): Par[A] =
       p.flatMap(b => if b then t else f)
 
     def choiceNViaFlatMap[A](p: Par[Int])(choices: List[Par[A]]): Par[A] =
       p.flatMap(i => choices(i))
+
+    // Exercise 7.14: `join` を実装せよ。
+    // また、 `flatMap` を用いて `join` を、 `join` を用いて `flatMap` をそれぞれ実装せよ。
 
     def join[A](ppa: Par[Par[A]]): Par[A] =
       es => cb => ppa(es)(pa => eval(es)(pa(es)(cb)))

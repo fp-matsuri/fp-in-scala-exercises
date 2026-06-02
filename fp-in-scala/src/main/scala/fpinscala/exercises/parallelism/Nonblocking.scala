@@ -48,6 +48,9 @@ object Nonblocking:
         latch.await // Block until the `latch.countDown` is invoked asynchronously
         ref.get // Once we've passed the latch, we know `ref` has been set, and return its value
 
+      // Exercise 7.10: 現在の `run` 実装では例外がスローされると `latch` がカウントダウンされなくなってしまう。
+      // 修正案を検討せよ。
+
       def map2[B, C](p2: Par[B])(f: (A, B) => C): Par[C] =
         es =>
           cb =>
@@ -69,8 +72,10 @@ object Nonblocking:
       def map[B](f: A => B): Par[B] =
         es => cb => p(es)(a => eval(es)(cb(f(a))))
 
-      def flatMap[B](f: A => Par[B]): Par[B] =
-        es => cb => p(es)(a => f(a)(es)(cb))
+      // Exercise 7.13-1: `flatMap` を実装せよ。
+
+      /* `chooser` is usually called `flatMap` or `bind`. */
+      def flatMap[B](f: A => Par[B]): Par[B] = ???
 
       def zip[B](b: Par[B]): Par[(A, B)] = map2(b)((_, _))
 
@@ -101,8 +106,6 @@ object Nonblocking:
     def parMap[A, B](as: IndexedSeq[A])(f: A => B): Par[IndexedSeq[B]] =
       sequenceBalanced(as.map(asyncF(f)))
 
-    // exercise answers
-
     /*
      * We can implement `choice` as a new primitive.
      *
@@ -124,6 +127,8 @@ object Nonblocking:
             if b then eval(es)(t(es)(cb))
             else eval(es)(f(es)(cb))
 
+    // Exercise 7.11: `choiceN` を実装し、それを用いて `choice` を実装せよ。
+
     /* The code here is very similar. */
     def choiceN[A](p: Par[Int])(ps: List[Par[A]]): Par[A] =
       ???
@@ -133,18 +138,21 @@ object Nonblocking:
     )(ifTrue: Par[A], ifFalse: Par[A]): Par[A] =
       ???
 
+    // Exercise 7.12: `choiceMap` を実装せよ。
+
     def choiceMap[K, V](p: Par[K])(ps: Map[K, Par[V]]): Par[V] =
       ???
 
-    /* `chooser` is usually called `flatMap` or `bind`. */
-    def chooser[A, B](p: Par[A])(f: A => Par[B]): Par[B] =
-      ???
+    // Exercise 7.13-2: `flatMap` を用いて `choice` と `choiceN` を実装せよ。
 
     def choiceViaFlatMap[A](p: Par[Boolean])(f: Par[A], t: Par[A]): Par[A] =
       ???
 
     def choiceNViaFlatMap[A](p: Par[Int])(choices: List[Par[A]]): Par[A] =
       ???
+
+    // Exercise 7.14: `join` を実装せよ。
+    // また、 `flatMap` を用いて `join` を、 `join` を用いて `flatMap` をそれぞれ実装せよ。
 
     def join[A](p: Par[Par[A]]): Par[A] =
       ???
