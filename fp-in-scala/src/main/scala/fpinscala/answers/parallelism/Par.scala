@@ -5,6 +5,8 @@ import java.util.concurrent.*
 opaque type Par[A] = ExecutorService => Future[A]
 
 object Par:
+  // Exercise 7.2: ここでの並行計算 `Par` の内部表現がどのように定義されているか確認せよ。
+
   extension [A](pa: Par[A]) def run(s: ExecutorService): Future[A] = pa(s)
 
   def unit[A](a: A): Par[A] =
@@ -19,6 +21,8 @@ object Par:
     def isCancelled = false
     def cancel(evenIfRunning: Boolean): Boolean = false
 
+  // Exercise 7.1: 2つの並列計算 `Par` の結果を組み合わせるメソッド `map2` はどのようなシグネチャになるか考えよ(実装例は以下のとおり)。
+
   extension [A](pa: Par[A])
     def map2[B, C](pb: Par[B])(
         f: (A, B) => C
@@ -31,6 +35,8 @@ object Par:
         ) // This implementation of `map2` does _not_ respect timeouts. It simply passes the `ExecutorService` on to both `Par` values, waits for the results of the Futures `af` and `bf`, applies `f` to them, and wraps them in a `UnitFuture`. In order to respect timeouts, we'd need a new `Future` implementation that records the amount of time spent evaluating `af`, then subtracts that time from the available time allocated for evaluating `bf`.
 
   extension [A](pa: Par[A])
+    // Exercise 7.3: [java.util.concurrent.Future](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Future.html)のタイムアウトが尊重されるように `map2` を実装せよ。
+
     def map2Timeouts[B, C](pb: Par[B])(f: (A, B) => C): Par[C] =
       es =>
         new Future[C]:
@@ -60,7 +66,20 @@ object Par:
   ): Par[A] = // This is the simplest and most natural implementation of `fork`, but there are some problems with it--for one, the outer `Callable` will block waiting for the "inner" task to complete. Since this blocking occupies a thread in our thread pool, or whatever resource backs the `ExecutorService`, this implies that we're losing out on some potential parallelism. Essentially, we're using two threads when one should suffice. This is a symptom of a more serious problem with the implementation, and we will discuss this later in the chapter.
     es => es.submit(new Callable[A] { def call = a(es).get })
 
+  // Exercise 7.8: 関数 `fork` は `fork(x) == x` が常に成り立つことが期待される。[java.util.concurrent.Executors](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Executors.html)の各種 `ExecutorService` 実装に対して、この関数が常に期待通り振る舞うか検討せよ。
+
+  /*
+   * 例えば `Executors.newFixedThreadPool(1)` のようなスレッド数が1の `ExecutorService` を用いると、`fork(x) == x` は成り立たない。
+   * これは、`fork` が新しいスレッドを要求するため、スレッド数が1の `ExecutorService` では、`fork(x)` を実行するとデッドロックが発生するからである。
+   */
+
+  // Exercise 7.9: この `fork` 実装では任意の固定サイズのスレッドプールでデッドロックが発生しうることを示せ。
+
+  // 例えば、スレッド数が2の `ExecutorService` を用いると、 `fork(fork(fork(x)))` や `fork(map2(fork(x), fork(y)))` でデッドロックが発生する。
+
   def lazyUnit[A](a: => A): Par[A] = fork(unit(a))
+
+  // Exercise 7.4: 任意の関数 `A => B` を受け取って非同期的に結果を返す関数に変換する関数 `asyncF` を実装せよ。
 
   def asyncF[A, B](f: A => B): A => Par[B] =
     a => lazyUnit(f(a))
@@ -69,8 +88,24 @@ object Par:
     def map[B](f: A => B): Par[B] =
       pa.map2(unit(()))((a, _) => f(a))
 
+    // Exercise 7.7: `y.map(id) == y` を前提に `y.map(g).map(f) == y.map(f compose g)` が成り立つことを証明せよ。
+
+    /*
+     * 関数 `f: B => C`, `g: A => B`, `p: D => C`, `q: A => D` について(多相関数 `map` のparametricityにより)
+     * f compose g == p compose q ならば _.map(g).map(f) == _.map(q).map(p) が成り立つことから、
+     *    y.map(g).map(f)
+     * // p: C => C = id, q: A => C = f compose g とすると _.map(g).map(f) == _.map(id).map(f compose g) なので
+     * == y.map(id).map(f compose g)
+     * // y.map(id) == y なので
+     * == y.map(f compose g)
+     *
+     * ref. https://github.com/quchen/articles/blob/master/second_functor_law.md
+     */
+
   def sortPar(parList: Par[List[Int]]) =
     parList.map(_.sorted)
+
+  // Exercise 7.5: 関数 `sequence` を実装せよ。
 
   def sequenceSimple[A](pas: List[Par[A]]): Par[List[A]] =
     pas.foldRight(unit(List.empty[A]))((pa, acc) => pa.map2(acc)(_ :: _))
@@ -101,6 +136,8 @@ object Par:
     val fbs: List[Par[B]] = ps.map(asyncF(f))
     sequence(fbs)
 
+  // Exercise 7.6: 関数 `parFilter` を実装せよ。
+
   def parFilter[A](l: List[A])(f: A => Boolean): Par[List[A]] = fork:
     val pars: List[Par[List[A]]] =
       l.map(asyncF(a => if f(a) then List(a) else List()))
@@ -120,6 +157,8 @@ object Par:
         t(es) // Notice we are blocking on the result of `cond`.
       else f(es)
 
+  // Exercise 7.11: `choiceN` を実装し、それを用いて `choice` を実装せよ。
+
   def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
     es =>
       val ind = n.run(es).get % choices.size // Full source files
@@ -128,16 +167,14 @@ object Par:
   def choiceViaChoiceN[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
     choiceN(cond.map(b => if b then 0 else 1))(List(t, f))
 
+  // Exercise 7.12: `choiceMap` を実装せよ。
+
   def choiceMap[K, V](key: Par[K])(choices: Map[K, Par[V]]): Par[V] =
     es =>
       val k = key.run(es).get
       choices(k).run(es)
 
-  extension [A](pa: Par[A])
-    def chooser[B](choices: A => Par[B]): Par[B] =
-      es =>
-        val k = pa.run(es).get
-        choices(k).run(es)
+  // Exercise 7.13: `flatMap` を実装し、それを用いて `choice` と `choiceN` を実装せよ。
 
   /* `chooser` is usually called `flatMap` or `bind`. */
   extension [A](pa: Par[A])
@@ -151,6 +188,9 @@ object Par:
 
   def choiceNViaFlatMap[A](p: Par[Int])(choices: List[Par[A]]): Par[A] =
     p.flatMap(i => choices(i))
+
+  // Exercise 7.14: `join` を実装せよ。
+  // また、 `flatMap` を用いて `join` を、 `join` を用いて `flatMap` をそれぞれ実装せよ。
 
   // see nonblocking implementation in `Nonblocking.scala`
   def join[A](ppa: Par[Par[A]]): Par[A] =
