@@ -12,5 +12,5 @@ coursier = {version = "2.1.24", postinstall = "cs install scalafix:0.14.6 --inst
 "github:scalameta/scalafmt" = "3.11.0"
 
 # fp-in-haskell
-ghc = "9.14.1"
-cabal = "3.16.1.0"
+ghc = "9.10.1"
+cabal = "3.10.3.0"
