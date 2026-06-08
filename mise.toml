@@ -1,3 +1,7 @@
+[plugins]
+ghc = "https://github.com/sestrella/asdf-ghcup.git"
+
+
 [tools]
 # fp-in-clojure
 java = "25.0.2"
