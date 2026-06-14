@@ -60,20 +60,11 @@ make format
 
 ```
 .
-├── Makefile                           # ビルド・テスト・リント・フォーマットのターゲット
-├── README.md                          
-├── fp-in-haskell.cabal                # Cabal プロジェクト設定
-├── Setup.hs
-└── src
-    └── FpInHaskell
-        ├── Answers                    # 解答例
-        │   └── GettingStarted.hs
-        └── Exercises                  # 演習問題
-            └── GettingStarted.hs
-└── test
-    ├── GettingStartedSpec.hs          # テスト仕様
-    ├── Main.hs
-    └── FpInHaskell
-        └── Test
-            └── Common.hs              # テスト用ユーティリティ
+├── Makefile                # よく使うコマンドのショートカット
+├── fp-in-haskell.cabal     # Cabal プロジェクト設定
+├── src/
+│   └── FpInHaskell/
+│       ├── Answers/        # 解答例
+│       └── Exercises/      # 演習問題
+└── test/                   # テストコード
 ```
