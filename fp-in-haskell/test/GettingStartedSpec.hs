@@ -2,7 +2,7 @@ module GettingStartedSpec (
     props,
 ) where
 
-import FpInHaskell.Answers.GettingStarted (compose, factorial, fib, isSorted, myCurry, myUncurry)
+import FpInHaskell.Exercises.GettingStarted (compose, factorial, fib, isSorted, myCurry, myUncurry)
 import FpInHaskell.Test.Common
 import Test.QuickCheck
 
