@@ -13,7 +13,6 @@ RUN curl -fsSL https://mise.run | sh && \
 
 COPY --chown=vscode mise.toml /tmp/mise.toml
 RUN ~/.local/bin/mise trust /tmp/mise.toml && \
-    MISE_BACKENDS_GHC='asdf:mise-plugins/mise-ghcup' \
     MISE_CONFIG_FILE=/tmp/mise.toml ~/.local/bin/mise install && \
     rm -rf /tmp/mise.toml ~/.local/share/mise/downloads ~/.cache/coursier
 
