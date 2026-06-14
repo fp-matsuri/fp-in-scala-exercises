@@ -12,7 +12,8 @@ RUN curl -fsSL https://mise.run | sh && \
     echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 
 COPY --chown=vscode mise.toml /tmp/mise.toml
-RUN ~/.local/bin/mise trust /tmp/mise.toml && \
+RUN ~/.local/bin/mise plugin install ghc https://github.com/sestrella/asdf-ghcup.git && \
+    ~/.local/bin/mise trust /tmp/mise.toml && \
     MISE_CONFIG_FILE=/tmp/mise.toml ~/.local/bin/mise install && \
     rm -rf /tmp/mise.toml ~/.local/share/mise/downloads ~/.cache/coursier
 
