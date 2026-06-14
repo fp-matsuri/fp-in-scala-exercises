@@ -62,7 +62,7 @@ make format
 .
 ├── Makefile                           # ビルド・テスト・リント・フォーマットのターゲット
 ├── README.md                          
-├── hello.cabal                        # Cabal プロジェクト設定
+├── fp-in-haskell.cabal                # Cabal プロジェクト設定
 ├── Setup.hs
 └── src
     └── FpInHaskell
