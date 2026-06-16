@@ -106,11 +106,12 @@ module Monomorphic_binary_search = struct
 end
 
 module Polymorphic_functions = struct
-  (** こちらは多相(ポリモーフィック)版の[find_first]であり、['a]型の値が探している要素かどうかをテストする関数でパラメータ化されている。
-      [string]をハードコードせず、任意の型['a]に対して動作するように一般化されている。
+  (** こちらは多相(ポリモーフィック)版の[find_first]であり、[a]型の値が探している要素かどうかをテストする関数でパラメータ化されている。
+      [string]をハードコードせず、任意の型[a]に対して動作するように一般化されている。
       そして、与えられたキーに対する等価判定をハードコードする代わりに配列の個々の要素をテストする関数をとる。
-      @see <https://ocaml.org/manual/5.4/types.html> ['a]は多相型を表す構文です。 *)
-  let find_first (a : 'a array) (p : 'a -> bool) =
+      @see <https://ocaml.org/manual/5.4/locallyabstract.html>
+        locally abstract types *)
+  let find_first (type a) (a : a array) (p : a -> bool) =
     let rec loop n =
       if n >= Array.length a then -1
       else if
@@ -124,24 +125,24 @@ module Polymorphic_functions = struct
   (** Exercise 2.2: 配列がソート済みかどうかを判定する多相関数を定義せよ。
       @param array ソート済みか判定する対象の配列
       @param gt 配列[array]の隣接する2要素をとって最初の要素が2番目の要素より大きいかどうかを判定する述語関数。 *)
-  let sorted a gt =
+  let sorted (type a) (array : a array) (gt : a -> a -> bool) : bool =
     let rec loop n =
-      if n >= Array.length a - 1 then true
-      else if gt a.(n) a.(n + 1) then false
+      if n >= Array.length array - 1 then true
+      else if gt array.(n) array.(n + 1) then false
       else loop (n + 1)
     in
     loop 0
 
   (** 多相関数はたいてい型によって制約されているため、対応する実装がひとつしかないことがある。[partial1]はその一例。
       OCamlの型推論は優秀なので、この程度なら明示せずとも正しく推論されるが、今回は教育のために明示している。 *)
-  let partial1 (a : 'a) (f : 'a -> 'b -> 'c) : 'b -> 'c = fun b -> f a b
+  let partial1 (type a b c) (a : a) (f : a -> b -> c) : b -> c = fun b -> f a b
 
-  (** Exercise 2.3: [curry] を実装せよ。*)
-  let curry (f : 'a * 'b -> 'c) : 'a -> 'b -> 'c = fun a b -> f (a, b)
+  (** Exercise 2.3: [curry]を実装せよ。*)
+  let curry (type a b c) (f : a * b -> c) : a -> b -> c = fun a b -> f (a, b)
 
-  (** Exercise 2.4: [uncurry] を実装せよ。*)
-  let uncurry (f : 'a -> 'b -> 'c) : 'a * 'b -> 'c = fun (a, b) -> f a b
+  (** Exercise 2.4: [uncurry]を実装せよ。*)
+  let uncurry (type a b c) (f : a -> b -> c) : a * b -> c = fun (a, b) -> f a b
 
-  (** Exercise 2.5: [compose] を実装せよ。*)
-  let compose (f : 'b -> 'c) (g : 'a -> 'b) : 'a -> 'c = fun a -> f (g a)
+  (** Exercise 2.5: [compose]を実装せよ。*)
+  let compose (type a b c) (f : b -> c) (g : a -> b) : a -> c = fun a -> f (g a)
 end
