@@ -7,37 +7,39 @@ cf. FP in Scalaの公式リポジトリ: https://github.com/fpinscala/fpinscala
 ## 問題集の構成
 
 - Part 1: Introduction to functional programming (関数型プログラミングの基礎)
-    - `gettingstarted`
-        - Chapter 2: Getting started with functional programming in Scala (Scala関数型プログラミングの準備)
-    - `datastructures`
-        - Chapter 3: Functional data structures (関数型プログラミングのデータ構造)
-    - `errorhandling`
-        - Chapter 4: Handling errors without exceptions (例外を使わないエラー処理)
-    - `laziness`
-        - Chapter 5: Strictness and laziness (正格と遅延)
-    - `state`
-        - Chapter 6: Purely functional state (純粋関数型の状態)
+    - Chapter 1: What is functional programming? (関数型プログラミングとは)
+        - `introduction` ※演習問題(exercises)なし
+    - Chapter 2: Getting started with functional programming in Scala (Scala関数型プログラミングの準備)
+        - `gettingstarted`
+    - Chapter 3: Functional data structures (関数型プログラミングのデータ構造)
+        - `datastructures`
+    - Chapter 4: Handling errors without exceptions (例外を使わないエラー処理)
+        - `errorhandling`
+    - Chapter 5: Strictness and laziness (正格と遅延)
+        - `laziness`
+    - Chapter 6: Purely functional state (純粋関数型の状態)
+        - `state`
 - Part 2: Functional design and combinator libraries (関数型デザインとコンビネータライブラリ)
-    - `parallelism`
-        - Chapter 7: Purely functional parallelism (純粋関数型の並列処理)
-    - `testing`
-        - Chapter 8: Property-based testing (プロパティベースのテスト)
-    - `parsing`
-        - Chapter 9: Parser combinators (パーサーコンビネータ)
+    - Chapter 7: Purely functional parallelism (純粋関数型の並列処理)
+        - `parallelism`
+    - Chapter 8: Property-based testing (プロパティベースのテスト)
+        - `testing`
+    - Chapter 9: Parser combinators (パーサーコンビネータ)
+        - `parsing`
 - Part 3: Common structures in functional design (関数型デザインに共通する構造)
-    - `monoids`
-        - Chapter 10: Monoids (モノイド)
-    - `monads`
-        - Chapter 11: Monads (モナド)
-    - `applicative`
-        - Chapter 12: Applicative and traversable functors (アプリカティブファンクタとトラバーサブルファンクタ)
+    - Chapter 10: Monoids (モノイド)
+        - `monoids`
+    - Chapter 11: Monads (モナド)
+        - `monads`
+    - Chapter 12: Applicative and traversable functors (アプリカティブファンクタとトラバーサブルファンクタ)
+        - `applicative`
 - Part 4: Effects and I/O (作用とI/O)
-    - `iomonad`
-        - Chapter 13: External effects and I/O (外部作用とI/O)
-    - `localeffects`
-        - Chapter 14: Local effects and mutable state (局所作用とミュータブルな状態)
-    - `streamingio`
-        - Chapter 15: Stream processing and incremental I/O (ストリーム処理とインクリメンタルI/O)
+    - Chapter 13: External effects and I/O (外部作用とI/O)
+        - `iomonad`
+    - Chapter 14: Local effects and mutable state (局所作用とミュータブルな状態)
+        - `localeffects`
+    - Chapter 15: Stream processing and incremental I/O (ストリーム処理とインクリメンタルI/O)
+        - `streamingio`
 
 ## 利用者向けガイド
 
