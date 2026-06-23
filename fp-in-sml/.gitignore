@@ -1,0 +1,11 @@
+# MLton が生成する実行ファイル
+build/run-exercises
+build/run-answers
+
+# SML/NJ (Compilation Manager) のキャッシュ
+.cm/
+**/.cm/
+
+# Nix
+result
+result-*
