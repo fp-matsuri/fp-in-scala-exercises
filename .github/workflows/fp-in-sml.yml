@@ -1,0 +1,42 @@
+name: fp-in-sml CI
+
+on:
+  push:
+    paths:
+      - "fp-in-sml/**"
+      - ".github/workflows/fp-in-sml.yml"
+  pull_request:
+    paths:
+      - "fp-in-sml/**"
+      - ".github/workflows/fp-in-sml.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fp-in-sml
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      # 解答の検証 (すべて pass する)
+      - name: MLton answers (expect all pass)
+        run: nix develop --command make answers
+
+      # 演習の検証 (未実装は todo 表示)
+      - name: MLton exercises (expect compile + todo, no failures)
+        run: nix develop --command make test
+
+      # SML/NJ でも同様に検証
+      - name: SML/NJ answers (expect all pass)
+        run: nix develop --command make nj-answers
+
+      - name: SML/NJ exercises (expect compile + todo, no failures)
+        run: nix develop --command make nj-test
