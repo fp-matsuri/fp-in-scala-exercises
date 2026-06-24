@@ -1,0 +1,3 @@
+(tests
+ (names getting_started_test)
+ (libraries alcotest exercises answers))
