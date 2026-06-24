@@ -38,6 +38,7 @@ end = struct
   let rec fib = function
     | 0 -> 0
     | 1 -> 1
+    (* パターンマッチ時にガードを付けられる。キーワードが[if]じゃなくて[when]なことに注意。 *)
     | n when n > 1 -> fib (n - 1) + fib (n - 2)
     | _ -> failwith "Negative input is not allowed"
 
@@ -67,7 +68,7 @@ module Test_fib = struct
       (fib 2) (fib 3) (fib 4) (fib 5) (fib 6)
 end
 
-(** 関数型プログラミング(FP)では関数を取り回すことがよくあるため、名前を付けること{bなく}関数を組み立てるシンタックスがあると便利だ *)
+(** 関数型プログラミング(FP)では関数を取り回すことがよくあるため、名前を付けること{b なく}関数を組み立てるシンタックスがあると便利だ *)
 module Anonymous_functions = struct
   open My_program
 
