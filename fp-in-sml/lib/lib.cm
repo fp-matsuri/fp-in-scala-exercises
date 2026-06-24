@@ -1,0 +1,7 @@
+(* SML/NJ (CM) で最初に読み込むグループです．
+ * build/*.cm が include してから再エクスポートできるよう Library ではなく Group にしています． *)
+Group is
+  $/basis.cm
+  Stub.sml
+  Pbt.sml
+  Test.sml
