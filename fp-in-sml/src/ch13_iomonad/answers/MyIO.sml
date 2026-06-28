@@ -8,13 +8,13 @@ struct
   fun effect th = th
   fun run m = m ()
 
-  fun unit a = fn () => a
+  fun unit a () = a
 
-  fun flatMap f m =
-    fn () => run (f (run m))
+  fun flatMap f m () =
+    run (f (run m))
 
-  fun map f m =
-    fn () => f (run m)
+  fun map f m () =
+    f (run m)
 
   (* 効果が左から右の順に走るよう，モナド的に合成する． *)
   fun sequence ms =

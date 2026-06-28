@@ -1,6 +1,4 @@
-(* 第15章 演習 (Process)．apply (駆動部) は提供済み．
- * sum / count は「値」なので，読込時に落ちないよう Await でくるんでおく
- * (実際に駆動されたときに Todo を投げる)． *)
+(* 第15章 演習 (Process)．apply (駆動部) は提供済み． *)
 structure Process: PROCESS =
 struct
   datatype ('i, 'o) process =

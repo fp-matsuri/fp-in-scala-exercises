@@ -8,13 +8,17 @@ struct
   fun state f = f
   fun run st s = st s
 
-  fun unit a = fn s => (a, s)
+  fun unit a s = (a, s)
 
-  fun map f st =
-    fn s => let val (a, s') = st s in (f a, s') end
+  fun map f st s =
+    let val (a, s') = st s
+    in (f a, s')
+    end
 
-  fun flatMap g st =
-    fn s => let val (a, s') = st s in g a s' end
+  fun flatMap g st s =
+    let val (a, s') = st s
+    in g a s'
+    end
 
   fun map2 f sa sb =
     flatMap (fn a => map (fn b => f (a, b)) sb) sa
@@ -22,8 +26,7 @@ struct
   fun sequence sts =
     List.foldr (fn (st, acc) => map2 (op::) st acc) (unit []) sts
 
-  val get = fn s => (s, s)
-  fun set s = fn _ => ((), s)
-  fun modify f =
-    fn s => ((), f s)
+  fun get s = (s, s)
+  fun set s _ = ((), s)
+  fun modify f s = ((), f s)
 end

@@ -28,13 +28,17 @@ struct
     in (Real.fromInt n / 2147483648.0, r')
     end
 
-  fun unit a = fn r => (a, r)
+  fun unit a r = (a, r)
 
-  fun map f ra =
-    fn r => let val (a, r') = ra r in (f a, r') end
+  fun map f ra r =
+    let val (a, r') = ra r
+    in (f a, r')
+    end
 
-  fun flatMap g ra =
-    fn r => let val (a, r') = ra r in g a r' end
+  fun flatMap g ra r =
+    let val (a, r') = ra r
+    in g a r'
+    end
 
   fun map2 f ra rb =
     flatMap (fn a => map (fn b => f (a, b)) rb) ra
