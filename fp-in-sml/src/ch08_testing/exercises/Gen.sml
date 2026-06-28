@@ -7,7 +7,7 @@ struct
 
   (* Exercise 8.4-8.13: 以下を実装せよ．Rng のコンビネータを使ってよい． *)
   fun unit a = Stub.todo ()
-  val boolean = fn r => Stub.todo ()
+  fun boolean r = Stub.todo ()
   fun choose (start, stopExclusive) = Stub.todo ()
 
   fun map f g = Stub.todo ()

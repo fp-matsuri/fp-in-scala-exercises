@@ -1,5 +1,4 @@
-(* 第6章 演習 (State)．state / run は提供済み．
- * get は値だが，多相のまま保つため無名関数 (値) として書いてある． *)
+(* 第6章 演習 (State)．state / run は提供済み． *)
 structure State :> STATE =
 struct
   type ('s, 'a) state = 's -> 'a * 's
@@ -8,14 +7,14 @@ struct
   fun run st s = st s
 
   (* Exercise 6.10: unit / map / map2 / flatMap / sequence を実装せよ． *)
-  fun unit a = fn s => Stub.todo ()
-  fun map f st = fn s => Stub.todo ()
-  fun map2 f sa sb = fn s => Stub.todo ()
-  fun flatMap g st = fn s => Stub.todo ()
-  fun sequence sts = fn s => Stub.todo ()
+  fun unit a s = Stub.todo ()
+  fun map f st s = Stub.todo ()
+  fun map2 f sa sb s = Stub.todo ()
+  fun flatMap g st s = Stub.todo ()
+  fun sequence sts s = Stub.todo ()
 
   (* get / set / modify を実装せよ． *)
-  val get = fn s => Stub.todo ()
-  fun set s = fn s' => Stub.todo ()
-  fun modify f = fn s => Stub.todo ()
+  fun get s = Stub.todo ()
+  fun set s s' = Stub.todo ()
+  fun modify f s = Stub.todo ()
 end
