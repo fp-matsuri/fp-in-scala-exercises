@@ -1,0 +1,8 @@
+$(SML_LIB)/basis/basis.mlb
+
+(* MLton で日本語 (non ascii) を使うために有効化 *)
+ann "allowExtendedTextConsts true" in
+  Stub.sml
+  Pbt.sml
+  Test.sml
+end
