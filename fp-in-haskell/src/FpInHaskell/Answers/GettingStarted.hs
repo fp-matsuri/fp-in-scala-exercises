@@ -83,7 +83,7 @@ printAnonymousFunctions = do
     putStrLn (formatResult "increment" 7 (\x -> x + 1))
     putStrLn (formatResult "increment2" 7 (\x -> x + 1))
     putStrLn (formatResult "increment3" 7 (\x -> x + 1))
-    putStrLn (formatResult "increment4" 7 (+ 1))
+    putStrLn (formatResult "increment4" 7 (+ 1)) -- `(+ 1)` は `+` の部分適用。`\x -> x + 1` と同じ
     putStrLn (formatResult "increment5" 7 (\x -> let r = x + 1 in r))
 
 -- まずは String に特化した findFirst。理想的には任意のリスト型に対して動作するよう一般化できる。
