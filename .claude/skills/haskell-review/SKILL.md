@@ -10,7 +10,7 @@ model: opus
 
 変更された Haskell コードを以下の観点でレビューし、違反を該当行とともに指摘する。
 
-- Prelude と衝突する名前は `my` 接頭辞で回避し、`import Prelude hiding` を使わない。
+- Prelude と衝突する名前は `import Prelude hiding` で同名定義し、コメントで補足する。
 - 文字列整形は `show` と `++` で行い、`Text.Printf.printf` を使わない。
 - 標準出力は `print*` 関数の `putStrLn` が担い、確認は ghci で行う。
 - 出力メッセージは Scala 版と一致させる。

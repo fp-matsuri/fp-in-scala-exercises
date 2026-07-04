@@ -1,5 +1,5 @@
 module FpInHaskell.Answers.GettingStarted (
-    myAbs,
+    abs,
     formatAbs,
     printAbs,
     factorial,
@@ -18,11 +18,16 @@ module FpInHaskell.Answers.GettingStarted (
     compose,
 ) where
 
-myAbs :: Int -> Int
-myAbs n = if n < 0 then -n else n
+import Prelude hiding (abs)
+
+-- Prelude は自動で読み込まれる標準ライブラリで、そこにはすでに `abs` という関数がある。
+-- 同じ名前で自分の関数を定義するため、ファイル冒頭の `import Prelude hiding (abs)` で
+-- Prelude 側の `abs` を読み込み対象から外している
+abs :: Int -> Int
+abs n = if n < 0 then -n else n
 
 formatAbs :: Int -> String
-formatAbs x = "The absolute value of " ++ show x ++ " is " ++ show (myAbs x)
+formatAbs x = "The absolute value of " ++ show x ++ " is " ++ show (abs x)
 
 -- `$` を使うと括弧の記法を避けられる
 printAbs :: IO ()
@@ -50,7 +55,7 @@ formatResult name n f = "The " ++ name ++ " of " ++ show n ++ " is " ++ show (f 
 
 printAbsAndFactorial :: IO ()
 printAbsAndFactorial = do
-    putStrLn (formatResult "absolute value" (-42) myAbs)
+    putStrLn (formatResult "absolute value" (-42) abs)
     putStrLn (formatResult "factorial" 7 factorial)
 
 printFib :: IO ()
@@ -78,7 +83,7 @@ printFib = do
 -- 無名関数の例:
 printAnonymousFunctions :: IO ()
 printAnonymousFunctions = do
-    putStrLn (formatResult "absolute value" (-42) myAbs)
+    putStrLn (formatResult "absolute value" (-42) abs)
     putStrLn (formatResult "factorial" 7 factorial)
     putStrLn (formatResult "increment" 7 (\x -> x + 1))
     putStrLn (formatResult "increment2" 7 (\x -> x + 1))
