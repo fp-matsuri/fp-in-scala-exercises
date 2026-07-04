@@ -24,8 +24,9 @@ myAbs n = if n < 0 then -n else n
 formatAbs :: Int -> String
 formatAbs x = "The absolute value of " ++ show x ++ " is " ++ show (myAbs x)
 
+-- `$` を使うと括弧の記法を避けられる
 printAbs :: IO ()
-printAbs = putStrLn (formatAbs (-42))
+printAbs = putStrLn $ formatAbs (-42) -- `putStrLn (formatAbs (-42))` と同じ
 
 -- ローカルな末尾再帰関数を使った factorial の定義
 factorial :: Int -> Int
