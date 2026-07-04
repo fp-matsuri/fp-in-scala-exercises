@@ -2,10 +2,12 @@ module FpInHaskell.Answers.GettingStarted.PolymorphicFunctions (
     findFirst,
     isSorted,
     partial1,
-    myCurry,
-    myUncurry,
+    curry,
+    uncurry,
     compose,
 ) where
+
+import Prelude hiding (curry, uncurry)
 
 -- こちらは多相版の `findFirst`。探している要素かどうかをテストする関数でパラメータ化されている。
 -- `String` をハードコードせず、型 `a` をパラメータとして受け取る。
@@ -37,17 +39,17 @@ isSorted gt as = go as
 partial1 :: a -> (a -> b -> c) -> b -> c
 partial1 x f y = f x y
 
--- Exercise 2.3: `myCurry` を実装せよ。
+-- Exercise 2.3: `curry` を実装せよ。
 -- `->` は右結合なので、戻り値の型は `a -> (b -> c)` とも書ける。
-myCurry :: ((a, b) -> c) -> a -> b -> c
-myCurry f x y = f (x, y)
+-- Prelude にも同名の `curry` があるため、ファイル冒頭の `import Prelude hiding (curry, uncurry)` で
+-- Prelude 側を読み込み対象から外している
+curry :: ((a, b) -> c) -> a -> b -> c
+curry f x y = f (x, y)
 
--- Exercise 2.4: `myUncurry` を実装せよ。
-myUncurry :: (a -> b -> c) -> (a, b) -> c
-myUncurry f (x, y) = f x y
+-- Exercise 2.4: `uncurry` を実装せよ。
+uncurry :: (a -> b -> c) -> (a, b) -> c
+uncurry f (x, y) = f x y
 
--- 補足: Prelude には `curry` と `uncurry` が用意されている。
---
 -- カリー化とアンカリー化は行き来できる。両者はある意味で「同じ」であり、
 -- FP の用語では _同型_ ("iso" = 同じ; "morphe" = 形、形式) と呼ぶ。
 -- これは圏論から受け継いだ用語だ。

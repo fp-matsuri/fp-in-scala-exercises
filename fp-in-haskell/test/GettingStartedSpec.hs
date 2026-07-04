@@ -3,9 +3,10 @@ module GettingStartedSpec (
 ) where
 
 import FpInHaskell.Exercises.GettingStarted.MyProgram (factorial, fib)
-import FpInHaskell.Exercises.GettingStarted.PolymorphicFunctions (compose, isSorted, myCurry, myUncurry)
+import FpInHaskell.Exercises.GettingStarted.PolymorphicFunctions (compose, curry, isSorted, uncurry)
 import FpInHaskell.Test.Common
 import Test.QuickCheck
+import Prelude hiding (curry, uncurry)
 
 prop_factorial :: Property
 prop_factorial = forAll genSmallInt $ \n ->
@@ -25,11 +26,11 @@ prop_isSorted_unsorted = forAll genUnsorted $ \xs ->
 
 prop_curry :: Property
 prop_curry = forAll (arbitrary :: Gen (Int, Int)) $ \(n, m) ->
-    myCurry (\(a, b) -> a * b) n m === n * m
+    curry (\(a, b) -> a * b) n m === n * m
 
 prop_uncurry :: Property
 prop_uncurry = forAll (arbitrary :: Gen (Int, Int)) $ \(n, m) ->
-    myUncurry (*) (n, m) === n * m
+    uncurry (*) (n, m) === n * m
 
 prop_compose :: Property
 prop_compose = forAll (arbitrary :: Gen (Int, Int)) $ \(n, m) ->
@@ -41,7 +42,7 @@ props =
     , ("MyProgram.fib", prop_fib)
     , ("PolymorphicFunctions.isSorted (sorted)", prop_isSorted_sorted)
     , ("PolymorphicFunctions.isSorted (unsorted)", prop_isSorted_unsorted)
-    , ("PolymorphicFunctions.myCurry", prop_curry)
-    , ("PolymorphicFunctions.myUncurry", prop_uncurry)
+    , ("PolymorphicFunctions.curry", prop_curry)
+    , ("PolymorphicFunctions.uncurry", prop_uncurry)
     , ("PolymorphicFunctions.compose", prop_compose)
     ]
