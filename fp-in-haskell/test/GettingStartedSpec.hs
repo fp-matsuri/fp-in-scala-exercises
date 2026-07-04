@@ -16,11 +16,11 @@ prop_fib = forAll genLengthOfFibonacciSeq $ \i ->
 
 prop_isSorted_sorted :: Property
 prop_isSorted_sorted = forAll genSorted $ \xs ->
-    isSorted xs (>) === True
+    isSorted (>) xs === True
 
 prop_isSorted_unsorted :: Property
 prop_isSorted_unsorted = forAll genUnsorted $ \xs ->
-    isSorted xs (>) === False
+    isSorted (>) xs === False
 
 prop_curry :: Property
 prop_curry = forAll (arbitrary :: Gen (Int, Int)) $ \(n, m) ->
