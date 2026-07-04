@@ -1,0 +1,6 @@
+(include_subdirs qualified)
+
+(library
+ (name exercises)
+ (flags
+  (:standard -w -unused-rec-flag)))
