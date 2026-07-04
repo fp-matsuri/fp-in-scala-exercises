@@ -2,7 +2,8 @@ module GettingStartedSpec (
     props,
 ) where
 
-import FpInHaskell.Exercises.GettingStarted (compose, factorial, fib, isSorted, myCurry, myUncurry)
+import FpInHaskell.Exercises.GettingStarted.MyProgram (factorial, fib)
+import FpInHaskell.Exercises.GettingStarted.PolymorphicFunctions (compose, isSorted, myCurry, myUncurry)
 import FpInHaskell.Test.Common
 import Test.QuickCheck
 

@@ -14,7 +14,7 @@ model: opus
 - 文字列整形は `show` と `++` で行い、`Text.Printf.printf` を使わない。
 - 標準出力は `print*` 関数の `putStrLn` が担い、確認は ghci で行う。
 - 出力メッセージは Scala 版と一致させる。
-- 複数の `object` は1モジュールに集約し、同名衝突する関数は型や用途を名前に付加して区別する（例: `findFirst` 単相版 → `findFirstString`）。
+- 複数の `object` は独立した題材ごとに個別モジュールへ分割する。
 - Scala の `(A, B) => C` はカリー化 `a -> b -> c` に対応づける。
 - リストなど主たる操作対象は最後の引数に置く。
 - 演習関数の本体は `undefined` とし、Answers のみ実装する。

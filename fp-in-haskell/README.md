@@ -22,7 +22,7 @@ make repl
 
 ```haskell
 -- 関数を呼び出す(例)
-ghci> import FpInHaskell.Answers.GettingStarted
+ghci> import FpInHaskell.Answers.GettingStarted.MyProgram
 ghci> factorial 5
 120
 
