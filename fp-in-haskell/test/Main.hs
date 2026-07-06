@@ -3,6 +3,7 @@ module Main (main) where
 import qualified DataStructuresSpec
 import qualified ErrorHandlingSpec
 import qualified GettingStartedSpec
+import qualified LazinessSpec
 import System.Exit (exitFailure, exitSuccess)
 import Test.QuickCheck (isSuccess, quickCheckResult)
 
@@ -11,7 +12,11 @@ main = do
     results <-
         mapM
             runProp
-            (GettingStartedSpec.props ++ DataStructuresSpec.props ++ ErrorHandlingSpec.props)
+            ( GettingStartedSpec.props
+                ++ DataStructuresSpec.props
+                ++ ErrorHandlingSpec.props
+                ++ LazinessSpec.props
+            )
     if all isSuccess results
         then exitSuccess
         else exitFailure

@@ -17,6 +17,7 @@ library
     FpInHaskell.Answers.GettingStarted.MyProgram
     FpInHaskell.Answers.GettingStarted.PolymorphicFunctions
     FpInHaskell.Answers.GettingStarted.TestFib
+    FpInHaskell.Answers.Laziness.LazyList
     FpInHaskell.Exercises.DataStructures.List
     FpInHaskell.Exercises.DataStructures.Tree
     FpInHaskell.Exercises.ErrorHandling.Either
@@ -27,6 +28,7 @@ library
     FpInHaskell.Exercises.GettingStarted.MyProgram
     FpInHaskell.Exercises.GettingStarted.PolymorphicFunctions
     FpInHaskell.Exercises.GettingStarted.TestFib
+    FpInHaskell.Exercises.Laziness.LazyList
   build-depends:    base >=4.2 && <5
   default-language: Haskell2010
 
@@ -39,6 +41,7 @@ test-suite fp-in-haskell-test
     ErrorHandlingSpec
     FpInHaskell.Test.Common
     GettingStartedSpec
+    LazinessSpec
   build-depends:
     base         >=4.2 && <5,
     QuickCheck,

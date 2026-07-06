@@ -15,6 +15,7 @@ module FpInHaskell.Test.Common (
     genIntOption,
     genEither,
     genStringIntEither,
+    fromLazyList,
 ) where
 
 import Data.List (sort)
@@ -22,6 +23,7 @@ import FpInHaskell.Exercises.DataStructures.List (List (Cons, Nil))
 import FpInHaskell.Exercises.DataStructures.Tree (Tree (Branch, Leaf))
 import FpInHaskell.Exercises.ErrorHandling.Either (Either (Left, Right))
 import FpInHaskell.Exercises.ErrorHandling.Option (Option (None, Some))
+import qualified FpInHaskell.Exercises.Laziness.LazyList as LZ
 import Test.QuickCheck hiding (Some)
 import Prelude hiding (Either (..))
 
@@ -105,3 +107,15 @@ genEither genE genA = oneof [Left <$> genE, Right <$> genA]
 
 genStringIntEither :: Gen (Either String Int)
 genStringIntEither = genEither arbitrary arbitrary
+
+-- Laziness 章 (LazyList) 向けのブリッジ関数。
+-- `LazyList` の構築子は `List` と同じ名前(`Cons`)を使うため、ここでは `LZ.` で修飾 import している。
+--
+-- `LazyList` は `ones`/`fibs` のように無限になりうるため、`Show`/`Eq` を導出していない
+-- (導出すると無限リストの比較・表示が停止しなくなる)。QuickCheck の `forAll` は生成する値に
+-- `Show` を要求するため、`LazyList` を直接 `forAll` に渡すことができない。そのため、
+-- テストでは常に `Show` を持つ Prelude の `[a]` を `forAll` で生成し、この `fromLazyList` で
+-- `LazyList a` に変換してから演習の関数に渡す(逆方向の変換である `toList` はそれ自体が
+-- 演習 5.1 なので、ライブラリ側で提供される)。
+fromLazyList :: [a] -> LZ.LazyList a
+fromLazyList = foldr LZ.Cons LZ.Empty
