@@ -7,6 +7,8 @@ module FpInHaskell.Answers.State.Candy (
 import FpInHaskell.Answers.State.State (State, get, modify, traverse)
 import Prelude hiding (traverse)
 
+-- State.hs で自作した `traverse`(State モナドを使う版)を使うため、Prelude の `traverse`
+-- (Traversable/Applicative に対する汎用版)を読み込み対象から外している。
 data Input = Coin | Turn
     deriving (Show, Eq)
 
