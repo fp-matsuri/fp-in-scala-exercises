@@ -48,6 +48,9 @@ instance Functor (State s) where
 
 instance Applicative (State s) where
     pure = unit
+
+    -- ここでの `$` は括弧を避けるための記法ではなく、「関数を引数に適用する」という演算そのものを
+    -- 値として `map2` に渡している。`map2 (\f x -> f x) sf sa` と同じ意味になる。
     sf <*> sa = map2 ($) sf sa
 
 instance Monad (State s) where
