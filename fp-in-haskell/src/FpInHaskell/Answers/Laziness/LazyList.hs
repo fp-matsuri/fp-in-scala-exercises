@@ -37,14 +37,9 @@ module FpInHaskell.Answers.Laziness.LazyList (
 import Data.Maybe (isJust)
 import Prelude hiding (drop, filter, map, take, takeWhile, zipWith)
 
--- `LazyList` 型。Scala 版は `Cons(h: () => A, t: () => LazyList[A])` のように、
--- 先頭要素・残りのリストの両方を明示的なサンク(`() => ...` という引数なし関数)として持つ。
--- Scala/OCaml/SML は既定で正格評価なので、こうしないと `Cons` を作った瞬間に両方の引数を
--- 評価しようとしてしまい、無限リストが作れない。
---
--- 一方 Haskell は既定で非正格評価であり、データ構築子のフィールドはどれも自動的に
--- 評価が遅延される。そのため `Cons a (LazyList a)` と素直に書くだけで、Scala 版の
--- 明示的なサンクや、それを扱うための `cons` スマートコンストラクタ相当のものが一切不要になる。
+-- `LazyList` 型。データ構築子のフィールドは Haskell の既定である非正格評価によって
+-- 自動的に評価が遅延されるため、`Cons a (LazyList a)` と素直に書くだけで無限リストを
+-- 表現できる。明示的なサンクや、それを扱うための `cons` スマートコンストラクタは一切不要になる。
 --
 -- また、`ones`/`fibs` のように無限になりうる値を含むため、`deriving (Eq, Show)` はしない
 -- (無限リストの構造的な等値比較や表示は停止しない)。テストでは必ず `take n` で有限に
@@ -53,10 +48,8 @@ data LazyList a
     = Empty
     | Cons a (LazyList a)
 
--- Scala 版は `z: => B` と `f: (A, => B) => B` のように、初期値と `f` の第2引数を明示的に
--- 非正格(by-name)にしている。これは、無限リストに対して途中で畳み込みを打ち切れるようにするための
--- 工夫だ。Haskell では関数の引数は既定で非正格なので、そのような注釈は一切不要で、
--- 以下の素直な定義がそのまま同じ効果を持つ。
+-- 関数の引数は既定で非正格なので、初期値と `f` の第2引数は実際に必要とされるまで評価されない。
+-- これにより、無限リストに対しても途中で畳み込みを打ち切れる。
 foldRight :: (a -> b -> b) -> b -> LazyList a -> b
 foldRight _ z Empty = z
 foldRight f z (Cons x xs) = f x (foldRight f z xs)
@@ -64,7 +57,7 @@ foldRight f z (Cons x xs) = f x (foldRight f z xs)
 -- `p a || b` の `||` は第2引数を非正格に扱うため、`p a` が `True` になった時点で `b`
 -- (残りの畳み込み)は評価されず、無限リストに対しても停止する。
 exists :: (a -> Bool) -> LazyList a -> Bool
-exists p = foldRight (\a b -> p a || b) False
+exists p = foldRight (\x acc -> p x || acc) False
 
 find :: (a -> Bool) -> LazyList a -> Maybe a
 find _ Empty = Nothing
@@ -97,20 +90,19 @@ takeWhile _ _ = Empty
 --
 -- `&&` が第2引数を非正格に扱うため、条件を満たさない要素が見つかった時点で停止する。
 forAll :: (a -> Bool) -> LazyList a -> Bool
-forAll p = foldRight (\a b -> p a && b) True
+forAll p = foldRight (\x acc -> p x && acc) True
 
 -- Exercise 5.5: `foldRight` を用いて `takeWhile` を実装せよ。
 --
--- 原典 Scala 版ではこの設問に対応するスタブは exercises 側に存在しない
+-- 原典ではこの設問に対応するスタブは exercises 側に存在しない
 -- (3.7/3.8 と同様、考察のみで済ませてもよい位置づけ)。ここでは参考実装として Answers にのみ置く。
 takeWhileViaFoldRight :: (a -> Bool) -> LazyList a -> LazyList a
-takeWhileViaFoldRight p = foldRight (\a acc -> if p a then Cons a acc else Empty) Empty
+takeWhileViaFoldRight p = foldRight (\x acc -> if p x then Cons x acc else Empty) Empty
 
 -- Exercise 5.6: `foldRight` を用いて先頭要素を返す関数 `headOption` を実装せよ。
 --
--- 戻り値は ch4 で自作した `Option` ではなく Prelude の `Maybe` を使う。原典 Scala 版もこのファイルは
--- 標準ライブラリの `Option` を使っており(ch4 の自作 `Option` を隠す import はない)、
--- 章をまたいだ依存を持ち込まないためにも Prelude の `Maybe` を使うのが自然。
+-- 戻り値は ch4 で自作した `Option` ではなく Prelude の `Maybe` を使う。章をまたいだ依存を
+-- 持ち込まないためだ。
 headOption :: LazyList a -> Maybe a
 headOption = foldRight (\h _ -> Just h) Nothing
 
@@ -129,15 +121,14 @@ append xs ys = foldRight Cons ys xs
 flatMap :: (a -> LazyList b) -> LazyList a -> LazyList b
 flatMap f = foldRight (\h acc -> append (f h) acc) Empty
 
--- 1を無限に繰り返す遅延リスト。Scala 版は `lazy val ones = LazyList.cons(1, ones)` のように
--- メモ化のための `cons` を介する必要があるが、Haskell では通常の自己参照的な定義がそのまま
--- 正しく動作し、`ones` を強制評価するたびに同じ先頭サンクが使い回される。
+-- 1を無限に繰り返す遅延リスト。通常の自己参照的な定義がそのまま正しく動作し、
+-- `ones` を強制評価するたびに同じ先頭サンクが使い回される。
 ones :: LazyList Int
 ones = Cons 1 ones
 
 -- Exercise 5.8: 任意の値を無限に繰り返す遅延リストを生成する関数 `continually` を定義せよ。
 continually :: a -> LazyList a
-continually a = single where single = Cons a single
+continually x = single where single = Cons x single
 
 -- Exercise 5.9: `n` から1ずつ増える無限の遅延リストを生成する関数 `from` を定義せよ。
 from :: Int -> LazyList Int
@@ -156,7 +147,7 @@ fibs = go 0 1
 -- (関数、初期状態の順)。
 unfold :: (s -> Maybe (a, s)) -> s -> LazyList a
 unfold f state = case f state of
-    Just (h, s) -> Cons h (unfold f s)
+    Just (h, state') -> Cons h (unfold f state')
     Nothing -> Empty
 
 -- Exercise 5.12: `unfold` を用いて `fibs`, `from`, `continually`, `ones` を実装せよ。
@@ -167,7 +158,7 @@ fromViaUnfold :: Int -> LazyList Int
 fromViaUnfold = unfold (\n -> Just (n, n + 1))
 
 continuallyViaUnfold :: a -> LazyList a
-continuallyViaUnfold a = unfold (const (Just (a, ()))) ()
+continuallyViaUnfold x = unfold (const (Just (x, ()))) ()
 
 onesViaUnfold :: LazyList Int
 onesViaUnfold = unfold (const (Just (1, ()))) ()
@@ -233,12 +224,11 @@ tails xs = append (unfold step xs) (Cons Empty Empty)
 --
 -- `foldRight` の型変数 `b` を「今の畳み込み結果」と「そこまでの中間結果を集めた LazyList」の
 -- ペアにインスタンス化し、1回の畳み込みで両方を計算してから、最後にペアの2番目だけを取り出す。
--- Scala 版は by-name引数を2回参照することになるため `lazy val` で明示的にメモ化する必要があるが、
--- Haskell では通常の変数参照がそのまま共有されるので、そのようなおまじないは不要。
+-- 通常の変数参照がそのまま共有されるので、値を2回使い回すための特別な工夫は不要。
 scanRight :: (a -> b -> b) -> b -> LazyList a -> LazyList b
 scanRight f z = snd . foldRight step (z, Cons z Empty)
   where
-    step a (b, bs) = let b' = f a b in (b', Cons b' bs)
+    step x (acc, accs) = let acc' = f x acc in (acc', Cons acc' accs)
 
 -- `tails`/`startsWith` を組み合わせた、部分列判定。演習番号はないが(3.24 の List.hasSubsequence
 -- に相当する)、Answers ではテスト対象として実装しておく。

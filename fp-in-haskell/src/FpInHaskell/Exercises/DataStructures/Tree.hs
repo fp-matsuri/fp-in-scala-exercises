@@ -21,9 +21,7 @@ data Tree a
     | Branch (Tree a) (Tree a)
     deriving (Show, Eq)
 
--- Scala 版はインスタンスメソッド `Tree[A].size` とコンパニオンの関数 `Tree.size(t)` の
--- 2通りを用意しているが、これはメソッド呼び出しとトップレベル関数呼び出しという Scala 特有の
--- 使い分けを示すためのものだ。Haskell にはメソッド/関数の区別自体がないため、1つの定義で足りる。
+-- ツリー全体を再帰的に辿り、含まれるノード(リーフとブランチ)の総数を数える。
 size :: Tree a -> Int
 size (Leaf _) = 1
 size (Branch l r) = 1 + size l + size r
@@ -54,8 +52,8 @@ depthViaFold = undefined
 mapViaFold :: (a -> b) -> Tree a -> Tree b
 mapViaFold = undefined
 
--- Scala 版では Exercise 3.25 の `maximum` の前に、同じ拡張メソッドの仕組みを示す例として
--- `firstPositive` が(演習番号なしで)スタブのまま置かれている。ここでも同様に扱う。
+-- 原典では Exercise 3.25 の `maximum` の前に、同種の関数の例として `firstPositive` が
+-- 演習番号なしのスタブとして置かれている。ここでも同様に扱う。
 
 firstPositive :: Tree Int -> Int
 firstPositive = undefined

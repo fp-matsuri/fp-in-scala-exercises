@@ -35,17 +35,17 @@ data Option a
 -- Prelude の `map` と同じ引数順(関数、Option の順)。
 map :: (a -> b) -> Option a -> Option b
 map _ None = None
-map f (Some a) = Some (f a)
+map f (Some x) = Some (f x)
 
 -- Prelude の `Data.Maybe.fromMaybe` と同じ引数順(デフォルト値、Option の順)。
 getOrElse :: a -> Option a -> a
 getOrElse def None = def
-getOrElse _ (Some a) = a
+getOrElse _ (Some x) = x
 
 -- Prelude の `traverse`/`>>=` と同じく、関数を先、Option を最後に置く。
 flatMap :: (a -> Option b) -> Option a -> Option b
 flatMap _ None = None
-flatMap f (Some a) = f a
+flatMap f (Some x) = f x
 
 -- 第1引数がフォールバック、第2引数が本体の Option。
 orElse :: Option a -> Option a -> Option a
@@ -53,27 +53,23 @@ orElse fallback None = fallback
 orElse _ some = some
 
 filter :: (a -> Bool) -> Option a -> Option a
-filter p (Some a) | p a = Some a
+filter p (Some x) | p x = Some x
 filter _ _ = None
 
--- Scala/OCaml 版はこの関数の型を `Int -> Int` のまま例外を捕捉できるが、Haskell には
--- 純粋な関数の中で `error`(回復不能な実行時エラーを表す機構)を安全に捕捉する手段がない。
+-- 純粋な関数の中で `error`(回復不能な実行時エラーを表す機構)を安全に捕捉する手段はない。
 -- 捕捉するには `IO` の中で `evaluate`/`catch` を使う必要があり、そのぶん戻り値の型も
 -- `IO Int` にせざるを得ない。これは、この章が教える「失敗は Option/Either で表現し、
--- 例外機構には頼らない」という教訓を、Haskell の型システムがさらに徹底して強制している例だと言える。
+-- 例外機構には頼らない」という教訓を、型システムがさらに徹底して強制している例だと言える。
 --
 -- また、Haskell は既定で非正格評価なので、`let y = error "fail!"` はこの束縛の時点では
--- 評価されない(Scala 版は `val y: Int = throw ...` の時点で即座に例外が飛ぶ)。
--- 例外が実際に飛ぶのは `evaluate` が `42 + 5 + y` を強制評価する瞬間で、
--- Scala 版よりも例外発生のタイミングが遅い。
+-- 評価されない。例外が実際に飛ぶのは `evaluate` が `42 + 5 + y` を強制評価する瞬間だ。
 failingFn :: Int -> IO Int
 failingFn _i =
     let y = error "fail!" :: Int
      in evaluate (42 + 5 + y) `catch` \(_ :: SomeException) -> return 43
 
--- こちらは `y` という名前を介さず、式の中に直接例外を埋め込んでいる。Haskell では
--- 非正格評価のため、`failingFn` との「例外が飛ぶタイミングの違い」は(Scala版と異なり)
--- 実質的になくなる。どちらも `evaluate` が式全体を強制するまで例外は飛ばない。
+-- こちらは `y` という名前を介さず、式の中に直接例外を埋め込んでいる。`failingFn` と同様、
+-- `evaluate` が式全体を強制するまで例外は飛ばない。
 failingFn2 :: Int -> IO Int
 failingFn2 _i =
     evaluate (42 + 5 + (error "fail!" :: Int)) `catch` \(_ :: SomeException) -> return 43
@@ -93,7 +89,7 @@ variance xs = flatMap (\m -> mean (fmap (\x -> (x - m) ** 2) xs)) (mean xs)
 -- Exercise 4.3: 2つの Option 値がともに `Some` なら、2つの値に関数 `f` を適用する関数 `map2` を定義せよ。
 -- どちらかが `None` なら結果も `None` になる。
 map2 :: (a -> b -> c) -> Option a -> Option b -> Option c
-map2 f oa ob = flatMap (\a -> map (f a) ob) oa
+map2 f oa ob = flatMap (\x -> map (f x) ob) oa
 
 -- Exercise 4.4: Option のリストをリストの Option に変換する関数 `sequence` を定義せよ。
 sequence :: [Option a] -> Option [a]

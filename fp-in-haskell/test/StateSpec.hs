@@ -24,8 +24,8 @@ genLengthOfList = choose (-5, 20)
 isInInterval :: Double -> Bool
 isInInterval d = 0 <= d && d < 1
 
--- Scala 版 `checkRND` に相当する。`gen` を `counter` 回繰り返し適用し、各結果が `isCorrect` を
--- 満たすこと、かつ連続する2回の結果が(ほぼ確実に)一致しないことを確認する。
+-- `gen` を `counter` 回繰り返し適用し、各結果が `isCorrect` を満たすこと、
+-- かつ連続する2回の結果が(ほぼ確実に)一致しないことを確認する。
 checkRand :: (Eq a) => RNG -> Int -> (RNG -> (a, RNG)) -> (a -> Bool) -> Bool
 checkRand rng0 counter0 gen isCorrect = go rng0 counter0 Nothing
   where
@@ -36,8 +36,7 @@ checkRand rng0 counter0 gen isCorrect = go rng0 counter0 Nothing
 
 -- `checkRand` から連続する2回の結果が一致しないことの確認を除いたもの。
 -- `RNG.unit`(常に同じ定数を返す)や `RNG.nonNegativeLessThan`(`limit` が小さいと
--- 偶然の一致がありうる)のように、そもそも連続する値が一致しうる場合に使う
--- (Scala 版が `checkRNGUnit`/`checkRNGNonNegativeLessThan` を別に用意しているのと同じ理由)。
+-- 偶然の一致がありうる)のように、そもそも連続する値が一致しうる場合に使う。
 checkRandRange :: RNG -> Int -> (RNG -> (a, RNG)) -> (a -> Bool) -> Bool
 checkRandRange rng0 counter0 gen isCorrect = go rng0 counter0
   where
@@ -95,7 +94,7 @@ prop_RNG_int :: Property
 prop_RNG_int = forAll ((,) <$> genRNG <*> genCounter) $ \(rng, counter) ->
     checkRand rng counter RNG.int (const True)
 
--- Scala 版の `checkRNGUnit` に相当。`unit` は状態に関わらず常に同じ値を返す。
+-- `unit` は状態に関わらず常に同じ値を返す。
 prop_RNG_unit :: Property
 prop_RNG_unit = forAll ((,) <$> genRNG <*> genCounter) $ \(rng, counter) ->
     checkRandRange rng counter (RNG.unit (42 :: Int)) (== 42)
@@ -104,8 +103,7 @@ prop_RNG_map :: Property
 prop_RNG_map = forAll ((,) <$> genRNG <*> genCounter) $ \(rng, counter) ->
     checkRand rng counter (RNG.map show RNG.int) (\s -> case readMaybe s :: Maybe Int of Just _ -> True; Nothing -> False)
 
--- Scala 本家はこの `_double`(このポートでの `doubleViaMap`)のテストをコメントアウトしているが、
--- 実際の演習(6.5)なのでテストする。
+-- 原典ではこの相当のテストがコメントアウトされているが、実際の演習(6.5)なのでテストする。
 prop_RNG_doubleViaMap :: Property
 prop_RNG_doubleViaMap = forAll ((,) <$> genRNG <*> genCounter) $ \(rng, counter) ->
     checkRand rng counter RNG.doubleViaMap isInInterval
@@ -135,7 +133,7 @@ prop_RNG_map2ViaFlatMap = forAll ((,) <$> genRNG <*> genCounter) $ \(rng, counte
     checkRand rng counter (RNG.map2ViaFlatMap (,) RNG.double RNG.double) $ \(d1, d2) ->
         isInInterval d1 && isInInterval d2 && d1 /= d2
 
--- State.hs のテスト。Scala 版に倣い、文字列のリストを状態とする2つの State 値を使う。
+-- State.hs のテスト。文字列のリストを状態とする2つの State 値を使う。
 genStringListPlain :: Gen [String]
 genStringListPlain = listOf (listOf (choose ('a', 'z')))
 
@@ -196,7 +194,7 @@ prop_State_sequence = forAll genStringListPlain $ \list ->
         (first, rest) = splitAt half list
      in (firstHalfElements, restElements) === (map Just first, rest)
 
--- `traverse` は Scala 版のテストにはないが、演習6.10の一部なのでテストする。
+-- `traverse` は演習6.10の一部として独自にテストする。
 -- 状態(カウンタ)を1つずつ増やしながら、その時点のカウンタ値を集める。
 prop_State_traverse :: Property
 prop_State_traverse = forAll (listOf (arbitrary :: Gen ())) $ \xs ->

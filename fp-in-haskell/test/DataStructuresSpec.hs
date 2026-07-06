@@ -103,8 +103,7 @@ prop_addPairwise :: Property
 prop_addPairwise = forAll ((,) <$> genIntDataList <*> genIntDataList) $ \(l1, l2) ->
     toDataList (List.addPairwise l1 l2) === zipWith (+) (toDataList l1) (toDataList l2)
 
--- Scala 版はコンパイラの型推論の制約でこの相当のテストがコメントアウトされているが、
--- Haskell 版は `zipWith` のシグネチャを最初から確定させているため、そのままテストできる。
+-- `zipWith` はシグネチャを最初から確定させているため、そのままテストできる。
 prop_zipWith :: Property
 prop_zipWith = forAll ((,) <$> genIntDataList <*> genIntDataList) $ \(l1, l2) ->
     toDataList (List.zipWith (*) l1 l2) === zipWith (*) (toDataList l1) (toDataList l2)

@@ -18,9 +18,8 @@ import Control.Exception (ArithException (DivideByZero), SomeException, catch, e
 import Prelude hiding (Either (..), either, map, sequence, traverse)
 
 -- `Either` 型。Prelude にも同名の型と `either` 関数があるため hide している。
--- Scala 版に倣い、右側(`Right`)を正常値として扱う right-biased な設計にする
--- (Prelude の `Either` の `Functor`/`Monad` インスタンスも同じく right-biased なので、
--- 実は考え方は完全に共通している)。
+-- 右側(`Right`)を正常値として扱う right-biased な設計にする
+-- (Prelude の `Either` の `Functor`/`Monad` インスタンスも同じく right-biased である)。
 data Either e a
     = Left e
     | Right a
@@ -59,12 +58,12 @@ safeDiv :: Int -> Int -> Either ArithException Int
 safeDiv _ 0 = Left DivideByZero
 safeDiv x y = Right (x `div` y)
 
--- Scala 版は `a: => A`(遅延評価される任意の式)を受け取り、例外を捕捉して `Either` に変換する。
--- Haskell では、任意の式を安全に捕捉するには `IO` の中で `evaluate`/`catch` を使うしかない。
+-- 任意の式を評価し、例外を捕捉して `Either` に変換する。`safeDiv` のように特定の失敗条件だけを
+-- 見る形にはできない汎用的な捕捉なので、`IO` の中で `evaluate`/`catch` を使うしかない。
 catchNonFatal :: a -> IO (Either SomeException a)
-catchNonFatal a = (Right <$> evaluate a) `catch` (return . Left)
+catchNonFatal x = (Right <$> evaluate x) `catch` (return . Left)
 
--- 原典 Scala 版ではここに演習番号は振られていないが(Tree.firstPositive と同様、番号なしのスタブ)、
+-- 原典ではここに演習番号は振られていないが(Tree.firstPositive と同様、番号なしのスタブ)、
 -- 実際にはテスト対象の演習である。誤りを蓄積する版の `map2All`/`traverseAll`/`sequenceAll` を実装せよ。
 -- `Left` の中身をリストにして、両方失敗していれば連結する。
 

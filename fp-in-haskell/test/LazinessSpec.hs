@@ -15,7 +15,7 @@ import Test.QuickCheck
 -- そのため、ここでは常に `Show` を持つ Prelude の `[Int]` を `forAll` で生成し、プロパティの中で
 -- `fromLazyList` を使って `LazyList Int` に変換してから演習の関数に渡す。
 --
--- また、Scala 本家の LazyListSuite 自身が map/filter/append/flatMap/zipWith/zipAll/tails/
+-- また、原典の LazyListSuite 自身が map/filter/append/flatMap/zipWith/zipAll/tails/
 -- scanRight/hasSubsequence とその ViaUnfold 系のテストをコメントアウトしている
 -- (おそらく自作の PBT エンジンでの記述が難しかったため)。ここでは QuickCheck を使い、
 -- それらも含めて全演習をテストする。

@@ -55,11 +55,10 @@ orElse = undefined
 filter :: (a -> Bool) -> Option a -> Option a
 filter = undefined
 
--- Scala/OCaml 版はこの関数の型を `Int -> Int` のまま例外を捕捉できるが、Haskell には
--- 純粋な関数の中で `error`(回復不能な実行時エラーを表す機構)を安全に捕捉する手段がない。
+-- 純粋な関数の中で `error`(回復不能な実行時エラーを表す機構)を安全に捕捉する手段はない。
 -- 捕捉するには `IO` の中で `evaluate`/`catch` を使う必要があり、そのぶん戻り値の型も
 -- `IO Int` にせざるを得ない。これは、この章が教える「失敗は Option/Either で表現し、
--- 例外機構には頼らない」という教訓を、Haskell の型システムがさらに徹底して強制している例だと言える。
+-- 例外機構には頼らない」という教訓を、型システムがさらに徹底して強制している例だと言える。
 failingFn :: Int -> IO Int
 failingFn _i =
     let y = error "fail!" :: Int

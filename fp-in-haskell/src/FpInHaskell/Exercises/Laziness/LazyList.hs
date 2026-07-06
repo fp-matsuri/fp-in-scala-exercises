@@ -35,14 +35,9 @@ module FpInHaskell.Exercises.Laziness.LazyList (
 
 import Prelude hiding (drop, filter, map, take, takeWhile, zipWith)
 
--- `LazyList` 型。Scala 版は `Cons(h: () => A, t: () => LazyList[A])` のように、
--- 先頭要素・残りのリストの両方を明示的なサンク(`() => ...` という引数なし関数)として持つ。
--- Scala/OCaml/SML は既定で正格評価なので、こうしないと `Cons` を作った瞬間に両方の引数を
--- 評価しようとしてしまい、無限リストが作れない。
---
--- 一方 Haskell は既定で非正格評価であり、データ構築子のフィールドはどれも自動的に
--- 評価が遅延される。そのため `Cons a (LazyList a)` と素直に書くだけで、Scala 版の
--- 明示的なサンクや、それを扱うための `cons` スマートコンストラクタ相当のものが一切不要になる。
+-- `LazyList` 型。データ構築子のフィールドは Haskell の既定である非正格評価によって
+-- 自動的に評価が遅延されるため、`Cons a (LazyList a)` と素直に書くだけで無限リストを
+-- 表現できる。明示的なサンクや、それを扱うための `cons` スマートコンストラクタは一切不要になる。
 --
 -- また、`ones`/`fibs` のように無限になりうる値を含むため、`deriving (Eq, Show)` はしない
 -- (無限リストの構造的な等値比較や表示は停止しない)。テストでは必ず `take n` で有限に
@@ -51,10 +46,8 @@ data LazyList a
     = Empty
     | Cons a (LazyList a)
 
--- Scala 版は `z: => B` と `f: (A, => B) => B` のように、初期値と `f` の第2引数を明示的に
--- 非正格(by-name)にしている。これは、無限リストに対して途中で畳み込みを打ち切れるようにするための
--- 工夫だ。Haskell では関数の引数は既定で非正格なので、そのような注釈は一切不要で、
--- 以下の素直な定義がそのまま同じ効果を持つ。
+-- 関数の引数は既定で非正格なので、初期値と `f` の第2引数は実際に必要とされるまで評価されない。
+-- これにより、無限リストに対しても途中で畳み込みを打ち切れる。
 foldRight :: (a -> b -> b) -> b -> LazyList a -> b
 foldRight _ z Empty = z
 foldRight f z (Cons x xs) = f x (foldRight f z xs)
@@ -62,7 +55,7 @@ foldRight f z (Cons x xs) = f x (foldRight f z xs)
 -- `p a || b` の `||` は第2引数を非正格に扱うため、`p a` が `True` になった時点で `b`
 -- (残りの畳み込み)は評価されず、無限リストに対しても停止する。
 exists :: (a -> Bool) -> LazyList a -> Bool
-exists p = foldRight (\a b -> p a || b) False
+exists p = foldRight (\x acc -> p x || acc) False
 
 find :: (a -> Bool) -> LazyList a -> Maybe a
 find _ Empty = Nothing
@@ -99,9 +92,8 @@ forAll = undefined
 
 -- Exercise 5.6: `foldRight` を用いて先頭要素を返す関数 `headOption` を実装せよ。
 --
--- 戻り値は ch4 で自作した `Option` ではなく Prelude の `Maybe` を使う。原典 Scala 版もこのファイルは
--- 標準ライブラリの `Option` を使っており(ch4 の自作 `Option` を隠す import はない)、
--- 章をまたいだ依存を持ち込まないためにも Prelude の `Maybe` を使うのが自然。
+-- 戻り値は ch4 で自作した `Option` ではなく Prelude の `Maybe` を使う。章をまたいだ依存を
+-- 持ち込まないためだ。
 
 headOption :: LazyList a -> Maybe a
 headOption = undefined
@@ -122,9 +114,8 @@ append = undefined
 flatMap :: (a -> LazyList b) -> LazyList a -> LazyList b
 flatMap = undefined
 
--- 1を無限に繰り返す遅延リスト。Scala 版は `lazy val ones = LazyList.cons(1, ones)` のように
--- メモ化のための `cons` を介する必要があるが、Haskell では通常の自己参照的な定義がそのまま
--- 正しく動作し、`ones` を強制評価するたびに同じ先頭サンクが使い回される。
+-- 1を無限に繰り返す遅延リスト。通常の自己参照的な定義がそのまま正しく動作し、
+-- `ones` を強制評価するたびに同じ先頭サンクが使い回される。
 ones :: LazyList Int
 ones = Cons 1 ones
 

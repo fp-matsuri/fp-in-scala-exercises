@@ -1,6 +1,5 @@
 -- `result` の case 式は、GHC がリテラルからなる分岐を静的に「冗長」と判定して警告を出す
--- (実行される枝が1つに決まってしまうため)。Scala 版もここで `@annotation.nowarn` を使って
--- 同種の警告を抑制しているので、GHC 側もファイル単位でこの警告を抑制しておく。
+-- (実行される枝が1つに決まってしまうため)。この警告をファイル単位で抑制しておく。
 {-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 
 module FpInHaskell.Exercises.DataStructures.List (
@@ -76,8 +75,7 @@ product (Cons x xs) = x * product xs
 
 -- Exercise 3.1: 以下の式 `result` の評価結果は何になるか?(推測してから ghci で確認してみよう)
 --
--- Scala 版は可変長引数の `List(1, 2, 3, 4, 5)` でリストを作れるが、
--- Haskell にはその糖衣構文がないため、ここでは `Cons` を直接ネストして書く。
+-- Haskell にはリストリテラルを直接書く糖衣構文がないため、ここでは `Cons` を直接ネストして書く。
 result :: Int
 result = case Cons 1 (Cons 2 (Cons 3 (Cons 4 (Cons 5 Nil)))) of
     Cons x (Cons 2 (Cons 4 _)) -> x
@@ -91,9 +89,8 @@ append Nil a2 = a2
 append (Cons h t) a2 = Cons h (append t a2)
 
 -- Prelude の `foldr` と同じ引数順（関数、初期値、リストの順）に揃えてある。
--- Scala 版は `foldRight(as, acc, f)` のようにリストが先頭の引数だが、Haskell では畳み込み対象の
--- データ構造を最後の引数に置くのが自然で、部分適用や `.` によるポイントフリーな関数合成がしやすくなる
--- （`sumViaFoldRight`/`productViaFoldRight` の定義を見比べてみてほしい）。
+-- 畳み込み対象のデータ構造を最後の引数に置くと、部分適用や `.` によるポイントフリーな関数合成が
+-- しやすくなる（`sumViaFoldRight`/`productViaFoldRight` の定義を見比べてみてほしい）。
 foldRight :: (a -> b -> b) -> b -> List a -> b
 foldRight _ z Nil = z
 foldRight f z (Cons x xs) = f x (foldRight f z xs)
@@ -135,7 +132,7 @@ init = undefined
 
 -- Exercise 3.7: `foldRight` によるリストの走査を途中で打ち切る(短絡的に結果を返す)ことは可能か? それはなぜか?
 --
--- (Haskell は非正格評価なので、Scala版の解答と結論が変わる。答え合わせは Answers を参照)
+-- (答え合わせは Answers を参照)
 
 -- Exercise 3.8: `foldRight` の引数の初期値に `Nil`、関数に `Cons` を与えるとどのような結果が得られるか?
 -- (推測してから ghci で確認してみよう)
@@ -225,7 +222,6 @@ addPairwise = undefined
 -- Exercise 3.23: `addPairwise` を一般化して、リスト `a`, `b` をそれぞれ先頭から順に取り出して対応する要素に
 -- 関数 `f` を適用して得られたリストを返す関数 `zipWith` を定義せよ。
 --
--- 原典 Scala 版ではシグネチャ自体が演習の一部で、学習者が型を決めることになっているが、
 -- Haskell では関数に明示的な型シグネチャが必須なので、ここでは Prelude の `zipWith` と同じ形
 -- （関数、2つのリストの順）で確定させている。
 

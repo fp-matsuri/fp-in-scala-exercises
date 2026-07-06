@@ -27,8 +27,7 @@ data Machine = Machine {locked :: Bool, candies :: Int, coins :: Int}
 --   - 販売機にキャンディが残っていない(candies = 0)とき、コインを投入し(Coin)ても
 --     ノブを回し(Turn)ても販売機は反応しない
 --
--- Scala 版は for-comprehension、こちらは State.hs で用意した Monad インスタンスのおかげで
--- 同じ形の do 記法で書ける。
+-- State.hs で用意した Monad インスタンスのおかげで do 記法で書ける。
 simulateMachine :: [Input] -> State Machine (Int, Int)
 simulateMachine inputs = do
     _ <- traverse (\i -> modify (update i)) inputs
