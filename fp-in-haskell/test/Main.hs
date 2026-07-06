@@ -1,12 +1,13 @@
 module Main (main) where
 
-import GettingStartedSpec (props)
+import qualified DataStructuresSpec
+import qualified GettingStartedSpec
 import System.Exit (exitFailure, exitSuccess)
 import Test.QuickCheck (isSuccess, quickCheckResult)
 
 main :: IO ()
 main = do
-    results <- mapM runProp props
+    results <- mapM runProp (GettingStartedSpec.props ++ DataStructuresSpec.props)
     if all isSuccess results
         then exitSuccess
         else exitFailure

@@ -13,3 +13,14 @@
 # 冗長な if 式の警告を抑制
 # 例: `if c then False else e` → `not c && e`
 - ignore: { name: "Redundant if" }
+
+# ラムダ式をポイントフリー形式へ簡略化する警告を抑制
+# 例: `\x acc -> Cons (show x) acc` → `Cons . show`、`\acc h -> Cons h acc` → `flip Cons`
+# `foldRight`/`foldLeft` に渡す関数の引数(累積値と要素)を明示した形のほうが、
+# 畳み込みの動きを追いやすいと考え、あえてポイントフリーにしない
+- ignore: { name: "Avoid lambda" }
+
+# concat . map を concatMap へ簡略化する警告を抑制
+# `flatMap` は演習の意図として、既存の `concat` と `map` を組み合わせて定義することを求めているため、
+# 単一の `concatMap` にまとめない
+- ignore: { name: "Use concatMap" }
