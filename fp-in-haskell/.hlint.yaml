@@ -34,3 +34,13 @@
 # 明示的なパターンマッチ再帰を foldr へ簡略化する警告を抑制
 # `sequence` の素直な再帰実装(foldRightを使わない版)を主たる解答としているため
 - ignore: { name: "Use foldr" }
+
+# traverse を traverse_ へ簡略化する警告を抑制
+# `Candy.simulateMachine` で使う `traverse` はこの章(6.10)で自作した State.traverse であり、
+# Prelude/Data.Foldable の汎用 `traverse_` とは無関係の別物のため置き換えられない
+- ignore: { name: "Use traverse_" }
+
+# ラムダ式をタプルセクションへ簡略化する警告を抑制
+# 例: `\s -> (a, s)` → `(a,)`(要 TupleSections 拡張)。この教材では新たな言語拡張を
+# 増やしてまで簡略化するより、明示的なラムダのほうが読みやすいと考える
+- ignore: { name: "Use tuple-section" }

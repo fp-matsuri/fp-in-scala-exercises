@@ -16,6 +16,13 @@ module FpInHaskell.Test.Common (
     genEither,
     genStringIntEither,
     fromLazyList,
+    genRNG,
+    genInput,
+    genInputList,
+    genNoCandiesMachine,
+    genLockedMachine,
+    genUnlockedMachine,
+    genMachine,
 ) where
 
 import Data.List (sort)
@@ -24,6 +31,8 @@ import FpInHaskell.Exercises.DataStructures.Tree (Tree (Branch, Leaf))
 import FpInHaskell.Exercises.ErrorHandling.Either (Either (Left, Right))
 import FpInHaskell.Exercises.ErrorHandling.Option (Option (None, Some))
 import qualified FpInHaskell.Exercises.Laziness.LazyList as LZ
+import FpInHaskell.Exercises.State.Candy (Input (Coin, Turn), Machine (Machine))
+import FpInHaskell.Exercises.State.RNG (RNG (Simple))
 import Test.QuickCheck hiding (Some)
 import Prelude hiding (Either (..))
 
@@ -119,3 +128,42 @@ genStringIntEither = genEither arbitrary arbitrary
 -- 演習 5.1 なので、ライブラリ側で提供される)。
 fromLazyList :: [a] -> LZ.LazyList a
 fromLazyList = foldr LZ.Cons LZ.Empty
+
+-- State 章 (RNG/Candy) 向けのジェネレータ。
+genRNG :: Gen RNG
+genRNG = Simple . fromIntegral <$> (arbitrary :: Gen Int)
+
+genInput :: Gen Input
+genInput = elements [Coin, Turn]
+
+genInputList :: Gen [Input]
+genInputList = listOf genInput
+
+-- キャンディが残っていない販売機(ロック状態はどちらもありうる)。
+genNoCandiesMachine :: Gen Machine
+genNoCandiesMachine = do
+    locked <- arbitrary
+    coins <- choose (0, 1000)
+    return (Machine locked 0 coins)
+
+-- ロックされていて、かつ最低1つはキャンディが残っている販売機。
+genLockedMachine :: Gen Machine
+genLockedMachine = do
+    candies <- choose (1, 1000)
+    coins <- choose (0, 1000)
+    return (Machine True candies coins)
+
+-- ロックされておらず、かつ最低1つはキャンディが残っている販売機。
+genUnlockedMachine :: Gen Machine
+genUnlockedMachine = do
+    candies <- choose (1, 1000)
+    coins <- choose (0, 1000)
+    return (Machine False candies coins)
+
+-- 制約なしの任意の販売機。
+genMachine :: Gen Machine
+genMachine = do
+    locked <- arbitrary
+    candies <- choose (0, 1000)
+    coins <- choose (0, 1000)
+    return (Machine locked candies coins)

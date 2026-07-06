@@ -4,6 +4,7 @@ import qualified DataStructuresSpec
 import qualified ErrorHandlingSpec
 import qualified GettingStartedSpec
 import qualified LazinessSpec
+import qualified StateSpec
 import System.Exit (exitFailure, exitSuccess)
 import Test.QuickCheck (isSuccess, quickCheckResult)
 
@@ -16,6 +17,7 @@ main = do
                 ++ DataStructuresSpec.props
                 ++ ErrorHandlingSpec.props
                 ++ LazinessSpec.props
+                ++ StateSpec.props
             )
     if all isSuccess results
         then exitSuccess
