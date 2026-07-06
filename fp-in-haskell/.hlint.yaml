@@ -24,3 +24,13 @@
 # `flatMap` は演習の意図として、既存の `concat` と `map` を組み合わせて定義することを求めているため、
 # 単一の `concatMap` にまとめない
 - ignore: { name: "Use concatMap" }
+
+# traverse id を sequenceA へ簡略化する警告を抑制
+# `sequence` を `traverse` を用いて定義するのが演習の意図であり、また `Either`/`Validated`/`Option` は
+# 独自定義の具体的な関数であって Traversable/Applicative のインスタンスではないため、
+# 汎用の `sequenceA` に単純に置き換えることはできない
+- ignore: { name: "Use sequenceA" }
+
+# 明示的なパターンマッチ再帰を foldr へ簡略化する警告を抑制
+# `sequence` の素直な再帰実装(foldRightを使わない版)を主たる解答としているため
+- ignore: { name: "Use foldr" }

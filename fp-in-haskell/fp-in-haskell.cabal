@@ -8,6 +8,9 @@ library
   exposed-modules:
     FpInHaskell.Answers.DataStructures.List
     FpInHaskell.Answers.DataStructures.Tree
+    FpInHaskell.Answers.ErrorHandling.Either
+    FpInHaskell.Answers.ErrorHandling.Option
+    FpInHaskell.Answers.ErrorHandling.Validated
     FpInHaskell.Answers.GettingStarted.AnonymousFunctions
     FpInHaskell.Answers.GettingStarted.FormatAbsAndFactorial
     FpInHaskell.Answers.GettingStarted.MonomorphicBinarySearch
@@ -16,6 +19,8 @@ library
     FpInHaskell.Answers.GettingStarted.TestFib
     FpInHaskell.Exercises.DataStructures.List
     FpInHaskell.Exercises.DataStructures.Tree
+    FpInHaskell.Exercises.ErrorHandling.Either
+    FpInHaskell.Exercises.ErrorHandling.Option
     FpInHaskell.Exercises.GettingStarted.AnonymousFunctions
     FpInHaskell.Exercises.GettingStarted.FormatAbsAndFactorial
     FpInHaskell.Exercises.GettingStarted.MonomorphicBinarySearch
@@ -31,6 +36,7 @@ test-suite fp-in-haskell-test
   main-is:          Main.hs
   other-modules:
     DataStructuresSpec
+    ErrorHandlingSpec
     FpInHaskell.Test.Common
     GettingStartedSpec
   build-depends:

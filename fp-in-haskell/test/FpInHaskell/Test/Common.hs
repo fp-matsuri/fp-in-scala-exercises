@@ -11,12 +11,19 @@ module FpInHaskell.Test.Common (
     genDoubleDataList,
     genDataListOfDataLists,
     genIntTree,
+    genOption,
+    genIntOption,
+    genEither,
+    genStringIntEither,
 ) where
 
 import Data.List (sort)
 import FpInHaskell.Exercises.DataStructures.List (List (Cons, Nil))
 import FpInHaskell.Exercises.DataStructures.Tree (Tree (Branch, Leaf))
-import Test.QuickCheck
+import FpInHaskell.Exercises.ErrorHandling.Either (Either (Left, Right))
+import FpInHaskell.Exercises.ErrorHandling.Option (Option (None, Some))
+import Test.QuickCheck hiding (Some)
+import Prelude hiding (Either (..))
 
 firstFibs :: [Int]
 firstFibs = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765]
@@ -83,3 +90,18 @@ genIntTree = sized go
                 [ (2, Leaf <$> arbitrary)
                 , (1, Branch <$> go (n `div` 2) <*> go (n `div` 2))
                 ]
+
+-- ErrorHandling 章 (Option/Either) 向けのジェネレータ。
+-- `None`/`Some` と `Left`/`Right` は五分五分の union にする(scala版 OptionSuite/EitherSuite の
+-- ジェネレータと同じ方針)。
+genOption :: Gen a -> Gen (Option a)
+genOption genA = oneof [pure None, Some <$> genA]
+
+genIntOption :: Gen (Option Int)
+genIntOption = genOption arbitrary
+
+genEither :: Gen e -> Gen a -> Gen (Either e a)
+genEither genE genA = oneof [Left <$> genE, Right <$> genA]
+
+genStringIntEither :: Gen (Either String Int)
+genStringIntEither = genEither arbitrary arbitrary
