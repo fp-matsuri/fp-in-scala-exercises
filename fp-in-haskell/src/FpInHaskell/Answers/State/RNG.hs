@@ -116,8 +116,11 @@ map2 f ra rb rng0 =
      in (f x y, rng2)
 
 -- Exercise 6.7: 関数 `sequence` を実装せよ。
+--
+-- η簡約: ラムダ本体 `map2 (:) r acc` の末尾に引数 `r acc` がその順で並んでいるので、
+-- 2引数まとめて削れて `map2 (:)` になる。
 sequence :: [Rand a] -> Rand [a]
-sequence = foldr (\r acc -> map2 (:) r acc) (unit [])
+sequence = foldr (map2 (:)) (unit [])
 
 -- Exercise 6.8: 関数 `flatMap` を実装せよ。
 flatMap :: (a -> Rand b) -> Rand a -> Rand b

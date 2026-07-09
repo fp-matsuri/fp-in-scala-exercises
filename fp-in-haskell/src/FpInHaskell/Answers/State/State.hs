@@ -28,8 +28,11 @@ unit x = State (\st -> (x, st))
 -- Exercise 6.10: `map`, `map2`, `flatMap` を実装せよ。また、関数 `unit`, `sequence`, `traverse` を実装せよ。
 --
 -- Prelude の `map` と同じ引数順(関数、State の順)。
+--
+-- η簡約(`\x -> f x` を `f` に書き換える構文的規則): 引数 `state` が右辺末尾
+-- `flatMap (unit . f) state` の最後にそのまま現れているので削れる。
 map :: (a -> b) -> State s a -> State s b
-map f state = flatMap (unit . f) state
+map f = flatMap (unit . f)
 
 map2 :: (a -> b -> c) -> State s a -> State s b -> State s c
 map2 f sa sb = flatMap (\x -> map (f x) sb) sa
@@ -37,11 +40,16 @@ map2 f sa sb = flatMap (\x -> map (f x) sb) sa
 flatMap :: (a -> State s b) -> State s a -> State s b
 flatMap f (State run) = State (\st0 -> let (x, st1) = run st0 in runState (f x) st1)
 
+-- ラムダ本体 `map2 (:) st acc` の末尾に引数 `st acc` がその順で並んでいるので、
+-- 2引数まとめてη簡約して `map2 (:)` になる。
 sequence :: [State s a] -> State s [a]
-sequence = foldr (\st acc -> map2 (:) st acc) (unit [])
+sequence = foldr (map2 (:)) (unit [])
 
+-- 内側の引数 `acc` は末尾 `... acc` に現れているので削れる。外側の `x` は末尾ではなく
+-- `f x` に消費されているので直接は削れないが、残った `\x -> map2 (:) (f x)` は
+-- `f` の結果を `map2 (:)` に渡す形なので関数合成 `map2 (:) . f` に等しい。
 traverse :: (a -> State s b) -> [a] -> State s [b]
-traverse f = foldr (\x acc -> map2 (:) (f x) acc) (unit [])
+traverse f = foldr (map2 (:) . f) (unit [])
 
 -- `map`/`flatMap` を `Functor`/`Applicative`/`Monad` に接続しておく。こうすると `modify`
 -- (下で定義)や次のファイルの `Candy.simulateMachine` を `do` 記法で書ける。`do` 記法は
