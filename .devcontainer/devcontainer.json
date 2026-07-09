@@ -1,6 +1,6 @@
 {
   "name": "FP in Scala Exercises",
-  "image": "ghcr.io/fp-matsuri/fp-in-scala-exercises/devcontainer:1ae0127a3e58",
+  "image": "ghcr.io/fp-matsuri/fp-in-scala-exercises/devcontainer:bc1ba606343c",
   "remoteUser": "vscode",
   "containerEnv": {
     "MISE_TRUSTED_CONFIG_PATHS": "/workspaces"
