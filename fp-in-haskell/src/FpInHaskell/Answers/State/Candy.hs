@@ -30,9 +30,12 @@ data Machine = Machine {locked :: Bool, candies :: Int, coins :: Int}
 --     ノブを回し(Turn)ても販売機は反応しない
 --
 -- State.hs で用意した Monad インスタンスのおかげで do 記法で書ける。
+--
+-- `\i -> modify (update i)` は `update` の結果を `modify` に流す関数なので、
+-- 関数合成 `modify . update :: Input -> State Machine ()` と等しい。
 simulateMachine :: [Input] -> State Machine (Int, Int)
 simulateMachine inputs = do
-    _ <- traverse (\i -> modify (update i)) inputs
+    _ <- traverse (modify . update) inputs
     s <- get
     return (coins s, candies s)
 
