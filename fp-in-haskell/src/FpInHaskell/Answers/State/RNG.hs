@@ -117,12 +117,16 @@ map2 f ra rb rng0 =
 
 -- Exercise 6.7: 関数 `sequence` を実装せよ。
 --
--- η簡約: ラムダ本体 `map2 (:) r acc` の末尾に引数 `r acc` がその順で並んでいるので、
--- 2引数まとめて削れて `map2 (:)` になる。
+-- η簡約(`\x -> f x` を `f` に書き換える構文的規則): ラムダ本体 `map2 (:) r acc` の末尾に
+-- 引数 `r acc` がその順で並んでいるので、2引数まとめて削れて `map2 (:)` になる。
 sequence :: [Rand a] -> Rand [a]
 sequence = foldr (map2 (:)) (unit [])
 
 -- Exercise 6.8: 関数 `flatMap` を実装せよ。
+--
+-- Haskell では標準的にこの演算を `>>=`(bind、シンタックスは `m >>= f`)と呼び、Monad クラスの
+-- メソッドとして提供する。`Rand` は `RNG -> (a, RNG)` という型シノニムで Monad インスタンスを
+-- 直接付けられないため、ここでは自作の `flatMap` という関数として実装する。
 flatMap :: (a -> Rand b) -> Rand a -> Rand b
 flatMap f r rng0 = let (x, rng1) = r rng0 in f x rng1
 

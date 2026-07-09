@@ -29,8 +29,8 @@ unit x = State (\st -> (x, st))
 --
 -- Prelude の `map` と同じ引数順(関数、State の順)。
 --
--- η簡約(`\x -> f x` を `f` に書き換える構文的規則): 引数 `state` が右辺末尾
--- `flatMap (unit . f) state` の最後にそのまま現れているので削れる。
+-- η簡約(RNG.sequence のコメント参照): 引数 `state` が右辺末尾 `flatMap (unit . f) state`
+-- の最後にそのまま現れているので削れる。
 map :: (a -> b) -> State s a -> State s b
 map f = flatMap (unit . f)
 
