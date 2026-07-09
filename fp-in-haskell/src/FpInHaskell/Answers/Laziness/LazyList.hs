@@ -76,6 +76,10 @@ toList (Cons h t) = h : toList t
 -- 先頭から最初の `n` 要素をスキップする関数 `drop` を定義せよ。
 --
 -- Prelude の `take`/`drop` と同じ引数順。
+--
+-- `n == 1` を先に受けきって `t` に触れずに `Empty` で打ち切ることで、`take 0 t` まで
+-- 進んで `t` を WHNF に forced するのを避けている。末尾に `undefined` を含みうる有限リストに
+-- 対しても `take` が例外を起こさず有限で止まる性質を保つための最適化。
 take :: Int -> LazyList a -> LazyList a
 take n (Cons h t) | n > 1 = Cons h (take (n - 1) t)
 take n (Cons h _) | n == 1 = Cons h Empty
