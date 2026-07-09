@@ -30,7 +30,10 @@ unit x = State (\st -> (x, st))
 -- Prelude の `map` と同じ引数順(関数、State の順)。
 --
 -- η簡約(RNG.sequence のコメント参照): 引数 `state` が右辺末尾 `flatMap (unit . f) state`
--- の最後にそのまま現れているので削れる。
+-- の最後にそのまま現れているので削れる。この結果、`map` は「対象の `State` 値」という
+-- 引数を明示的に書かずに、`flatMap` と `.`(関数合成)の組み合わせだけで定義できている。
+-- このように演算対象を表す引数を省いて関数合成や部分適用の組み合わせだけで定義するスタイルを
+-- ポイントフリースタイル(point-free style)と呼ぶ。
 map :: (a -> b) -> State s a -> State s b
 map f = flatMap (unit . f)
 
