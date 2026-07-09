@@ -45,8 +45,8 @@ import Prelude hiding (drop, filter, map, take, takeWhile, zipWith)
 -- `Cons a (LazyList a)` と素直に書くだけで無限リストを表現できる。明示的なサンクや、
 -- それを扱うための `cons` スマートコンストラクタは一切不要になる。
 --
--- また、`ones`/`fibs` のように無限になりうる値を含むため、`deriving (Eq, Show)` はしない
--- (無限リストの構造的な等値比較や表示は停止しない)。テストでは必ず `take n` で有限に
+-- また、`ones`/`fibs` のように無限になりうる値を含むため、`deriving (Eq, Show)` はしない。
+-- 無限リストの構造的な等値比較や表示は停止しないからだ。テストでは必ず `take n` で有限に
 -- 切り詰めてから `toList` で `[a]` に変換して比較する。
 data LazyList a
     = Empty
@@ -77,10 +77,10 @@ toList (Cons h t) = h : toList t
 --
 -- Prelude の `take`/`drop` と同じ引数順。
 --
--- `take` の定義で使っている `| n > 1` のような構文はガード。パターン(`Cons h t`)にマッチした
+-- `take` の定義で使っている `| n > 1` のような構文はガード。パターン `Cons h t` にマッチした
 -- 上で、`|` の後ろに書いた真偽式でさらに絞り込み、それを満たす節だけが選ばれる。
--- 上から順に試され、最初に条件を満たした節が使われる(ここでは `n > 1` の節が外れると
--- `n == 1` の節が試され、それも外れれば最後のワイルドカード節に落ちる)。
+-- 上から順に試され、最初に条件を満たした節が使われる。ここでは `n > 1` の節が外れると
+-- `n == 1` の節が試され、それも外れれば最後のワイルドカード節に落ちる。
 --
 -- `n == 1` を先に受けきって `t` に触れずに `Empty` で打ち切ることで、`take 0 t` まで
 -- 進んで `t` を WHNF に forced するのを避けている。末尾に `undefined` を含みうる有限リストに
@@ -107,8 +107,8 @@ forAll p = foldRight (\x acc -> p x && acc) True
 
 -- Exercise 5.5: `foldRight` を用いて `takeWhile` を実装せよ。
 --
--- 原典ではこの設問に対応するスタブは exercises 側に存在しない
--- (3.7/3.8 と同様、考察のみで済ませてもよい位置づけ)。ここでは参考実装として Answers にのみ置く。
+-- 原典ではこの設問に対応するスタブは exercises 側に存在しない。3.7/3.8 と同様、考察のみで
+-- 済ませてもよい位置づけなのだろう。ここでは参考実装として Answers にのみ置く。
 takeWhileViaFoldRight :: (a -> Bool) -> LazyList a -> LazyList a
 takeWhileViaFoldRight p = foldRight (\x acc -> if p x then Cons x acc else Empty) Empty
 
@@ -243,7 +243,7 @@ scanRight f z = snd . foldRight step (z, Cons z Empty)
   where
     step x (acc, accs) = let acc' = f x acc in (acc', Cons acc' accs)
 
--- `tails`/`startsWith` を組み合わせた、部分列判定。演習番号はないが(3.24 の List.hasSubsequence
--- に相当する)、Answers ではテスト対象として実装しておく。
+-- `tails`/`startsWith` を組み合わせた、部分列判定。演習番号はないが、3.24 の
+-- List.hasSubsequence に相当し、Answers ではテスト対象として実装しておく。
 hasSubsequence :: (Eq a) => LazyList a -> LazyList a -> Bool
 hasSubsequence xs sub = exists (startsWith sub) (tails xs)
