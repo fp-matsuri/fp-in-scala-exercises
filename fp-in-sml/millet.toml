@@ -1,0 +1,7 @@
+# LSP (Millet) の設定．
+# 既定では演習側のビルドを解析対象にする．
+# 解答側を見たいときは root を build/answers.mlb に変更する．
+version = 1
+
+[workspace]
+root = "build/exercises.mlb"

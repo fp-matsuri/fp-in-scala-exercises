@@ -1,0 +1,88 @@
+(* SML/NJ (CM) で解答側を読み込む．
+ * CM.make "build/answers.cm"; Test.run (); でビルドとテストを実行する．
+ * Main.sml は含めない．含めると Test.run の中で REPL ごと exit してしまう． *)
+Group is
+  $/basis.cm
+  ../lib/lib.cm
+
+  (* ch02 gettingstarted *)
+  ../src/ch02_gettingstarted/INTRO.sig
+  ../src/ch02_gettingstarted/answers/Intro.sml
+  ../test/ch02_gettingstarted/IntroTest.sml
+
+  (* ch03 datastructures *)
+  ../src/ch03_datastructures/MY_LIST.sig
+  ../src/ch03_datastructures/answers/MyList.sml
+  ../src/ch03_datastructures/TREE.sig
+  ../src/ch03_datastructures/answers/Tree.sml
+  ../test/ch03_datastructures/MyListTest.sml
+  ../test/ch03_datastructures/TreeTest.sml
+
+  (* ch04 errorhandling *)
+  ../src/ch04_errorhandling/MY_OPTION.sig
+  ../src/ch04_errorhandling/answers/MyOption.sml
+  ../src/ch04_errorhandling/EITHER.sig
+  ../src/ch04_errorhandling/answers/Either.sml
+  ../test/ch04_errorhandling/MyOptionTest.sml
+  ../test/ch04_errorhandling/EitherTest.sml
+
+  (* ch05 laziness *)
+  ../src/ch05_laziness/LAZY_LIST.sig
+  ../src/ch05_laziness/answers/LazyList.sml
+  ../test/ch05_laziness/LazyListTest.sml
+
+  (* ch06 state *)
+  ../src/ch06_state/RNG.sig
+  ../src/ch06_state/answers/Rng.sml
+  ../src/ch06_state/STATE.sig
+  ../src/ch06_state/answers/State.sml
+  ../test/ch06_state/RngTest.sml
+  ../test/ch06_state/StateTest.sml
+
+  (* ch08 testing *)
+  ../src/ch08_testing/GEN.sig
+  ../src/ch08_testing/answers/Gen.sml
+  ../src/ch08_testing/PROP.sig
+  ../src/ch08_testing/answers/Prop.sml
+  ../test/ch08_testing/GenTest.sml
+  ../test/ch08_testing/PropTest.sml
+
+  (* ch09 parsing *)
+  ../src/ch09_parsing/PARSER.sig
+  ../src/ch09_parsing/answers/Parser.sml
+  ../src/ch09_parsing/JSON.sig
+  ../src/ch09_parsing/Json.sml
+  ../test/ch09_parsing/ParserTest.sml
+  ../test/ch09_parsing/JsonTest.sml
+
+  (* ch10 monoids *)
+  ../src/ch10_monoids/MONOID.sig
+  ../src/ch10_monoids/answers/Monoids.sml
+  ../test/ch10_monoids/MonoidsTest.sml
+
+  (* ch11 monads *)
+  ../src/ch11_monads/MONAD.sig
+  ../src/ch11_monads/answers/MonadUtil.sml
+  ../src/ch11_monads/MonadInstances.sml
+  ../test/ch11_monads/MonadTest.sml
+
+  (* ch12 applicative *)
+  ../src/ch12_applicative/APPLICATIVE.sig
+  ../src/ch12_applicative/answers/ApplicativeUtil.sml
+  ../src/ch12_applicative/ApplicativeInstances.sml
+  ../test/ch12_applicative/ApplicativeTest.sml
+
+  (* ch13 iomonad *)
+  ../src/ch13_iomonad/MY_IO.sig
+  ../src/ch13_iomonad/answers/MyIO.sml
+  ../test/ch13_iomonad/MyIOTest.sml
+
+  (* ch14 localeffects *)
+  ../src/ch14_localeffects/LOCAL_EFFECTS.sig
+  ../src/ch14_localeffects/answers/LocalEffects.sml
+  ../test/ch14_localeffects/LocalEffectsTest.sml
+
+  (* ch15 streamingio *)
+  ../src/ch15_streamingio/PROCESS.sig
+  ../src/ch15_streamingio/answers/Process.sml
+  ../test/ch15_streamingio/ProcessTest.sml
