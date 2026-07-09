@@ -35,6 +35,10 @@ module FpInHaskell.Exercises.Laziness.LazyList (
 
 import Prelude hiding (drop, filter, map, take, takeWhile, zipWith)
 
+-- Prelude には同名の `drop`/`filter`/`map`/`take`/`takeWhile`/`zipWith` がすでにあるため、
+-- 上の `import Prelude hiding (...)` でそれらを読み込み対象から外し、ここでは `LazyList`
+-- に対する同名の演習関数を自前で定義する。
+
 -- `LazyList` 型。データ構築子のフィールドは Haskell の既定である非正格評価によって
 -- 自動的に評価が遅延されるため、`Cons a (LazyList a)` と素直に書くだけで無限リストを
 -- 表現できる。明示的なサンクや、それを扱うための `cons` スマートコンストラクタは一切不要になる。

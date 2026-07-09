@@ -13,6 +13,10 @@ module FpInHaskell.Answers.State.State (
 
 import Prelude hiding (map, sequence, traverse)
 
+-- Prelude には同名の `map`/`sequence`/`traverse` がすでにあるため、上の
+-- `import Prelude hiding (...)` でそれらを読み込み対象から外し、ここでは `State` に対する
+-- 同名の演習関数を自前で定義している。
+
 -- 状態 `s` を持ち回しながら値 `a` を計算する計算を表す型。`newtype` を使うことで、
 -- 実行時のコストなしに元の関数型 `s -> (a, s)` と見分けられる型を作れる。
 -- フィールド名 `runState` で元の関数を取り出して実行できる。

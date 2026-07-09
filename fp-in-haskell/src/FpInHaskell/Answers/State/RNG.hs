@@ -26,6 +26,9 @@ import Data.Int (Int32)
 import Data.Word (Word64)
 import Prelude hiding (map, sequence)
 
+-- Prelude には同名の `map`/`sequence` がすでにあるため、上の `import Prelude hiding (...)` で
+-- それらを読み込み対象から外し、ここでは `Rand` に対する同名の演習関数を自前で定義している。
+
 -- 乱数生成器。この演習では単一の実装(線形合同法)しか使わないため、型クラスや抽象データ型で
 -- 一般化せず、具体的な `newtype` として素直に定義する。
 newtype RNG = Simple Word64
