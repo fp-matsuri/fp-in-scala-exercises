@@ -169,7 +169,14 @@ length = foldRight (\_ acc -> acc + 1) 0
 
 -- Exercise 3.10: リストを左端から畳み込む `foldLeft` 関数を末尾再帰関数として定義せよ。
 --
--- Prelude の `foldl` と同じ引数順（関数、初期値、リストの順）。
+-- Prelude の `foldl` と同じ引数順（関数、初期値、リストの順）。この `foldLeft` は末尾再帰だが、
+-- Prelude 標準の `foldl` と同じく蓄積値 `f acc h` を評価せず次の再帰にそのまま渡すため、
+-- 大きなリストではサンクが積み上がりスペースリークを起こしうる。実務で `[a]` を畳み込むときは、
+-- 素の `foldl` ではなく正格版の `Data.List.foldl'` を使うべきだ。
+--
+-- どちらの畳み込みを使うべきかは言語の評価戦略にも左右される。例えば末尾再帰の `foldLeft` が
+-- 好まれがちな言語がある一方、Haskell では上の `foldRight` のように遅延評価と相性がよい `foldr`
+-- も標準的に使われる。無限リストに対応でき短絡評価もできるからだ。詳しくは Exercise 3.7 を参照。
 foldLeft :: (b -> a -> b) -> b -> List a -> b
 foldLeft _ acc Nil = acc
 foldLeft f acc (Cons h t) = foldLeft f (f acc h) t
