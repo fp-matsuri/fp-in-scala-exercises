@@ -39,9 +39,9 @@ import Prelude hiding (drop, filter, map, take, takeWhile, zipWith)
 -- 上の `import Prelude hiding (...)` でそれらを読み込み対象から外し、ここでは `LazyList`
 -- に対する同名の演習関数を自前で定義する。
 
--- `LazyList` 型。データ構築子のフィールドは Haskell の既定である非正格評価によって
--- 自動的に評価が遅延されるため、`Cons a (LazyList a)` と素直に書くだけで無限リストを
--- 表現できる。明示的なサンクや、それを扱うための `cons` スマートコンストラクタは一切不要になる。
+-- `LazyList` 型。データ構築子のフィールドは Haskell が既定で遅延評価するため、
+-- `Cons a (LazyList a)` と素直に書くだけで無限リストを表現できる。明示的なサンクや、
+-- それを扱うための `cons` スマートコンストラクタは一切不要になる。
 --
 -- また、`ones`/`fibs` のように無限になりうる値を含むため、`deriving (Eq, Show)` はしない
 -- (無限リストの構造的な等値比較や表示は停止しない)。テストでは必ず `take n` で有限に
@@ -50,13 +50,13 @@ data LazyList a
     = Empty
     | Cons a (LazyList a)
 
--- 関数の引数は既定で非正格なので、初期値と `f` の第2引数は実際に必要とされるまで評価されない。
+-- 関数の引数は既定で遅延評価されるので、初期値と `f` の第2引数は実際に必要とされるまで評価されない。
 -- これにより、無限リストに対しても途中で畳み込みを打ち切れる。
 foldRight :: (a -> b -> b) -> b -> LazyList a -> b
 foldRight _ z Empty = z
 foldRight f z (Cons x xs) = f x (foldRight f z xs)
 
--- `p a || b` の `||` は第2引数を非正格に扱うため、`p a` が `True` になった時点で `b`
+-- `p a || b` の `||` は第2引数の評価を必要になるまで遅らせるため、`p a` が `True` になった時点で `b`
 -- (残りの畳み込み)は評価されず、無限リストに対しても停止する。
 exists :: (a -> Bool) -> LazyList a -> Bool
 exists p = foldRight (\x acc -> p x || acc) False

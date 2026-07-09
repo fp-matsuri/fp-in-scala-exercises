@@ -44,7 +44,7 @@ prop_forAll = forAll ((,) <$> choose (-10, 10) <*> genIntListPlain) $ \(n, xs) -
     LZ.forAll (/= n) (fromLazyList xs) === notElem n xs
 
 -- `ones`(無限に1を繰り返す、given の定数)に対して `forAll (/= 1)` を適用すると、
--- 最初の要素で条件を満たさないと判明するため、`&&` の非正格評価により即座に `False` が
+-- 最初の要素で条件を満たさないと判明するため、`&&` の遅延評価により即座に `False` が
 -- 返る(全要素を走査しようとしたら無限ループになり、テストはタイムアウトする)。
 prop_forAll_infinite :: Property
 prop_forAll_infinite = once (LZ.forAll (/= 1) LZ.ones === False)

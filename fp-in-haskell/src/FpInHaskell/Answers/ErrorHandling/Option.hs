@@ -61,7 +61,7 @@ filter _ _ = None
 -- `IO Int` にせざるを得ない。これは、この章が教える「失敗は Option/Either で表現し、
 -- 例外機構には頼らない」という教訓を、型システムがさらに徹底して強制している例だと言える。
 --
--- また、Haskell は既定で非正格評価なので、`let y = error "fail!"` はこの束縛の時点では
+-- また、Haskell は既定で遅延評価なので、`let y = error "fail!"` はこの束縛の時点では
 -- 評価されない。例外が実際に飛ぶのは `evaluate` が `42 + 5 + y` を強制評価する瞬間だ。
 failingFn :: Int -> IO Int
 failingFn _i =
