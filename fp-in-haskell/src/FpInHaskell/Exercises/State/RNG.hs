@@ -107,8 +107,8 @@ sequence = undefined
 flatMap :: (a -> Rand b) -> Rand a -> Rand b
 flatMap = undefined
 
--- `flatMap` の使用例。演習番号はないが(Either.map2All 等と同様の位置づけ)、`flatMap` の
--- テスト対象として実装する。`n` 未満の非負整数を、偏りが出ないように再試行しながら生成する。
+-- `flatMap` の使用例。演習番号はないが、`flatMap` の使い方の見本として Answers/Exercises
+-- 両方で実装しておく(`n` 未満の非負整数を、偏りが出ないように再試行しながら生成する)。`n` 未満の非負整数を、偏りが出ないように再試行しながら生成する。
 
 nonNegativeLessThan :: Int -> Rand Int
 nonNegativeLessThan n = flatMap go nonNegativeInt

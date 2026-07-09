@@ -204,7 +204,8 @@ scanRight :: (a -> b -> b) -> b -> LazyList a -> LazyList b
 scanRight = undefined
 
 -- `tails`/`startsWith` を組み合わせた、部分列判定。演習番号はないが(3.24 の List.hasSubsequence
--- に相当する)、テスト対象として実装する。
+-- に相当する)、Answers ではテスト対象として実装しておく。ここでは undefined のままにするので、
+-- 自分で実装せよ。
 
 hasSubsequence :: (Eq a) => LazyList a -> LazyList a -> Bool
 hasSubsequence = undefined
