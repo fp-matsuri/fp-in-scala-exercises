@@ -6,28 +6,49 @@ build-type:    Simple
 library
   hs-source-dirs:   src
   exposed-modules:
+    FpInHaskell.Answers.DataStructures.List
+    FpInHaskell.Answers.DataStructures.Tree
+    FpInHaskell.Answers.ErrorHandling.Either
+    FpInHaskell.Answers.ErrorHandling.Option
+    FpInHaskell.Answers.ErrorHandling.Validated
     FpInHaskell.Answers.GettingStarted.AnonymousFunctions
     FpInHaskell.Answers.GettingStarted.FormatAbsAndFactorial
     FpInHaskell.Answers.GettingStarted.MonomorphicBinarySearch
     FpInHaskell.Answers.GettingStarted.MyProgram
     FpInHaskell.Answers.GettingStarted.PolymorphicFunctions
     FpInHaskell.Answers.GettingStarted.TestFib
+    FpInHaskell.Answers.Laziness.LazyList
+    FpInHaskell.Answers.State.Candy
+    FpInHaskell.Answers.State.RNG
+    FpInHaskell.Answers.State.State
+    FpInHaskell.Exercises.DataStructures.List
+    FpInHaskell.Exercises.DataStructures.Tree
+    FpInHaskell.Exercises.ErrorHandling.Either
+    FpInHaskell.Exercises.ErrorHandling.Option
     FpInHaskell.Exercises.GettingStarted.AnonymousFunctions
     FpInHaskell.Exercises.GettingStarted.FormatAbsAndFactorial
     FpInHaskell.Exercises.GettingStarted.MonomorphicBinarySearch
     FpInHaskell.Exercises.GettingStarted.MyProgram
     FpInHaskell.Exercises.GettingStarted.PolymorphicFunctions
     FpInHaskell.Exercises.GettingStarted.TestFib
+    FpInHaskell.Exercises.Laziness.LazyList
+    FpInHaskell.Exercises.State.Candy
+    FpInHaskell.Exercises.State.RNG
+    FpInHaskell.Exercises.State.State
   build-depends:    base >=4.2 && <5
   default-language: Haskell2010
 
-test-suite getting-started-test
+test-suite fp-in-haskell-test
   type:             exitcode-stdio-1.0
   hs-source-dirs:   test
   main-is:          Main.hs
   other-modules:
+    DataStructuresSpec
+    ErrorHandlingSpec
     FpInHaskell.Test.Common
     GettingStartedSpec
+    LazinessSpec
+    StateSpec
   build-depends:
     base         >=4.2 && <5,
     QuickCheck,
