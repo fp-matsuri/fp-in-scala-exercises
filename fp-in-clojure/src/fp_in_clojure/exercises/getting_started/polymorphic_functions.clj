@@ -9,14 +9,14 @@
 ;; そして、与えられたキーに対する等価判定をハードコードする代わりに
 ;; シーケンスの個々の要素をテストする関数をとる。
 ;; NOTE: clojure.specにはパラメータ多相/ジェネリクスに相当する仕組みがないため、specでは単純な `any?`, `ifn?` で代用している。
-;; Scala風の型表記: `find-first: (as: Sequence[A], p: A => Boolean) => Int`
+;; Scala風の型表記: `find-first: (p: A => Boolean, as: Sequence[A]) => Int`
 
 (s/fdef find-first
-  :args (s/cat :as (s/coll-of any?)
-               :p ifn?)
+  :args (s/cat :p ifn?
+               :as (s/coll-of any?))
   :ret int?)
 
-(defn find-first [as p]
+(defn find-first [p as]
   (loop [n 0]
     (cond
       (>= n (count as)) -1
@@ -26,15 +26,15 @@
       :else (recur (inc n)))))
 
 ;; Exercise 2.2: シーケンスがソート済みかどうかを判定する多相関数を定義せよ。
-;; 第2引数 `gt` はシーケンス `as` の隣接する2要素をとって最初の要素が2番目の要素より大きいかどうかを判定する述語関数。
-;; Scala風の型表記: `sorted?: (as: Sequence[A], gt: (A, A) => Boolean) => Boolean`
+;; 第1引数 `gt` はシーケンス `as` の隣接する2要素をとって最初の要素が2番目の要素より大きいかどうかを判定する述語関数。
+;; Scala風の型表記: `sorted?: (gt: (A, A) => Boolean, as: Sequence[A]) => Boolean`
 
 (s/fdef sorted?
-  :args (s/cat :as (s/coll-of any?)
-               :gt ifn?)
+  :args (s/cat :gt ifn?
+               :as (s/coll-of any?))
   :ret boolean?)
 
-(defn sorted? [as gt]
+(defn sorted? [gt as]
   ;; TODO
   )
 
@@ -94,21 +94,21 @@
   (require '[clojure.spec.test.alpha :as stest])
   (stest/instrument)
 
-  (find-first [2 5 1 4 3] #(== % 2))
+  (find-first #(== % 2) [2 5 1 4 3])
 
-  (find-first [2 5 1 4 3] #(== % 4))
+  (find-first #(== % 4) [2 5 1 4 3])
 
-  (find-first [2 5 1 4 3] #(== % 3))
+  (find-first #(== % 3) [2 5 1 4 3])
 
-  (find-first [2 5 1 4 3] #(== % 0))
+  (find-first #(== % 0) [2 5 1 4 3])
 
-  (find-first [] #(== % 2))
+  (find-first #(== % 2) [])
 
-  (sorted? [2 5 1 4 3] >)
+  (sorted? > [2 5 1 4 3])
 
-  (sorted? [1 2 3 4 5] >)
+  (sorted? > [1 2 3 4 5])
 
-  (sorted? [1 1 3 4 5] >)
+  (sorted? > [1 1 3 4 5])
 
   ((partial1 1 #(+ %1 %2)) 2)
 
