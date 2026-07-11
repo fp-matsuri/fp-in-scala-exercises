@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 
+ARG TARGETARCH
+
 # ghcup 経由の GHC がリンクに使うシステムライブラリ
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libffi-dev libffi8 libgmp-dev libgmp10 libncurses-dev pkg-config \
@@ -12,6 +14,10 @@ RUN curl -fsSL https://mise.run | sh && \
     echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 
 COPY --chown=vscode mise.toml /tmp/mise.toml
+# hlint と cljstyle は linux/arm64 バイナリが配布されていないため arm64 では除外する
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+      sed -i -e '/hlint/d' -e '/cljstyle/d' /tmp/mise.toml; \
+    fi
 RUN ~/.local/bin/mise plugin install ghc https://github.com/sestrella/asdf-ghcup.git && \
     ~/.local/bin/mise trust /tmp/mise.toml && \
     MISE_CONFIG_FILE=/tmp/mise.toml ~/.local/bin/mise install && \
