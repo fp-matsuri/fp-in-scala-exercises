@@ -23,3 +23,9 @@
  (tests
   (names rng_test monad_test candy_test)
   (libraries alcotest exercises answers)))
+
+(subdir
+ parallelism
+ (tests
+  (names par_test)
+  (libraries alcotest exercises answers)))
