@@ -1,0 +1,23 @@
+{
+  "name": "FP in Scala Exercises (Local Build / arm64)",
+  "build": {
+    "dockerfile": "../../.devcontainer-image/Dockerfile",
+    "context": "../.."
+  },
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "MISE_TRUSTED_CONFIG_PATHS": "/workspaces"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "betterthantomorrow.calva",
+        "clj-kondo.clj-kondo",
+        "scalameta.metals",
+        "haskell.haskell",
+        "ocamllabs.ocaml-platform",
+        "usernamehw.errorlens"
+      ]
+    }
+  }
+}

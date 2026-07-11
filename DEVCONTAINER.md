@@ -5,13 +5,17 @@
 このリポジトリの Dev Container イメージは `ghcr.io/fp-matsuri/fp-in-scala-exercises/devcontainer` として管理されている。
 イメージのタグには **コンテンツハッシュ**（後述）を使用し、`.devcontainer/devcontainer.json` に記載されたタグを参照して起動する。
 
+配布イメージは **amd64（x86_64）専用**。arm64（Apple Silicon など）では、同じ Dockerfile から手元でビルドする別構成（後述）を使う。
+
 ## ファイル構成
 
 ```
 .devcontainer/
-  devcontainer.json          # 使用するイメージタグを記載
+  devcontainer.json          # 使用するイメージタグを記載（amd64 用・デフォルト）
+  local-build/
+    devcontainer.json        # 手元で Dockerfile からビルドする構成（arm64 用）
 .devcontainer-image/
-  Dockerfile                 # イメージ定義
+  Dockerfile                 # イメージ定義（amd64/arm64 両対応）
   content-hash.sh            # コンテンツハッシュ計算スクリプト
   build-image.sh             # ローカルビルド用スクリプト
 .github/workflows/
@@ -30,6 +34,26 @@ cat .devcontainer-image/Dockerfile mise.toml | sha256sum | cut -c1-12
 この方式により、**イメージの内容が変わったときだけタグが変わる**。
 コミットのたびにタグが変わる（コミットハッシュ方式の）問題を避けられる。
 
+## arm64（Apple Silicon など）での利用
+
+配布イメージは amd64 専用のため、arm64 マシンでは「コンテナーで再度開く」時の構成選択ダイアログで
+**「FP in Scala Exercises (Local Build / arm64)」**（`.devcontainer/local-build/devcontainer.json`）を選択する。
+配布イメージを参照する代わりに、同じ Dockerfile を使って手元でネイティブ（arm64）イメージをビルドして起動する。
+
+- 初回はビルドに時間がかかる（10〜20分程度。大半はツールのダウンロードと OCaml コンパイラのソースビルド）。2回目以降は Docker のキャッシュが効く
+- `Dockerfile` や `mise.toml` が更新されたら、コマンドパレットの「Dev Containers: Rebuild Container」で再ビルドする
+
+### arm64 版に含まれないツール
+
+以下のツールは linux/arm64 バイナリが配布されていないため、arm64 ビルドには含まれない
+（Dockerfile 内で `TARGETARCH` を見て除外している）。
+
+- hlint（Haskell リンター）
+- cljstyle（Clojure フォーマッタ）
+
+このためコンテナ内で mise が missing tools の警告を出すことがあるが、無視してよい。
+これら以外のツールは amd64 版と同じバージョンが入る。
+
 ## ローカルビルド（動作確認・デバッグ用）
 
 ```bash
@@ -37,6 +61,7 @@ cat .devcontainer-image/Dockerfile mise.toml | sha256sum | cut -c1-12
 ```
 
 コンテンツハッシュをタグとしてローカルの Docker にイメージをビルドする（push はしない）。
+CI が作る配布イメージと同じ amd64 向けビルドを再現するもので、arm64 マシンではエミュレーションで動く点に注意。
 
 ## CI/CD ワークフロー
 

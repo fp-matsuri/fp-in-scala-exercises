@@ -52,6 +52,13 @@ cf. FP in Scalaの公式リポジトリ: https://github.com/fpinscala/fpinscala
 1. [Docker Desktop](https://www.docker.com/products/docker-desktop/) と VS Code の [Dev Containers 拡張](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) をインストール
 2. このリポジトリをクローン
 3. VS Code でリポジトリを開き、右下の通知または左下の `><` メニューから「コンテナーで再度開く」を選択
+4. 構成の選択ダイアログが出たら「FP in Scala Exercises」を選択
+
+**Apple Silicon など arm64 マシンで開く場合**
+
+配布済みのコンテナイメージは amd64 専用のため、arm64 マシンでは手元でイメージをビルドする構成を使う。
+手順は上記と同じで、構成の選択ダイアログで **「FP in Scala Exercises (Local Build / arm64)」を選択**する。
+初回はイメージのビルドに時間がかかる（10〜20分程度）。詳細は [DEVCONTAINER.md](DEVCONTAINER.md) を参照。
 
 **GitHub Codespaces で開く場合**
 
