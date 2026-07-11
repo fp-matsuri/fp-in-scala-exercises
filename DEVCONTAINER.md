@@ -34,6 +34,22 @@ cat .devcontainer-image/Dockerfile mise.toml | sha256sum | cut -c1-12
 この方式により、**イメージの内容が変わったときだけタグが変わる**。
 コミットのたびにタグが変わる（コミットハッシュ方式の）問題を避けられる。
 
+## VS Code からのツール解決（remoteEnv の PATH 設定）
+
+mise によるツールの有効化（`mise activate`）はコンテナ内の `~/.bashrc` に書かれているため、
+**対話シェル（統合ターミナルなど）でしか効かない**。VS Code の拡張機能（Metals、Calva など）が
+LSP サーバーやツールを起動するプロセスは対話シェルを経由しないため、そのままでは
+java や clojure が見つからず LSP が動かない。
+
+このため `devcontainer.json` の `remoteEnv` で以下を設定している。
+
+- `PATH` に mise の shims（`~/.local/share/mise/shims`）と opam の bin（`~/.opam/default/bin`、dune 用）を追加
+  → シェルの種類に関係なく全ツールが解決できる
+- `MISE_GLOBAL_CONFIG_FILE` にリポジトリの `mise.toml` を指定
+  → shims がカレントディレクトリに依存せずバージョンを解決できる
+  （shims は実行時にカレントディレクトリから mise 設定を探すため、これがないと
+  ワークスペース外を起点とするプロセスから実行したときに失敗する）
+
 ## arm64（Apple Silicon など）での利用
 
 配布イメージは amd64 専用のため、arm64 マシンでは「コンテナーで再度開く」時の構成選択ダイアログで

@@ -8,6 +8,10 @@
   "containerEnv": {
     "MISE_TRUSTED_CONFIG_PATHS": "/workspaces"
   },
+  "remoteEnv": {
+    "PATH": "/home/vscode/.local/share/mise/shims:/home/vscode/.opam/default/bin:${containerEnv:PATH}",
+    "MISE_GLOBAL_CONFIG_FILE": "${containerWorkspaceFolder}/mise.toml"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
