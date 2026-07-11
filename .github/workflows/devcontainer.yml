@@ -42,13 +42,6 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      # arm64 は QEMU エミュレーションでビルドするため時間がかかる(数時間規模)
-      - name: Set up QEMU
-        if: steps.check.outputs.exists == 'false'
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
-
       - name: Set up Docker Buildx
         if: steps.check.outputs.exists == 'false'
         uses: docker/setup-buildx-action@v3
@@ -59,7 +52,7 @@ jobs:
         with:
           context: .
           file: .devcontainer-image/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.hash.outputs.image }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:cache
