@@ -7,8 +7,23 @@ FP in Scala演習問題の[OCaml](https://ocaml.org/)移植版
 - 公式コンパイラ/ランタイム: [OCaml](https://ocaml.org/) (コマンド: `ocaml`, `ocamlfind` など) — 5.4 以降
 - ビルドシステム: [Dune](https://dune.build/) (コマンド: `dune`) — 3.20 以降
 
-opam で dune をインストールした場合は以下のコマンドでパスを通してください
+### opam からのセットアップ
+
+[opam](https://opam.ocaml.org/) (OCaml のパッケージマネージャー) 経由でセットアップする場合、インストールが必要なのは `dune` のみ。
+OCaml コンパイラ本体と依存ライブラリは、後述の Dune Package Management が `dune.lock/` の内容に従って自動でビルドするため、
+opam switch のコンパイラバージョンを本プロジェクトに合わせる必要はない。
+
 ```shell
+# opam のインストール (macOS の場合。他の OS は https://opam.ocaml.org/doc/Install.html を参照)
+brew install opam
+
+# opam の初期化 (デフォルトの switch が作成される。初期化済みならスキップ)
+opam init -y
+
+# dune のインストール
+opam install -y dune
+
+# パスを通す
 eval `opam env`
 ```
 
@@ -26,6 +41,13 @@ dune tools install ocamlformat
 dune tools install ocamllsp
 ```
 
+ツールへパスを通すために以下のコマンドの実行が必要なことがあります。
+dune 経由で使う場合には必要ありません。
+
+```shell
+eval `dune tools env`
+```
+
 ## 使い方
 
 ### REPL
@@ -41,13 +63,13 @@ dune utop ./exercises
 (* 式を評価する *)
 utop # 1 + 2 + 3 ;;
 - : int = 6
-(* モジュール経由で関数を呼び出す *)
-utop # Getting_started.My_program.factorial 10 ;;
+(* モジュール経由で関数を呼び出す (ライブラリ名 Exercises が名前空間になる) *)
+utop # Exercises.Getting_started.My_program.factorial 10 ;;
 - : int = 3628800
 (* `open` で名前空間を取り込んでから呼び出す *)
-utop # open Getting_started.My_program ;;
+utop # open Exercises.Getting_started.My_program ;;
 utop # List.init 10 factorial ;;
-- : int list = [1; 1; 2; 6; 24; 120; 720; 5040; 40320; 362880]
+- : int List.t = [1; 1; 2; 6; 24; 120; 720; 5040; 40320; 362880]
 ```
 
 ### テスト

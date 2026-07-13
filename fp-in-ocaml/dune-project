@@ -11,5 +11,7 @@
  (description "FP in Scala 演習問題の OCaml 移植版")
  (depends
   (ocaml
-   (>= 5.4))
+   (and
+    (>= 5.4)
+    (< 5.5)))
   (alcotest :with-test)))
