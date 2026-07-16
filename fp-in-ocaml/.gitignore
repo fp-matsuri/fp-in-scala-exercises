@@ -33,7 +33,7 @@ setup.log
 *.install
 
 # Local OPAM switch
-_opam/
+_opam
 
 # Direnv
 .direnv
