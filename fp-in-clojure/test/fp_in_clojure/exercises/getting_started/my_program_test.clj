@@ -13,7 +13,7 @@
    [fp-in-clojure.test-helper :as test-helper]))
 
 (t/use-fixtures
-  :once (test-helper/instrument-specs *ns*))
+  :once (test-helper/instrument-specs *ns* 'sut))
 
 ;; NOTE: test.checkによるプロパティベーステスト(PBT)のテストケース
 ;; ref. https://github.com/clojure/test.check
