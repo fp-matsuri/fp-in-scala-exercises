@@ -84,7 +84,7 @@
 
 (defn traverse [f xs]
   (if (empty? xs)
-    (->Right nil)
+    (->Right [])
     (map2 cons
           (->> xs first f)
           (traverse f (rest xs)))))
