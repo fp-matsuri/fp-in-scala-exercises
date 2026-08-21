@@ -76,13 +76,13 @@
 
 (s/fdef product
   :args (s/cat :ns (s/and list?
-                          #(every? integer? %)))
-  :ret integer?)
+                          #(every? double? %)))
+  :ret double?)
 
 (defn product [ns]
   (cond
-    (empty? ns) 1
-    (zero? (first ns)) 0
+    (empty? ns) 1.0
+    (zero? (first ns)) 0.0
     :else (* (first ns)
              (product (rest ns)))))
 
@@ -134,11 +134,11 @@
 
 (s/fdef product-via-fold-right
   :args (s/cat :ns (s/and list?
-                          #(every? integer? %)))
-  :ret integer?)
+                          #(every? double? %)))
+  :ret double?)
 
 (defn product-via-fold-right [ns]
-  (fold-right * 1 ns))
+  (fold-right * 1.0 ns))
 
 ;; Exercise 3.2: 先頭要素以外のリストを返す関数 `tail` を定義せよ。
 
@@ -162,7 +162,7 @@
 
 (defn set-head [l h]
   (if (empty? l)
-    (Cons. h nil)
+    (throw (ex-info "set-head on empty list" {:l l}))
     (Cons. h (rest l))))
 
 ;; Exercise 3.4: リストの先頭から `n` 個の要素を取り除く関数 `drop` を定義せよ。
@@ -198,12 +198,25 @@
   :ret list?)
 
 (defn init [l]
-  (if (or (empty? l)
-          (empty? (rest l)))
-    nil
-    (Cons. (first l) (init (rest l)))))
+  (cond
+    (empty? l) (throw (ex-info "init of empty list" {:l l}))
+    (empty? (rest l)) nil
+    :else (Cons. (first l) (init (rest l)))))
 
 ;; このリストの実装は単方向連結リストであり、最終要素を除外したリストを得るにはリスト全体を走査し再構築する必要がある。
+
+(s/fdef init'
+  :args (s/cat :l list?)
+  :ret list?)
+
+(defn init' [l]
+  (loop [buf (transient [])
+         cur l]
+    (cond
+      (empty? cur) (throw (ex-info "init of empty list" {:l l}))
+      (empty? (rest cur)) (apply list (persistent! buf))
+      :else (recur (conj! buf (first cur))
+                   (rest cur)))))
 
 ;; Exercise 3.7: `fold-right` によるリストの走査を途中で打ち切る(短絡的に結果を返す)ことは可能か? それはなぜか?
 
@@ -251,15 +264,15 @@
   :ret integer?)
 
 (defn sum-via-fold-left [ns]
-  (fold-left + 0 ns))
+  (fold-left +' 0 ns))
 
 (s/fdef product-via-fold-left
   :args (s/cat :ns (s/and list?
-                          #(every? integer? %)))
-  :ret integer?)
+                          #(every? double? %)))
+  :ret double?)
 
 (defn product-via-fold-left [ns]
-  (fold-left * 1 ns))
+  (fold-left * 1.0 ns))
 
 (s/fdef length-via-fold-left
   :args (s/cat :l list?)
@@ -279,22 +292,22 @@
 
 ;; Exercise 3.13: `fold-left` を用いて `fold-right` を定義することは可能か? 可能であれば定義せよ。
 
-(s/fdef fold-left2
+(s/fdef fold-left'
   :args (s/cat :f ifn?
                :acc any?
                :as list?)
   :ret any?)
 
-(defn fold-left2 [f acc as]
+(defn fold-left' [f acc as]
   (fold-right #(f %2 %1) acc (reverse as)))
 
-(s/fdef fold-right2
+(s/fdef fold-right'
   :args (s/cat :f ifn?
                :acc any?
                :as list?)
   :ret any?)
 
-(defn fold-right2 [f acc as]
+(defn fold-right' [f acc as]
   (fold-left #(f %2 %1) acc (reverse as)))
 
 ;; Exercise 3.14: `fold-right` を用いて `append` を定義せよ。
@@ -349,6 +362,27 @@
 (defn map [f l]
   (fold-right #(Cons. (f %1) %2) nil l))
 
+(s/fdef map'
+  :args (s/cat :f ifn?
+               :l list?)
+  :ret list?)
+
+(defn map' [f l]
+  (fold-right' #(Cons. (f %1) %2) nil l))
+
+(s/fdef map''
+  :args (s/cat :f ifn?
+               :l list?)
+  :ret list?)
+
+(defn map'' [f l]
+  (loop [buf (transient [])
+         l l]
+    (if (empty? l)
+      (apply list (persistent! buf))
+      (recur (conj! buf (f (first l)))
+             (rest l)))))
+
 ;; Exercise 3.19: リストの各要素を述語関数 `f` に従ってフィルタリングする関数 `filter` を定義せよ。
 
 (s/fdef filter
@@ -358,6 +392,30 @@
 
 (defn filter [f l]
   (fold-right (fn [x acc] (if (f x) (Cons. x acc) acc)) nil l))
+
+(s/fdef filter'
+  :args (s/cat :f ifn?
+               :l list?)
+  :ret list?)
+
+(defn filter' [f l]
+  (fold-right' (fn [x acc] (if (f x) (Cons. x acc) acc)) nil l))
+
+(s/fdef filter''
+  :args (s/cat :f ifn?
+               :l list?)
+  :ret list?)
+
+(defn filter'' [f l]
+  (loop [buf (transient [])
+         l l]
+    (if (empty? l)
+      (apply list (persistent! buf))
+      (recur (let [h (first l)]
+               (if (f h)
+                 (conj! buf h)
+                 buf))
+             (rest l)))))
 
 ;; Exercise 3.20: リストの各要素を関数 `f` に適用して得られるリストのリストを1つのリストに連結する関数 `flat-map` を定義せよ。
 
@@ -393,7 +451,7 @@
   (if (or (empty? a1)
           (empty? a2))
     nil
-    (Cons. (+ (first a1) (first a2))
+    (Cons. (+' (first a1) (first a2))
            (add-pairwise (rest a1) (rest a2)))))
 
 ;; Exercise 3.23: `add-pairwise` を一般化して、リスト `a`, `b` をそれぞれ先頭から順に取り出して対応する要素に関数 `f` を適用して得られたリストを返す関数 `zip-with` を定義せよ。
@@ -439,8 +497,8 @@
   (sum (list 2))
   (sum nil)
 
-  (product (list 1 2 4))
-  (product (list 2))
+  (product (list 1.0 2.5 4.0))
+  (product (list 2.5))
   (product nil)
 
   (append (list 1 2) (list 3 4 5))
@@ -451,8 +509,8 @@
   (sum-via-fold-right (list 2))
   (sum-via-fold-right nil)
 
-  (product-via-fold-right (list 1 2 4))
-  (product-via-fold-right (list 2))
+  (product-via-fold-right (list 1.0 2.5 4.0))
+  (product-via-fold-right (list 2.5))
   (product-via-fold-right nil)
 
   (tail (list 1 2 3))
@@ -482,8 +540,8 @@
   (sum-via-fold-left (list 1 2 4))
   (sum-via-fold-left (list 2))
   (sum-via-fold-left nil)
-  (product-via-fold-left (list 1 2 4))
-  (product-via-fold-left (list 2))
+  (product-via-fold-left (list 1.0 2.5 4.0))
+  (product-via-fold-left (list 2.5))
   (product-via-fold-left nil)
   (length-via-fold-left (list :a :b :c))
   (length-via-fold-left (list :a))
@@ -492,9 +550,9 @@
   (reverse (list 1 2 3))
 
   (= (fold-left - 0 (list 1 2 3))
-     (fold-left2 - 0 (list 1 2 3)))
+     (fold-left' - 0 (list 1 2 3)))
   (= (fold-right - 0 (list 1 2 3))
-     (fold-right2 - 0 (list 1 2 3)))
+     (fold-right' - 0 (list 1 2 3)))
 
   (append-via-fold-right (list 1 2) (list 3 4 5))
   (append-via-fold-right nil (list 3 4 5))
@@ -507,9 +565,13 @@
 
   (double->string (list 1.2 2.3 3.4))
 
-  (map #(* % %) (list 1 2 3))
+  (= (map #(* % %) (list 1 2 3))
+     (map' #(* % %) (list 1 2 3))
+     (map'' #(* % %) (list 1 2 3)))
 
-  (filter odd? (list 1 2 3))
+  (= (filter odd? (list 1 2 3))
+     (filter' odd? (list 1 2 3))
+     (filter'' odd? (list 1 2 3)))
 
   (flat-map #(list % %) (list 1 2 3))
 

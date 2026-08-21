@@ -76,13 +76,13 @@
 
 (s/fdef product
   :args (s/cat :ns (s/and list?
-                          #(every? integer? %)))
-  :ret integer?)
+                          #(every? double? %)))
+  :ret double?)
 
 (defn product [ns]
   (cond
-    (empty? ns) 1
-    (zero? (first ns)) 0
+    (empty? ns) 1.0
+    (zero? (first ns)) 0.0
     :else (* (first ns)
              (product (rest ns)))))
 
@@ -133,11 +133,11 @@
 
 (s/fdef product-via-fold-right
   :args (s/cat :ns (s/and list?
-                          #(every? integer? %)))
-  :ret integer?)
+                          #(every? double? %)))
+  :ret double?)
 
 (defn product-via-fold-right [ns]
-  (fold-right * 1 ns))
+  (fold-right * 1.0 ns))
 
 ;; Exercise 3.2: 先頭要素以外のリストを返す関数 `tail` を定義せよ。
 
@@ -148,8 +148,6 @@
 (defn tail [l]
   ;; TODO
   )
-
-;; 空リストの場合に `nil` を返すこともできるが、ここでは例外をスローするようにしている。
 
 ;; Exercise 3.3: リストの先頭要素を別の値に置き換える関数 `set-head` を定義せよ。
 
@@ -235,8 +233,8 @@
 
 (s/fdef product-via-fold-left
   :args (s/cat :ns (s/and list?
-                          #(every? integer? %)))
-  :ret integer?)
+                          #(every? double? %)))
+  :ret double?)
 
 (defn product-via-fold-left [ns]
   ;; TODO
@@ -398,8 +396,8 @@
   (sum (list 2))
   (sum nil)
 
-  (product (list 1 2 4))
-  (product (list 2))
+  (product (list 1.0 2.5 4.0))
+  (product (list 2.5))
   (product nil)
 
   (append (list 1 2) (list 3 4 5))
@@ -410,8 +408,8 @@
   (sum-via-fold-right (list 2))
   (sum-via-fold-right nil)
 
-  (product-via-fold-right (list 1 2 4))
-  (product-via-fold-right (list 2))
+  (product-via-fold-right (list 1.0 2.5 4.0))
+  (product-via-fold-right (list 2.5))
   (product-via-fold-right nil)
 
   (tail (list 1 2 3))
@@ -441,8 +439,8 @@
   (sum-via-fold-left (list 1 2 4))
   (sum-via-fold-left (list 2))
   (sum-via-fold-left nil)
-  (product-via-fold-left (list 1 2 4))
-  (product-via-fold-left (list 2))
+  (product-via-fold-left (list 1.0 2.5 4.0))
+  (product-via-fold-left (list 2.5))
   (product-via-fold-left nil)
   (length-via-fold-left (list :a :b :c))
   (length-via-fold-left (list :a))
