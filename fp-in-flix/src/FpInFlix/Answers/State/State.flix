@@ -30,7 +30,7 @@ pub mod FpInFlix.Answers.State.State {
         List.foldRight((x, acc) -> map2(List.cons, f(x), acc), unit(Nil), xs)
 
     pub def modify(f: s -> s): State[s, Unit] =
-        flatMap(s -> set(f(s)), get())
+        flatMap(f >> set, get())
 
     pub def get(): State[s, s] =
         State(s -> (s, s))
@@ -39,7 +39,7 @@ pub mod FpInFlix.Answers.State.State {
         State(_ -> ((), s))
 
     // Exercise 6.11: Stateを用いて以下のルールを満たすキャンディ販売機の振る舞いをシミュレートする関数 `simulateMachine` を実装せよ。
-    // `simulateMachine` は入力リストを受け取って販売機の最終的なキャンディの個数とコインの枚数のペアを返す。
+    // `simulateMachine` は入力リストを受け取って販売機の最終的なコインの枚数とキャンディの個数のペアを返す。
     // ルール:
     //   - 販売機がロックされている(`locked = true`)とき、ノブを回し(Input.Turn)ても販売機は反応しない
     //   - 販売機がロックされている(`locked = true`)とき、コインを投入する(Input.Coin)と販売機のロックが外れてコインが1枚増える
@@ -62,13 +62,14 @@ pub mod FpInFlix.Answers.State.State {
         use FpInFlix.Answers.State.State.{Input, Machine, State}
 
         pub def simulateMachine(inputs: List[Input]): State[Machine, (Int32, Int32)] =
-            State.flatMap(_ ->
-                State.map(s ->
-                    (s#coins, s#candies),
-                    State.get()
-                ),
-                State.traverse(input -> State.modify(update(input)), inputs)
-            )
+            inputs
+                |> State.traverse(update >> State.modify)
+                |> State.flatMap(_ ->
+                    State.map(s ->
+                        (s#coins, s#candies),
+                        State.get()
+                    )
+                )
 
         def update(i: Input, m: Machine): Machine =
             match (i, m) {
