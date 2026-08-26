@@ -1,0 +1,6 @@
+[package]
+name        = "fp-in-flix"
+description = "FP in Scala演習問題のFlix移植版"
+version     = "0.1.0"
+flix        = "0.75.3"
+authors     = ["fp-matsuri"]
