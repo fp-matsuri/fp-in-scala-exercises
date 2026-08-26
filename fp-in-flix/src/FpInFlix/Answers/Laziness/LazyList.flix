@@ -229,7 +229,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
 
     pub def startsWith(prefix: {prefix = LazyList[a]}, ll: LazyList[a]): Bool with Eq[a] =
         zipAll(prefix#prefix, ll)
-            |> takeWhile(p -> Option.nonEmpty(fst(p)))
+            |> takeWhile(fst >> Option.nonEmpty)
             |> forAll(p -> fst(p) == snd(p))
 
     // Exercise 5.15: `unfold` を用いて遅延リストに `tail` を繰り返し適用した結果を返す関数 `tails` を定義せよ。
@@ -243,7 +243,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
             }, ll))
 
     pub def hasSubsequence(sub: {sub = LazyList[a]}, sup: LazyList[a]): Bool with Eq[a] =
-        exists(tail -> startsWith(prefix = sub#sub, tail), tails(sup))
+        exists(startsWith(prefix = sub#sub), tails(sup))
 
     // Exercise 5.16: `tails` を一般化して、 `foldRight` の累積値を要素とする遅延リストを返す関数 `scanRight` を定義せよ。
 
