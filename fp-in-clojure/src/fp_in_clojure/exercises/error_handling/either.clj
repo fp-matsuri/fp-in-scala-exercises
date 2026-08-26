@@ -115,27 +115,21 @@
   (map inc (->Right 42))
   (map inc (->Left "falsity"))
 
-
-
   (flat-map (fn [x]
               (if (even? x)
                 (->Right x)
                 (->Left "odd")))
             (->Right 2))
-
   (flat-map (fn [x]
               (if (even? x)
                 (->Right x)
                 (->Left "odd")))
             (->Right 3))
-
   (flat-map  (fn [x]
                (if (even? x)
                  (->Right x)
                  (->Left "odd")))
              (->Left "n/a"))
-
-
 
   (or-else (->Right \b) (->Right \a))
   (or-else (->Left \β) (->Right \a))
@@ -147,18 +141,12 @@
   (map2 + (->Right 1) (->Left "bar"))
   (map2 + (->Left "foo") (->Left "bar"))
 
-
-
   (traverse (fn [x] (if (odd? x) (->Right x) (->Left "even")))
             [])
-
   (traverse (fn [x] (if (odd? x) (->Right x) (->Left "even")))
             [1 3 5])
-
   (traverse (fn [x] (if (odd? x) (->Right x) (->Left "even")))
             [1 4 5])
-
-
 
   (sequence [])
   (sequence [(->Right 1) (->Right 2)])
