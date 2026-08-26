@@ -54,6 +54,16 @@
        (map f)
        (get-or-else nil)))
 
+(s/fdef flat-map'
+  :args (s/cat :f ifn?
+               :o option?)
+  :ret option?)
+
+(defn flat-map' [f o]
+  (if (some? o)
+    (f (:value o))
+    nil))
+
 (s/fdef or-else
   :args (s/cat :other option?
                :o option?)
@@ -64,12 +74,32 @@
        (map ->Some)
        (get-or-else other)))
 
+(s/fdef or-else'
+  :args (s/cat :other option?
+               :o option?)
+  :ret option?)
+
+(defn or-else' [other o]
+  (if (some? o)
+    o
+    other))
+
 (s/fdef filter
   :args (s/cat :f ifn?
                :o option?)
   :ret option?)
 
 (defn filter [f o]
+  (if (and (some? o) (f (:value o)))
+    o
+    nil))
+
+(s/fdef filter'
+  :args (s/cat :f ifn?
+               :o option?)
+  :ret option?)
+
+(defn filter' [f o]
   (flat-map (fn [a]
               (when (f a)
                 (->Some a)))
@@ -146,7 +176,7 @@
 
 (defn sequence [xs]
   (if (empty? xs)
-    (->Some nil)
+    (->Some [])
     (flat-map (fn [hh]
                 (map #(cons hh %)
                      (->> xs rest sequence)))
@@ -162,7 +192,7 @@
 
 (defn traverse [f xs]
   (if (empty? xs)
-    (->Some nil)
+    (->Some [])
     (map2 cons
           (->> xs first f)
           (traverse f (rest xs)))))
@@ -184,17 +214,26 @@
   (get-or-else 0 (->Some 42))
   (get-or-else 0 nil)
 
-  (flat-map #(->Some (* % 2)) (->Some 42))
-  (flat-map #(->Some (* % 2)) nil)
+  (= (flat-map #(->Some (* % 2)) (->Some 42))
+     (flat-map' #(->Some (* % 2)) (->Some 42)))
+  (= (flat-map #(->Some (* % 2)) nil)
+     (flat-map' #(->Some (* % 2)) nil))
 
-  (or-else (->Some \b) (->Some \a))
-  (or-else (->Some \b) nil)
-  (or-else nil (->Some \a))
-  (or-else nil nil)
+  (= (or-else (->Some \b) (->Some \a))
+     (or-else' (->Some \b) (->Some \a)))
+  (= (or-else (->Some \b) nil)
+     (or-else' (->Some \b) nil))
+  (= (or-else nil (->Some \a))
+     (or-else' nil (->Some \a)))
+  (= (or-else nil nil)
+     (or-else' nil nil))
 
-  (filter odd? (->Some 3))
-  (filter odd? (->Some 4))
-  (filter odd? nil)
+  (= (filter odd? (->Some 3))
+     (filter' odd? (->Some 3)))
+  (= (filter odd? (->Some 4))
+     (filter' odd? (->Some 4)))
+  (= (filter odd? nil)
+     (filter' odd? nil))
 
   (failing-fn)
   (failing-fn')

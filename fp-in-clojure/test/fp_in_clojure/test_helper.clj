@@ -1,33 +1,32 @@
 (ns fp-in-clojure.test-helper
   (:require
-   [clojure.spec.test.alpha :as stest]
-   [clojure.string :as str]))
+   [clojure.spec.test.alpha :as stest]))
 
-(defn- test-ns->sut-ns-sym [test-ns]
-  (let [test-ns-name (-> test-ns ns-name str)]
-    (when (str/ends-with? test-ns-name "-test")
-      (-> test-ns-name
-          (str/replace #"-test$" "")
-          symbol))))
+(defn- ns-alias->sym [ns alias]
+  (some-> ns
+          ns-aliases
+          (get alias)
+          ns-name
+          symbol))
+
+(defn- instrumentable [ns-sym]
+  (filter #(= (namespace %) (name ns-sym))
+          (stest/instrumentable-syms)))
 
 (defn- instrument-ns [ns-sym]
-  (->> (stest/instrumentable-syms)
-       (filter #(= (namespace %) (name ns-sym)))
-       stest/instrument))
+  (stest/instrument (instrumentable ns-sym)))
 
 (defn- unstrument-ns [ns-sym]
-  (->> (stest/instrumentable-syms)
-       (filter #(= (namespace %) (name ns-sym)))
-       stest/unstrument))
+  (stest/unstrument (instrumentable ns-sym)))
 
 ;; fixtures
 
-(defn instrument-specs [test-ns]
+(defn instrument-specs [current-ns target-alias]
   (fn [f]
-    (if-let [sut-ns-sym (test-ns->sut-ns-sym test-ns)]
-      (do (instrument-ns sut-ns-sym)
+    (if-let [target-ns-sym (ns-alias->sym current-ns target-alias)]
+      (do (instrument-ns target-ns-sym)
           (try
             (f)
             (finally
-              (unstrument-ns sut-ns-sym))))
+              (unstrument-ns target-ns-sym))))
       (f))))

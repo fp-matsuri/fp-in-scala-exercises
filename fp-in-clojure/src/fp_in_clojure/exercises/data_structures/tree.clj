@@ -46,6 +46,14 @@
        1
        (-> t :right size))))
 
+(s/fdef first-positive
+  :args (s/cat :t tree?)
+  :ret integer?)
+
+(defn first-positive [t]
+  ;; TODO
+  )
+
 ;; Exercise 3.25: ツリーのリーフの最大値を計算する拡張メソッド `maximum` を定義せよ。
 
 (s/fdef maximum
@@ -133,6 +141,13 @@
   (size (->Branch (->Leaf 1)
                   (->Branch (->Leaf 4)
                             (->Leaf 2))))
+
+  (first-positive (->Leaf 2))
+  (first-positive (->Branch (->Leaf -2)
+                            (->Leaf 4)))
+  (first-positive (->Branch (->Leaf -1)
+                            (->Branch (->Leaf -4)
+                                      (->Leaf 2))))
 
   (maximum (->Leaf 2))
   (maximum (->Branch (->Leaf 2)
