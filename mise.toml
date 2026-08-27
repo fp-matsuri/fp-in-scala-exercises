@@ -9,10 +9,16 @@ clj-kondo = "2026.05.25"
 cljstyle = "0.17.642"
 "github:candid82/joker" = "1.9.0"
 
-# fp-in-scala
-sbt = "1.12.11"
-coursier = {version = "2.1.25-M26", postinstall = "cs install scalafix:0.14.6 --install-dir ~/.local/bin" }
-"github:scalameta/scalafmt" = "3.11.0"
+# fp-in-flix
+"github:flix/flix" = { version = "0.75.3", asset_pattern = "flix.jar", depends = ["java"],
+  postinstall = '''
+cat > "$MISE_TOOL_INSTALL_PATH/flix" <<EOF
+#!/bin/sh
+exec java -jar "$MISE_TOOL_INSTALL_PATH/flix.jar" "\$@"
+EOF
+chmod +x "$MISE_TOOL_INSTALL_PATH/flix"
+'''
+}
 
 # fp-in-haskell
 ghc = "9.14.1"
@@ -22,3 +28,8 @@ cabal = "3.16.1.0"
 
 # fp-in-ocaml
 opam = {version = "2.5.1", postinstall = "opam init -y --disable-sandboxing && opam install -y dune" }
+
+# fp-in-scala
+sbt = "1.12.11"
+coursier = {version = "2.1.25-M26", postinstall = "cs install scalafix:0.14.6 --install-dir ~/.local/bin" }
+"github:scalameta/scalafmt" = "3.11.0"

@@ -17,9 +17,10 @@
       "extensions": [
         "betterthantomorrow.calva",
         "clj-kondo.clj-kondo",
-        "scalameta.metals",
+        "flix.flix",
         "haskell.haskell",
         "ocamllabs.ocaml-platform",
+        "scalameta.metals",
         "usernamehw.errorlens"
       ]
     }
