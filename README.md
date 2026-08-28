@@ -43,30 +43,32 @@ cf. FP in Scalaの公式リポジトリ: https://github.com/fpinscala/fpinscala
 
 ## 利用者向けガイド
 
-### Dev Container を使う（推奨）
+### A. Dev Container を使う
 
 このリポジトリは Dev Container に対応している。以下のいずれかの方法で、ツールのインストール不要ですぐに演習を始められる。
 
-**VS Code で開く場合**
+#### ローカルの VS Code で開く場合
 
 1. [Docker Desktop](https://www.docker.com/products/docker-desktop/) と VS Code の [Dev Containers 拡張](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) をインストール
 2. このリポジトリをクローン
 3. VS Code でリポジトリを開き、右下の通知または左下の `><` メニューから「コンテナーで再度開く」を選択
 4. 構成の選択ダイアログが出たら「FP in Scala Exercises」を選択
 
-**Apple Silicon など arm64 マシンで開く場合**
+⚠️ **Apple Silicon など arm64 マシンの場合**
 
 配布済みのコンテナイメージは amd64 専用のため、arm64 マシンでは手元でイメージをビルドする構成を使う。
 手順は上記と同じで、構成の選択ダイアログで **「FP in Scala Exercises (Local Build / arm64)」を選択**する。
 初回はイメージのビルドに時間がかかる（10〜20分程度）。詳細は [DEVCONTAINER.md](DEVCONTAINER.md) を参照。
 
-**GitHub Codespaces で開く場合**
+#### クラウドの [GitHub Codespaces](https://github.co.jp/features/codespaces) で開く場合
 
-GitHub のリポジトリページから「Code → Codespaces → Create codespace」を選択するだけで使える。
+GitHub のリポジトリページから[「Code」 → 「Codespaces」 → 「Create codespace」を選択する](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository?tool=webui#creating-a-codespace-for-a-repository)だけで使える。
 
-### ローカル環境で使う
+### B. ローカル環境を直接使う
 
-Dev Container を使わない場合、各言語ディレクトリ配下の README.md を参照。
+Dev Container を使わず、各言語ディレクトリ配下の README.md を参考に必要なツールを自ら準備する。
+
+[mise.toml](mise.toml) に設定がある言語の場合、開発環境管理ツール [mise](https://mise.en.dev/) でツールを導入することができる。
 
 ## 問題作成者向けガイド
 
