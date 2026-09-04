@@ -353,14 +353,14 @@
 ;; Exercise 3.22: リスト `a`, `b` をそれぞれ先頭から順に取り出して対応する要素を足し合わせたリストを返す関数 `add-pairwise` を定義せよ。 `a`, `b` の長さが異なる場合、返すリストの長さは短いほうに一致する。
 
 (s/fdef add-pairwise
-  :args (s/cat :a1 (s/and list?
-                          #(every? integer? %))
-               :a2 (s/and list?
-                          #(every? integer? %)))
+  :args (s/cat :a (s/and list?
+                         #(every? integer? %))
+               :b (s/and list?
+                         #(every? integer? %)))
   :ret (s/and list?
               #(every? integer? %)))
 
-(defn add-pairwise [a1 a2]
+(defn add-pairwise [a b]
   ;; TODO
   )
 
@@ -368,11 +368,11 @@
 
 (s/fdef zip-with
   :args (s/cat :f ifn?
-               :as list?
-               :bs list?)
+               :a list?
+               :b list?)
   :ret list?)
 
-(defn zip-with [f as bs]
+(defn zip-with [f a b]
   ;; TODO
   )
 
