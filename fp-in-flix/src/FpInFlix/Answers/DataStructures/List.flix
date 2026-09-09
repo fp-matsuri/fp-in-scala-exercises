@@ -289,18 +289,20 @@ pub mod FpInFlix.Answers.DataStructures.List {
     // 例えば、 `Cons(1, Cons(2, Cons(3, Cons(4, Nil))))` は `Cons(1, Cons(2, Nil))`, `Cons(2, Cons(3, Nil))`, `Cons(4, Nil)` を部分列として含むが、 `Cons(1, Cons(4, Nil))` は部分列として含まない。
 
     @Tailrec
-    def startWith(l: List[a], prefix: List[a]): Bool with Eq[a] =
-        match (l, prefix) {
-            case (_, Nil) => true
-            case (Cons(h1, t1), Cons(h2, t2)) if h1 == h2 => startWith(t1, t2)
+    def startWith(prefix: {prefix = List[a]}, l: List[a]): Bool with Eq[a] =
+        match (prefix#prefix, l) {
+            case (Nil, _) => true
+            case (Cons(h1, t1), Cons(h2, t2)) if h1 == h2 => startWith(prefix = t1, t2)
             case _ => false
         }
 
+    // NOTE: 引数 `sub` はレコードによる名前付きパラメータ
+    // ref. https://doc.flix.dev/records.html#named-parameters
     @Tailrec
-    pub def hasSubsequence(sup: List[a], sub: List[a]): Bool with Eq[a] =
+    pub def hasSubsequence(sub: {sub = List[a]}, sup: List[a]): Bool with Eq[a] =
         match sup {
-            case Nil => sub == Nil
-            case _ if startWith(sup, sub) => true
-            case Cons(_, t) => hasSubsequence(t, sub)
+            case Nil => sub#sub == Nil
+            case _ if startWith(prefix = sub#sub, sup) => true
+            case Cons(_, t) => hasSubsequence(sub, t)
         }
 }

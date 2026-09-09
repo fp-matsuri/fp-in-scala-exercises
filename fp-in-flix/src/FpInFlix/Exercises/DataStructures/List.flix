@@ -176,6 +176,8 @@ pub mod FpInFlix.Exercises.DataStructures.List {
     // Exercise 3.24: リスト `sup` の中にリスト `sub` が部分列として含まれているかどうかを判定する関数 `hasSubsequence` を定義せよ。
     // 例えば、 `Cons(1, Cons(2, Cons(3, Cons(4, Nil))))` は `Cons(1, Cons(2, Nil))`, `Cons(2, Cons(3, Nil))`, `Cons(4, Nil)` を部分列として含むが、 `Cons(1, Cons(4, Nil))` は部分列として含まない。
 
-    pub def hasSubsequence(sup: List[a], sub: List[a]): Bool with Eq[a] =
+    // NOTE: 引数 `sub` はレコードによる名前付きパラメータ
+    // ref. https://doc.flix.dev/records.html#named-parameters
+    pub def hasSubsequence(sub: {sub = List[a]}, sup: List[a]): Bool with Eq[a] =
         ???
 }

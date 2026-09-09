@@ -380,11 +380,11 @@
 ;; 例えば、 `(list 1 2 3 4)` は `(list 1 2)`, `(list 2 3)`, `(list 4)` を部分列として含むが、 `(list 1 4)` は部分列として含まない。
 
 (s/fdef has-subsequence?
-  :args (s/cat :sup list?
-               :sub list?)
+  :args (s/cat :sub list?
+               :sup list?)
   :ret boolean?)
 
-(defn has-subsequence? [sup sub]
+(defn has-subsequence? [sub sup]
   ;; TODO
   )
 
@@ -473,8 +473,8 @@
   (zip-with * (list 1 2 3) (list 4 5))
   (zip-with * (list 1 2) (list 3 4 5))
 
-  (has-subsequence? (list 1 2 3 4 5) (list 1 2 3))
-  (has-subsequence? (list 1 2 3 4 5) (list 3 4))
-  (has-subsequence? (list 1 2 3 4 5) (list 5))
-  (has-subsequence? (list 1 2 3 4 5) (list 1 3))
+  (has-subsequence? (list 1 2 3) (list 1 2 3 4 5))
+  (has-subsequence? (list 3 4) (list 1 2 3 4 5))
+  (has-subsequence? (list 5) (list 1 2 3 4 5))
+  (has-subsequence? (list 1 3) (list 1 2 3 4 5))
   )

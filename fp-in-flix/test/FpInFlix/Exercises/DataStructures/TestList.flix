@@ -176,18 +176,18 @@ mod FpInFlix.Exercises.DataStructures.TestList {
     @Test
     def testHasSubsequence(): Unit \ Assert =
         assertTrue(
-            List.hasSubsequence(Cons(1, Cons(2, Cons(3, Cons(4, Nil)))), Cons(2, Cons(3, Nil)))
+            List.hasSubsequence(sub = Cons(2, Cons(3, Nil)), Cons(1, Cons(2, Cons(3, Cons(4, Nil)))))
         );
         assertFalse(
-            List.hasSubsequence(Cons(1, Cons(2, Cons(3, Cons(4, Nil)))), Cons(2, Cons(4, Nil)))
+            List.hasSubsequence(sub = Cons(2, Cons(4, Nil)), Cons(1, Cons(2, Cons(3, Cons(4, Nil)))))
         );
         assertTrue(
-            List.hasSubsequence(Cons(1, Cons(2, Cons(3, Cons(4, Nil)))), Nil)
+            List.hasSubsequence(sub = Nil, Cons(1, Cons(2, Cons(3, Cons(4, Nil)))))
         );
         assertFalse(
-            List.hasSubsequence(Nil, Cons(1, Nil))
+            List.hasSubsequence(sub = Cons(1, Nil), Nil)
         );
         assertTrue(
-            List.hasSubsequence((Nil: List[Int32]), Nil)
+            List.hasSubsequence(sub = (Nil: List[Int32]), Nil)
         )
 }

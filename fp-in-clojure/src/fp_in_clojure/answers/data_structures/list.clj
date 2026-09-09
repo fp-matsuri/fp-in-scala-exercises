@@ -472,22 +472,22 @@
 ;; Exercise 3.24: リスト `sup` の中にリスト `sub` が部分列として含まれているかどうかを判定する関数 `has-subsequence?` を定義せよ。
 ;; 例えば、 `(list 1 2 3 4)` は `(list 1 2)`, `(list 2 3)`, `(list 4)` を部分列として含むが、 `(list 1 4)` は部分列として含まない。
 
-(defn- starts-with [l prefix]
+(defn- starts-with [prefix l]
   (cond
     (empty? prefix) true
-    (= (first l) (first prefix)) (recur (rest l) (rest prefix))
+    (= (first prefix) (first l)) (recur (rest prefix) (rest l))
     :else false))
 
 (s/fdef has-subsequence?
-  :args (s/cat :sup list?
-               :sub list?)
+  :args (s/cat :sub list?
+               :sup list?)
   :ret boolean?)
 
-(defn has-subsequence? [sup sub]
+(defn has-subsequence? [sub sup]
   (cond
     (empty? sup) (empty? sub)
-    (starts-with sup sub) true
-    :else (recur (rest sup) sub)))
+    (starts-with sub sup) true
+    :else (recur sub (rest sup))))
 
 (comment
   (require '[clojure.spec.test.alpha :as stest])
@@ -583,8 +583,8 @@
   (zip-with * (list 1 2 3) (list 4 5))
   (zip-with * (list 1 2) (list 3 4 5))
 
-  (has-subsequence? (list 1 2 3 4 5) (list 1 2 3))
-  (has-subsequence? (list 1 2 3 4 5) (list 3 4))
-  (has-subsequence? (list 1 2 3 4 5) (list 5))
-  (has-subsequence? (list 1 2 3 4 5) (list 1 3))
+  (has-subsequence? (list 1 2 3) (list 1 2 3 4 5))
+  (has-subsequence? (list 3 4) (list 1 2 3 4 5))
+  (has-subsequence? (list 5) (list 1 2 3 4 5))
+  (has-subsequence? (list 1 3) (list 1 2 3 4 5))
   )

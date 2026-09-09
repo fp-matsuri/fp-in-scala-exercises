@@ -175,13 +175,13 @@
 (tc/defspec has-subsequence?-test 1000
   (prop/for-all [l gen-int-list
                  n gen-small-num]
-    (and (sut/has-subsequence? l nil)
+    (and (sut/has-subsequence? nil l)
          (sut/has-subsequence? l l)
-         (sut/has-subsequence? l (try-with-default nil (sut/init l)))
-         (sut/has-subsequence? l (try-with-default nil (sut/tail l)))
-         (sut/has-subsequence? l (sut/drop n l)))))
+         (sut/has-subsequence? (try-with-default nil (sut/init l)) l)
+         (sut/has-subsequence? (try-with-default nil (sut/tail l)) l)
+         (sut/has-subsequence? (sut/drop n l) l))))
 
-(defn- contains-slice? [sup sub]
+(defn- contains-slice? [sub sup]
   (if (empty? sub)
     true
     (some? (some #(= sub %) (partition (count sub) 1 sup)))))
