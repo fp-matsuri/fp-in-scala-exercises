@@ -353,14 +353,14 @@
 ;; Exercise 3.22: リスト `a`, `b` をそれぞれ先頭から順に取り出して対応する要素を足し合わせたリストを返す関数 `add-pairwise` を定義せよ。 `a`, `b` の長さが異なる場合、返すリストの長さは短いほうに一致する。
 
 (s/fdef add-pairwise
-  :args (s/cat :a1 (s/and list?
-                          #(every? integer? %))
-               :a2 (s/and list?
-                          #(every? integer? %)))
+  :args (s/cat :a (s/and list?
+                         #(every? integer? %))
+               :b (s/and list?
+                         #(every? integer? %)))
   :ret (s/and list?
               #(every? integer? %)))
 
-(defn add-pairwise [a1 a2]
+(defn add-pairwise [a b]
   ;; TODO
   )
 
@@ -368,11 +368,11 @@
 
 (s/fdef zip-with
   :args (s/cat :f ifn?
-               :as list?
-               :bs list?)
+               :a list?
+               :b list?)
   :ret list?)
 
-(defn zip-with [f as bs]
+(defn zip-with [f a b]
   ;; TODO
   )
 
@@ -380,11 +380,11 @@
 ;; 例えば、 `(list 1 2 3 4)` は `(list 1 2)`, `(list 2 3)`, `(list 4)` を部分列として含むが、 `(list 1 4)` は部分列として含まない。
 
 (s/fdef has-subsequence?
-  :args (s/cat :sup list?
-               :sub list?)
+  :args (s/cat :sub list?
+               :sup list?)
   :ret boolean?)
 
-(defn has-subsequence? [sup sub]
+(defn has-subsequence? [sub sup]
   ;; TODO
   )
 
@@ -473,8 +473,8 @@
   (zip-with * (list 1 2 3) (list 4 5))
   (zip-with * (list 1 2) (list 3 4 5))
 
-  (has-subsequence? (list 1 2 3 4 5) (list 1 2 3))
-  (has-subsequence? (list 1 2 3 4 5) (list 3 4))
-  (has-subsequence? (list 1 2 3 4 5) (list 5))
-  (has-subsequence? (list 1 2 3 4 5) (list 1 3))
+  (has-subsequence? (list 1 2 3) (list 1 2 3 4 5))
+  (has-subsequence? (list 3 4) (list 1 2 3 4 5))
+  (has-subsequence? (list 5) (list 1 2 3 4 5))
+  (has-subsequence? (list 1 3) (list 1 2 3 4 5))
   )

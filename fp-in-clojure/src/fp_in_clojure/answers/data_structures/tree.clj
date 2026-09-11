@@ -56,7 +56,7 @@
         lpos
         (first-positive (:right t))))))
 
-;; Exercise 3.25: ツリーのリーフの最大値を計算する拡張メソッド `maximum` を定義せよ。
+;; Exercise 3.25: ツリーのリーフの最大値を計算する関数 `maximum` を定義せよ。
 
 (s/fdef maximum
   :args (s/cat :t tree?)
@@ -68,7 +68,7 @@
     (max (-> t :left maximum)
          (-> t :right maximum))))
 
-;; Exercise 3.26: ツリーの深さを計算するメソッド `depth` を定義せよ。深さは、ルートから最も遠いリーフまでのパスの長さである。
+;; Exercise 3.26: ツリーの深さを計算する関数 `depth` を定義せよ。深さは、ルートから最も遠いリーフまでのパスの長さである。
 
 (s/fdef depth
   :args (s/cat :t tree?)
@@ -80,7 +80,7 @@
     (inc (max (-> t :left depth)
               (-> t :right depth)))))
 
-;; Exercise 3.27: ツリーの各リーフに関数 `f` を適用するメソッド `map` を定義せよ。
+;; Exercise 3.27: ツリーの各リーフに関数 `f` を適用する関数 `map` を定義せよ。
 
 (s/fdef map
   :args (s/cat :f ifn?
@@ -93,7 +93,7 @@
     (->Branch (map f (:left t))
               (map f (:right t)))))
 
-;; Exercise 3.28: ツリーのリーフの値を変換する関数 `f` とブランチの左右の値をまとめる関数 `g` を受け取ってツリーを畳み込むメソッド `fold` を定義せよ。
+;; Exercise 3.28: ツリーのリーフの値を変換する関数 `f` とブランチの左右の値をまとめる関数 `g` を受け取ってツリーを畳み込む関数 `fold` を定義せよ。
 ;; また、 `fold` を用いて `size` 、 `depth` 、 `map` 、 `maximum` を定義せよ。
 
 (s/fdef fold

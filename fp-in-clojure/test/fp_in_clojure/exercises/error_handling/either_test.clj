@@ -5,11 +5,9 @@
    [clojure.string :as str]
    [clojure.test :as t]
    [clojure.test.check.clojure-test :as tc]
-   [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    ;; 解答例
    #_[fp-in-clojure.answers.error-handling.either :as sut]
-   [fp-in-clojure.exercises.common :as common]
    [fp-in-clojure.exercises.error-handling.either :as sut]
    [fp-in-clojure.exercises.error-handling.either-test.person :as-alias person]
    [fp-in-clojure.test-helper :as test-helper]))

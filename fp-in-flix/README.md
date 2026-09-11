@@ -6,6 +6,7 @@ FP in Scala演習問題の[Flix](https://flix.dev/)移植版
 
 - コマンドラインツール: [`flix` コマンド](https://flix.dev/get-started/)
     - もしくは、配布されているjarを直接利用して: `java -jar flix.jar`
+        - このとき、 `make` を利用する場合は `FLIX="java -jar flix.jar" make test` のように実行する
 
 ## 使い方
 
@@ -36,6 +37,9 @@ DelayList(1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880)
     ```shell
     # 全テストの実行
     flix test  # または make test
+    # 特定の章のテストの実行(例)
+    # ℹ️ 章に対応するモジュール名は make chapters で確認できる
+    make test CH=GettingStarted
     ```
 
 - REPLから:

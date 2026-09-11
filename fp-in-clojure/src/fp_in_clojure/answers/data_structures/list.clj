@@ -86,7 +86,7 @@
     :else (* (first ns)
              (product (rest ns)))))
 
-;; Exercise 3.1: 以下の式 `result `の評価結果は何になるか? (推測してからREPLで確認してみよう)
+;; Exercise 3.1: 以下の式 `result` の評価結果は何になるか? (推測してからREPLで確認してみよう)
 
 (def result
   ;; NOTE: ここではパターンマッチングの例示のため、準標準ライブラリcore.matchを利用している。
@@ -440,54 +440,54 @@
 ;; Exercise 3.22: リスト `a`, `b` をそれぞれ先頭から順に取り出して対応する要素を足し合わせたリストを返す関数 `add-pairwise` を定義せよ。 `a`, `b` の長さが異なる場合、返すリストの長さは短いほうに一致する。
 
 (s/fdef add-pairwise
-  :args (s/cat :a1 (s/and list?
-                          #(every? integer? %))
-               :a2 (s/and list?
-                          #(every? integer? %)))
+  :args (s/cat :a (s/and list?
+                         #(every? integer? %))
+               :b (s/and list?
+                         #(every? integer? %)))
   :ret (s/and list?
               #(every? integer? %)))
 
-(defn add-pairwise [a1 a2]
-  (if (or (empty? a1)
-          (empty? a2))
+(defn add-pairwise [a b]
+  (if (or (empty? a)
+          (empty? b))
     nil
-    (Cons. (+' (first a1) (first a2))
-           (add-pairwise (rest a1) (rest a2)))))
+    (Cons. (+' (first a) (first b))
+           (add-pairwise (rest a) (rest b)))))
 
 ;; Exercise 3.23: `add-pairwise` を一般化して、リスト `a`, `b` をそれぞれ先頭から順に取り出して対応する要素に関数 `f` を適用して得られたリストを返す関数 `zip-with` を定義せよ。
 
 (s/fdef zip-with
   :args (s/cat :f ifn?
-               :as list?
-               :bs list?)
+               :a list?
+               :b list?)
   :ret list?)
 
-(defn zip-with [f as bs]
-  (if (or (empty? as)
-          (empty? bs))
+(defn zip-with [f a b]
+  (if (or (empty? a)
+          (empty? b))
     nil
-    (Cons. (f (first as) (first bs))
-           (zip-with f (rest as) (rest bs)))))
+    (Cons. (f (first a) (first b))
+           (zip-with f (rest a) (rest b)))))
 
 ;; Exercise 3.24: リスト `sup` の中にリスト `sub` が部分列として含まれているかどうかを判定する関数 `has-subsequence?` を定義せよ。
 ;; 例えば、 `(list 1 2 3 4)` は `(list 1 2)`, `(list 2 3)`, `(list 4)` を部分列として含むが、 `(list 1 4)` は部分列として含まない。
 
-(defn- starts-with [l prefix]
+(defn- starts-with [prefix l]
   (cond
     (empty? prefix) true
-    (= (first l) (first prefix)) (recur (rest l) (rest prefix))
+    (= (first prefix) (first l)) (recur (rest prefix) (rest l))
     :else false))
 
 (s/fdef has-subsequence?
-  :args (s/cat :sup list?
-               :sub list?)
+  :args (s/cat :sub list?
+               :sup list?)
   :ret boolean?)
 
-(defn has-subsequence? [sup sub]
+(defn has-subsequence? [sub sup]
   (cond
     (empty? sup) (empty? sub)
-    (starts-with sup sub) true
-    :else (recur (rest sup) sub)))
+    (starts-with sub sup) true
+    :else (recur sub (rest sup))))
 
 (comment
   (require '[clojure.spec.test.alpha :as stest])
@@ -583,8 +583,8 @@
   (zip-with * (list 1 2 3) (list 4 5))
   (zip-with * (list 1 2) (list 3 4 5))
 
-  (has-subsequence? (list 1 2 3 4 5) (list 1 2 3))
-  (has-subsequence? (list 1 2 3 4 5) (list 3 4))
-  (has-subsequence? (list 1 2 3 4 5) (list 5))
-  (has-subsequence? (list 1 2 3 4 5) (list 1 3))
+  (has-subsequence? (list 1 2 3) (list 1 2 3 4 5))
+  (has-subsequence? (list 3 4) (list 1 2 3 4 5))
+  (has-subsequence? (list 5) (list 1 2 3 4 5))
+  (has-subsequence? (list 1 3) (list 1 2 3 4 5))
   )

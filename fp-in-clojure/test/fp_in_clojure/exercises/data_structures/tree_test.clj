@@ -70,6 +70,11 @@
     (= (apply str (tree->seq t))
        (sut/fold str str t))))
 
+(tc/defspec size-via-fold-test 1000
+  (prop/for-all [t gen-int-tree]
+    (= (count (tree->seq t))
+       (sut/size-via-fold t))))
+
 (tc/defspec depth-via-fold-test 1000
   (prop/for-all [t gen-int-tree]
     (if (sut/leaf? t)
