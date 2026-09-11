@@ -157,7 +157,9 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
     // Exercise 5.12: `unfold` を用いて `fibs`, `startFrom`, `continually`, `ones` を実装せよ。
 
     pub def fibsViaUnfold(): LazyList[BigInt] =
-        unfold(p -> let (current, next) = p; Some((current, (next, current + next))), (0ii, 1ii))
+        // NOTE: ラムダ式の引数でパターンマッチすることができる(ここでは2要素のタプルによる1引数)
+        // ref. https://doc.flix.dev/pattern-matching.html#match-lambdas
+        unfold(match (current, next) -> Some((current, (next, current + next))), (0ii, 1ii))
 
     pub def startFromViaUnfold(n: Int32): LazyList[Int32] =
         unfold(x -> Some((x, x + 1)), n)

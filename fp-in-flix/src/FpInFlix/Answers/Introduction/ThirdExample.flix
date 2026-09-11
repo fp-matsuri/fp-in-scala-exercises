@@ -35,10 +35,7 @@ pub mod FpInFlix.Answers.Introduction.ThirdExample {
 
         pub def coalesce(charges: List[Charge]): Result[String, List[Charge]] =
             charges
-                |> List.groupBy(charge ->
-                    let Charge({creditCard | _}) = charge;
-                    creditCard
-                )
+                |> List.groupBy(match Charge({creditCard | _}) -> creditCard)
                 |> Traversable.traverse(group -> Foldable.foldLeftM(combine, Nel.head(group), Nel.tail(group)))
     }
 
