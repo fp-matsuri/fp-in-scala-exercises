@@ -4,10 +4,10 @@ ghc = "https://github.com/sestrella/asdf-ghcup.git"
 [tools]
 # fp-in-clojure
 java = "25.0.2"
-clojure = "1.12.5.1654"
-clj-kondo = "2026.05.25"
+clojure = "1.12.6.1673"
+clj-kondo = "2026.08.04"
 cljstyle = "0.17.642"
-"github:candid82/joker" = "1.9.0"
+"github:candid82/joker" = "1.10.0"
 
 # fp-in-flix
 "github:flix/flix" = { version = "0.75.3", asset_pattern = "flix.jar", depends = ["java"],
