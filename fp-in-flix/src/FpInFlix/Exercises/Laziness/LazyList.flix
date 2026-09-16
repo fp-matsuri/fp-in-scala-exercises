@@ -150,7 +150,7 @@ pub mod FpInFlix.Exercises.Laziness.LazyList {
         ???
 
     pub def hasSubsequence(sub: {sub = LazyList[a]}, sup: LazyList[a]): Bool with Eq[a] =
-        exists(tail -> startsWith(prefix = sub#sub, tail), tails(sup))
+        exists(startsWith(prefix = sub#sub), tails(sup))
 
     // Exercise 5.16: `tails` を一般化して、 `foldRight` の累積値を要素とする遅延リストを返す関数 `scanRight` を定義せよ。
 
