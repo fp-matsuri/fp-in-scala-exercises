@@ -10,7 +10,7 @@ cljstyle = "0.17.642"
 "github:candid82/joker" = "1.10.0"
 
 # fp-in-flix
-"github:flix/flix" = { version = "0.75.3", asset_pattern = "flix.jar", depends = ["java"],
+"github:flix/flix" = { version = "0.76.0", asset_pattern = "flix.jar", depends = ["java"],
   postinstall = '''
 cat > "$MISE_TOOL_INSTALL_PATH/flix" <<EOF
 #!/bin/sh

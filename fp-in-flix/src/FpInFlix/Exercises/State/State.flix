@@ -55,10 +55,6 @@ pub mod FpInFlix.Exercises.State.State {
         coins = Int32
     }
 
-    mod Candy {
-        use FpInFlix.Exercises.State.State.{Input, Machine, State}
-
-        pub def simulateMachine(inputs: List[Input]): State[Machine, (Int32, Int32)] =
-            ???
-    }
+    pub def simulateMachine(inputs: List[Input]): State[Machine, (Int32, Int32)] =
+        ???
 }

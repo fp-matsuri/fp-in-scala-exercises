@@ -1,8 +1,18 @@
 mod FpInFlix.Exercises.ErrorHandling.TestOption {
     use Assert.assertEq
     // 解答例
-    // use FpInFlix.Answers.ErrorHandling.Option.{FlixOption, None, Option, Some}
-    use FpInFlix.Exercises.ErrorHandling.Option.{FlixOption, None, Option, Some}
+    // use FpInFlix.Answers.ErrorHandling.Option.{None, Option, Some}
+    use FpInFlix.Exercises.ErrorHandling.Option.{None, Option, Some}
+
+    mod FlixOption {
+        // 解答例
+        // use FpInFlix.Answers.ErrorHandling.{Option => MyOption}
+        use FpInFlix.Exercises.ErrorHandling.{Option => MyOption}
+
+        /// Flix標準ライブラリの `Option` を独自定義の `Option` に変換する。
+        pub def toOption(o: Option[a]): MyOption[a] =
+            Option.foldLeft((_, x) -> MyOption.Some(x), MyOption.None, o)
+    }
 
     @Test
     def testMap(): Unit \ Assert =

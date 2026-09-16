@@ -2,5 +2,5 @@
 name        = "fp-in-flix"
 description = "FP in Scala演習問題のFlix移植版"
 version     = "0.1.0"
-flix        = "0.75.3"
+flix        = "0.76.0"
 authors     = ["fp-matsuri"]

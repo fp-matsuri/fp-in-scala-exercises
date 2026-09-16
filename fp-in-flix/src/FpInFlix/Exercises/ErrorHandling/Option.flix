@@ -8,14 +8,6 @@ pub mod FpInFlix.Exercises.ErrorHandling.Option {
         case Some(a)
     }
 
-    mod FlixOption {
-        use FpInFlix.Exercises.ErrorHandling.{Option => MyOption}
-
-        /// Flix標準ライブラリの `Option` を独自定義の `Option` に変換する。
-        pub def toOption(o: Option[a]): MyOption[a] =
-            Option.foldLeft((_, x) -> MyOption.Some(x), MyOption.None, o)
-    }
-
     // Exercise 4.1: 関数 `map` 、 `getOrElse` 、 `flatMap` 、 `orElse` 、 `filter` を実装せよ。
     // `getOrElse` は `Some` ならその中身の値を返し、 `None` なら引数のデフォルト値を返す。
     // `orElse` は `Some` ならそのまま返し、 `None` なら引数のOption値を返す。
