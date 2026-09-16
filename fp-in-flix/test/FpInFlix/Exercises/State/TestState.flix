@@ -70,7 +70,7 @@ mod FpInFlix.Exercises.State.TestState {
         )
             let machine = {locked = locked, candies = candies, coins = coins};
             let inputs = List#{State.Input.Coin, State.Input.Turn};
-            let (result, finalMachine) = State.Candy.simulateMachine(inputs) |> State.runState(machine);
+            let (result, finalMachine) = State.simulateMachine(inputs) |> State.runState(machine);
             // 変化なし
             assertEq(expected = (coins, candies), result);
             assertEq(expected = machine#locked, finalMachine#locked);
@@ -86,7 +86,7 @@ mod FpInFlix.Exercises.State.TestState {
         )
             let machine = {locked = locked, candies = candies, coins = coins};
             let inputs = List#{State.Input.Coin};
-            let (result, finalMachine) = State.Candy.simulateMachine(inputs) |> State.runState(machine);
+            let (result, finalMachine) = State.simulateMachine(inputs) |> State.runState(machine);
             // コインが1枚増え、ロックが外れる
             assertEq(expected = (coins + 1, candies), result);
             assertEq(expected = false, finalMachine#locked);
@@ -102,7 +102,7 @@ mod FpInFlix.Exercises.State.TestState {
         )
             let machine = {locked = locked, candies = candies, coins = coins};
             let inputs = List#{State.Input.Turn};
-            let (result, finalMachine) = State.Candy.simulateMachine(inputs) |> State.runState(machine);
+            let (result, finalMachine) = State.simulateMachine(inputs) |> State.runState(machine);
             // 変化なし
             assertEq(expected = (coins, candies), result);
             assertEq(expected = locked, finalMachine#locked);
@@ -118,7 +118,7 @@ mod FpInFlix.Exercises.State.TestState {
         )
             let machine = {locked = locked, candies = candies, coins = coins};
             let inputs = List#{State.Input.Coin};
-            let (result, finalMachine) = State.Candy.simulateMachine(inputs) |> State.runState(machine);
+            let (result, finalMachine) = State.simulateMachine(inputs) |> State.runState(machine);
             // 変化なし
             assertEq(expected = (coins, candies), result);
             assertEq(expected = locked, finalMachine#locked);
@@ -134,7 +134,7 @@ mod FpInFlix.Exercises.State.TestState {
         )
             let machine = {locked = locked, candies = candies, coins = coins};
             let inputs = List#{State.Input.Turn};
-            let (result, finalMachine) = State.Candy.simulateMachine(inputs) |> State.runState(machine);
+            let (result, finalMachine) = State.simulateMachine(inputs) |> State.runState(machine);
             // キャンディが1個減り、ロックが掛かる
             assertEq(expected = (coins, candies - 1), result);
             assertEq(expected = true, finalMachine#locked);
@@ -151,7 +151,7 @@ mod FpInFlix.Exercises.State.TestState {
         )
             let machine = {locked = locked, candies = candies, coins = coins};
             let inputs = List#{State.Input.Coin, State.Input.Turn} |> List.repeat(myCoins) |> List.flatten;
-            let (result, finalMachine) = State.Candy.simulateMachine(inputs) |> State.runState(machine);
+            let (result, finalMachine) = State.simulateMachine(inputs) |> State.runState(machine);
             let spentCoins = Int32.min(candies, myCoins);
             // キャンディの残数が尽きるまでに使ったコインの分だけコインの枚数が増え、キャンディの個数が減る
             assertEq(expected = (coins + spentCoins, candies - spentCoins), result);
@@ -168,7 +168,7 @@ mod FpInFlix.Exercises.State.TestState {
         )
             let machine = {locked = locked, candies = candies, coins = coins};
             let inputs = Nil;
-            let (result, finalMachine) = State.Candy.simulateMachine(inputs) |> State.runState(machine);
+            let (result, finalMachine) = State.simulateMachine(inputs) |> State.runState(machine);
             // 変化なし
             assertEq(expected = (coins, candies), result);
             assertEq(expected = locked, finalMachine#locked);

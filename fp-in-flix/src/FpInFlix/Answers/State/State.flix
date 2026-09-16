@@ -58,28 +58,24 @@ pub mod FpInFlix.Answers.State.State {
         coins = Int32
     }
 
-    mod Candy {
-        use FpInFlix.Answers.State.State.{Input, Machine, State}
-
-        pub def simulateMachine(inputs: List[Input]): State[Machine, (Int32, Int32)] =
-            inputs
-                |> State.traverse(update >> State.modify)
-                |> State.flatMap(_ ->
-                    State.map(s ->
-                        (s#coins, s#candies),
-                        State.get()
-                    )
+    pub def simulateMachine(inputs: List[Input]): State[Machine, (Int32, Int32)] =
+        inputs
+            |> State.traverse(updateMachine >> State.modify)
+            |> State.flatMap(_ ->
+                State.map(s ->
+                    (s#coins, s#candies),
+                    State.get()
                 )
+            )
 
-        def update(i: Input, m: Machine): Machine =
-            match (i, m) {
-                case (_, {candies = 0 | _}) => m
-                case (Input.Coin, {locked = false | _}) => m
-                case (Input.Turn, {locked = true | _}) => m
-                case (Input.Coin, {locked = true, candies, coins}) =>
-                    {locked = false, candies = candies, coins = coins + 1}
-                case (Input.Turn, {locked = false, candies, coins}) =>
-                    {locked = true, candies = candies - 1, coins = coins}
-            }
-    }
+    def updateMachine(i: Input, m: Machine): Machine =
+        match (i, m) {
+            case (_, {candies = 0 | _}) => m
+            case (Input.Coin, {locked = false | _}) => m
+            case (Input.Turn, {locked = true | _}) => m
+            case (Input.Coin, {locked = true, candies, coins}) =>
+                {locked = false, candies = candies, coins = coins + 1}
+            case (Input.Turn, {locked = false, candies, coins}) =>
+                {locked = true, candies = candies - 1, coins = coins}
+        }
 }
