@@ -1,7 +1,6 @@
 (ns fp-in-clojure.exercises.laziness.lazy-seq
   (:refer-clojure :exclude [drop filter find map take take-while])
   (:require
-   [clojure.core :as core]
    [clojure.spec.alpha :as s]))
 
 ;; NOTE: Clojureでは `lazy-seq` マクロを使って遅延シーケンスを生成することができる
@@ -333,7 +332,8 @@
   )
 
 (comment
-  (require '[clojure.spec.test.alpha :as stest])
+  (require '[clojure.core :as core]
+           '[clojure.spec.test.alpha :as stest])
   (stest/instrument)
 
   (->seq (lazy-seq (cons 1 (lazy-seq (cons 2 (lazy-seq (cons 3 nil)))))))
