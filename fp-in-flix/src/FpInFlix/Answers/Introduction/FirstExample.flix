@@ -1,6 +1,6 @@
 pub mod FpInFlix.Answers.Introduction.FirstExample {
     mod Coffee {
-        pub enum Coffee({price = Float64})
+        enum Coffee({price = Float64})
 
         instance ToString[Coffee] {
             pub def toString(coffee: Coffee): String =
