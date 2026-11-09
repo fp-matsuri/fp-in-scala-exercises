@@ -68,6 +68,7 @@ tree -L 3 --gitignore
 .
 ├── flix.toml  # プロジェクト設定
 ├── Makefile
+├── packages.lock  # 依存のロックファイル
 ├── README.md
 ├── src  # ソースコード
 │   ├── FpInFlix
