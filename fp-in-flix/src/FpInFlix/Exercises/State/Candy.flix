@@ -16,9 +16,9 @@ pub mod FpInFlix.Exercises.State.Candy {
     }
 
     pub type alias Machine = {
-        locked = Bool,
+        locked  = Bool,
         candies = Int32,
-        coins = Int32
+        coins   = Int32
     }
 
     pub def simulateMachine(inputs: List[Input]): State[Machine, (Int32, Int32)] =

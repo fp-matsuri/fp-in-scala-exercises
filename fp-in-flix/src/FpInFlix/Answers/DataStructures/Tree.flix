@@ -6,7 +6,7 @@ pub mod FpInFlix.Answers.DataStructures.Tree {
 
     pub def size(t: Tree[a]): Int32 =
         match t {
-            case Leaf(_) => 1
+            case Leaf(_)             => 1
             case Branch(left, right) => 1 + size(left) + size(right)
         }
 
@@ -22,15 +22,15 @@ pub mod FpInFlix.Answers.DataStructures.Tree {
 
     pub def maximum(t: Tree[Int32]): Int32 =
         match t {
-            case Leaf(n) => n
+            case Leaf(n)             => n
             case Branch(left, right) => Int32.max(maximum(left), maximum(right))
         }
 
     // Exercise 3.26: ツリーの深さを計算する関数 `depth` を定義せよ。深さは、ルートから最も遠いリーフまでのパスの長さである。
 
-     pub def depth(t: Tree[a]): Int32 =
+    pub def depth(t: Tree[a]): Int32 =
         match t {
-            case Leaf(_) => 0
+            case Leaf(_)             => 0
             case Branch(left, right) => 1 + Int32.max(depth(left), depth(right))
         }
 
@@ -38,7 +38,7 @@ pub mod FpInFlix.Answers.DataStructures.Tree {
 
     pub def map(f: a -> b \ ef, t: Tree[a]): Tree[b] \ ef =
         match t {
-            case Leaf(a) => Leaf(f(a))
+            case Leaf(a)             => Leaf(f(a))
             case Branch(left, right) => Branch(map(f, left), map(f, right))
         }
 
@@ -47,7 +47,7 @@ pub mod FpInFlix.Answers.DataStructures.Tree {
 
     pub def fold(f: a -> b \ ef1, g: (b, b) -> b \ ef2, t: Tree[a]): b \ ef1 + ef2 =
         match t {
-            case Leaf(a) => f(a)
+            case Leaf(a)             => f(a)
             case Branch(left, right) => g(fold(f, g, left), fold(f, g, right))
         }
 

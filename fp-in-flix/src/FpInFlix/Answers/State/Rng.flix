@@ -1,14 +1,14 @@
 pub mod FpInFlix.Answers.State.Rng {
-   pub enum Rng(Int64) with Eq, ToString
+    pub enum Rng(Int64) with Eq, ToString
 
-   pub def nextInt(rng: Rng): (Int32, Rng) =
-       let Rng(seed) = rng;
-       // 現在のシード値から新たなシード値を生成する(線形合同法による)
-       let newSeed = Int64.bitwiseAnd(seed * 25214903917i64 + 11i64, 281474976710655i64);
-       let nextRng = Rng(newSeed);
-       let n = Int64.rightShift(newSeed, 16) |> Int64.truncateToInt32;
-       // 戻り値は擬似乱数の整数と次のシード値のタプル
-       (n, nextRng)
+    pub def nextInt(rng: Rng): (Int32, Rng) =
+        let Rng(seed) = rng;
+        // 現在のシード値から新たなシード値を生成する(線形合同法による)
+        let newSeed = Int64.bitwiseAnd(seed * 25214903917i64 + 11i64, 281474976710655i64);
+        let nextRng = Rng(newSeed);
+        let n = Int64.rightShift(newSeed, 16) |> Int64.truncateToInt32;
+        // 戻り値は擬似乱数の整数と次のシード値のタプル
+        (n, nextRng)
 
     pub type alias Rand[a] = Rng -> (a, Rng)
 
@@ -67,7 +67,8 @@ pub mod FpInFlix.Answers.State.Rng {
 
     pub def ints(count: Int32): Rand[List[Int32]] =
         rng ->
-            if (count <= 0) (Nil, rng)
+            if (count <= 0)
+                (Nil, rng)
             else
                 let (x, rng2) = int()(rng);
                 let (xs, rng3) = ints(count - 1)(rng2);
@@ -76,7 +77,8 @@ pub mod FpInFlix.Answers.State.Rng {
     pub def ints2(count: Int32): Rand[List[Int32]] =
         @Tailrec
         def go(c, r, xs) =
-            if (c <= 0) (xs, r)
+            if (c <= 0)
+                (xs, r)
             else {
                 let (x, r2) = int()(r);
                 go(c - 1, r2, x :: xs)

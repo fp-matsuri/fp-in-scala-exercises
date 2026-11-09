@@ -1,7 +1,9 @@
 mod FpInFlix.Exercises.State.TestRng {
     use Assert.assertTrueWithMsg
+
     // 解答例
     // use FpInFlix.Answers.State.Rng
+
     use FpInFlix.Exercises.State.Rng
 
     @Test
@@ -39,8 +41,12 @@ mod FpInFlix.Exercises.State.TestRng {
         assertRng(
             match (d1, d2, d3) ->
                 isInInterval(d1) and isInInterval(d2) and isInInterval(d3)
-                and d1 != d2 and d2 != d3 and d3 != d1,
-            Rng(42i64), 1000, Rng.double3()
+                    and d1 != d2
+                    and d2 != d3
+                    and d3 != d1,
+            Rng(42i64),
+            1000,
+            Rng.double3()
         )
 
     @Test
@@ -53,9 +59,11 @@ mod FpInFlix.Exercises.State.TestRng {
 
     @Test
     def testMap2(): Unit \ Assert =
-        assertRng(match (d1, d2) ->
-            isInInterval(d1) and isInInterval(d2) and d1 != d2,
-            Rng(42i64), 1000,
+        assertRng(
+            match (d1, d2) ->
+                isInInterval(d1) and isInInterval(d2) and d1 != d2,
+            Rng(42i64),
+            1000,
             Rng.map2((d1, d2) -> (d1, d2), Rng.double(), Rng.double())
         )
 
@@ -63,7 +71,8 @@ mod FpInFlix.Exercises.State.TestRng {
     def testSequence(): Unit \ Assert =
         assertRng(
             xs -> List.length(xs) == xs |> List.distinct |> List.length,
-            Rng(42i64), 1000,
+            Rng(42i64),
+            1000,
             Rng.sequence(List.repeat(10, Rng.int()))
         )
 
@@ -76,7 +85,8 @@ mod FpInFlix.Exercises.State.TestRng {
     def testMapViaFlatMap(): Unit \ Assert =
         assertRng(
             Int32.fromString >> Option.nonEmpty,
-            Rng(42i64), 1000,
+            Rng(42i64),
+            1000,
             Rng.mapViaFlatMap(ToString.toString, Rng.int())
         )
 
@@ -85,7 +95,8 @@ mod FpInFlix.Exercises.State.TestRng {
         assertRng(
             match (d1, d2) ->
                 isInInterval(d1) and isInInterval(d2) and d1 != d2,
-            Rng(42i64), 1000,
+            Rng(42i64),
+            1000,
             Rng.map2ViaFlatMap((d1, d2) -> (d1, d2), Rng.double(), Rng.double())
         )
 
@@ -110,11 +121,13 @@ mod FpInFlix.Exercises.State.TestRng {
         )
 
     def randomValues(init: Rng, count: Int32, ra: Rng.Rand[a]): List[a] =
-        List.unfold(match (r1, c) ->
-            if (c <= 0) None
-            else
-                let (n, r2) = ra(r1);
-                Some((n, (r2, c - 1))),
+        List.unfold(
+            match (r1, c) ->
+                if (c <= 0)
+                    None
+                else
+                    let (n, r2) = ra(r1);
+                    Some((n, (r2, c - 1))),
             (init, count)
         )
 

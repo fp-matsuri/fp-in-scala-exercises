@@ -20,33 +20,34 @@ pub mod FpInFlix.Exercises.DataStructures.List {
     }
 
     pub def sum(ints: List[Int32]): Int32 =
-        match ints {  // 整数リストを足し上げるためにパターンマッチングを使う関数
-            case Nil => 0  // 空の整数リストの和は0
-            case Cons(x, xs) => x + sum(xs)  // `x` で始まるリストの和は `x` に残りのリストの和を加えたもの
+        match ints {
+            // 整数リストを足し上げるためにパターンマッチングを使う関数
+            case Nil         => 0 // 空の整数リストの和は0
+            case Cons(x, xs) => x + sum(xs) // `x` で始まるリストの和は `x` に残りのリストの和を加えたもの
         }
 
     pub def product(doubles: List[Float64]): Float64 =
         match doubles {
-            case Nil => 1.0
+            case Nil          => 1.0
             case Cons(0.0, _) => 0.0
-            case Cons(x, xs) => x * product(xs)
+            case Cons(x, xs)  => x * product(xs)
         }
 
     // Exercise 3.1: 以下の式 `result()` の評価結果は何になるか? (推測してからREPLで確認してみよう)
 
     pub def result(): Int32 =
         match Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil))))) {
-            case Cons(x, Cons(2, Cons(4, _))) => x
-            case Nil => 42
+            case Cons(x, Cons(2, Cons(4, _)))          => x
+            case Nil                                   => 42
             case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
-            case Cons(h, t) => h + sum(t)
+            case Cons(h, t)                            => h + sum(t)
             // NOTE: Flixでは到達不可能なパターン(分岐)があるとコンパイルエラーになる
             // case _ => 101
         }
 
     pub def append(a1: List[a], a2: List[a]): List[a] =
         match a1 {
-            case Nil => a2
+            case Nil        => a2
             case Cons(h, t) => Cons(h, append(t, a2))
         }
 
@@ -55,7 +56,7 @@ pub mod FpInFlix.Exercises.DataStructures.List {
     // ref. https://doc.flix.dev/effect-polymorphism.html
     pub def foldRight(f: (a, b) -> b \ ef, acc: b, l: List[a]): b \ ef =
         match l {
-            case Nil => acc
+            case Nil         => acc
             case Cons(x, xs) => f(x, foldRight(f, acc, xs))
         }
 

@@ -1,14 +1,16 @@
 mod FpInFlix.Exercises.State.TestCandy {
     use Assert.assertEq
+
     // 解答例
     // use FpInFlix.Answers.State.Candy
     // use FpInFlix.Answers.State.State
+
     use FpInFlix.Exercises.State.Candy
     use FpInFlix.Exercises.State.State
 
     @Test
     def testSimulateMachine_machineThatIsOutOfCandy(): Unit \ Assert =
-        foreach(
+        foreach (
             locked <- List#{true, false};
             candies <- List#{0};
             coins <- List#{0, 5}
@@ -24,7 +26,7 @@ mod FpInFlix.Exercises.State.TestCandy {
 
     @Test
     def testSimulateMachine_insertingCoinIntoLockedMachine(): Unit \ Assert =
-        foreach(
+        foreach (
             locked <- List#{true};
             candies <- List#{1, 10};
             coins <- List#{0, 5}
@@ -40,7 +42,7 @@ mod FpInFlix.Exercises.State.TestCandy {
 
     @Test
     def testSimulateMachine_turningKnobOnLockedMachine(): Unit \ Assert =
-        foreach(
+        foreach (
             locked <- List#{true};
             candies <- List#{1, 10};
             coins <- List#{0, 5}
@@ -56,7 +58,7 @@ mod FpInFlix.Exercises.State.TestCandy {
 
     @Test
     def testSimulateMachine_insertingCoinIntoUnlockedMachine(): Unit \ Assert =
-        foreach(
+        foreach (
             locked <- List#{false};
             candies <- List#{1, 10};
             coins <- List#{0, 5}
@@ -72,7 +74,7 @@ mod FpInFlix.Exercises.State.TestCandy {
 
     @Test
     def testSimulateMachine_turningKnobOnUnlockedMachine(): Unit \ Assert =
-        foreach(
+        foreach (
             locked <- List#{false};
             candies <- List#{1, 10};
             coins <- List#{0, 5}
@@ -88,7 +90,7 @@ mod FpInFlix.Exercises.State.TestCandy {
 
     @Test
     def testSimulateMachine_spendSomeCoins(): Unit \ Assert =
-        foreach(
+        foreach (
             locked <- List#{true};
             candies <- List#{1, 10};
             coins <- List#{0, 5};
@@ -106,7 +108,7 @@ mod FpInFlix.Exercises.State.TestCandy {
 
     @Test
     def testSimulateMachine_emptyInputs(): Unit \ Assert =
-        foreach(
+        foreach (
             locked <- List#{true, false};
             candies <- List#{0, 1, 10};
             coins <- List#{0, 5}

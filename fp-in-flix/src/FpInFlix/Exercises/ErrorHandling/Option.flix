@@ -1,5 +1,6 @@
 pub mod FpInFlix.Exercises.ErrorHandling.Option {
     use FpInFlix.Exercises.ErrorHandling.Option.{None, Some}
+
     import java.lang.Math
 
     // ref. https://api.flix.dev/Option.html
@@ -29,22 +30,28 @@ pub mod FpInFlix.Exercises.ErrorHandling.Option {
 
     pub def failingFn(): Int32 \ Abort =
         let y = Abort.abort(RichString.text("fail!"));
-        (run {
-            let x = 42 + 5;
-            x + y
-        } with Abort.runWithResult)
+        (
+            run {
+                let x = 42 + 5;
+                x + y
+            } with Abort.runWithResult
+        )
             |> Result.getWithDefault(43)
 
     pub def failingFn2(): Int32 =
-        (run {
-            let x = 42 + 5;
-            x + Abort.abort(RichString.text("fail!"))
-        } with Abort.runWithResult)
+        (
+            run {
+                let x = 42 + 5;
+                x + Abort.abort(RichString.text("fail!"))
+            } with Abort.runWithResult
+        )
             |> Result.getWithDefault(43)
 
     pub def mean(xs: Vector[Float64]): Option[Float64] =
-        if (Vector.isEmpty(xs)) None
-        else Some(Vector.fold(xs) / Int32.toFloat64(Vector.length(xs)))
+        if (Vector.isEmpty(xs))
+            None
+        else
+            Some(Vector.fold(xs) / Int32.toFloat64(Vector.length(xs)))
 
     // Exercise 4.2: 分散(平均からの偏差の2乗の平均)を計算する関数 `variance` を定義せよ。
 

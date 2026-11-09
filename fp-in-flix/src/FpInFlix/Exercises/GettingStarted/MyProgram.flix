@@ -3,8 +3,10 @@
 /// ドキュメンテーションコメント!
 pub mod FpInFlix.Exercises.GettingStarted.MyProgram {
     pub def abs(x: Int32): Int32 =
-        if (x < 0) -x
-        else x
+        if (x < 0)
+            -x
+        else
+            x
 
     def formatAbs(x: Int32): String =
         "The absolute value of ${x} is ${abs(x)}"
@@ -21,8 +23,10 @@ pub mod FpInFlix.Exercises.GettingStarted.MyProgram {
         @Tailrec
         // NOTE: トップレベル関数では型注釈が必須だが、ローカル関数では省略できる
         def go(x, acc) =
-            if (x <= 0) acc
-            else go(x - 1, x * acc);
+            if (x <= 0)
+                acc
+            else
+                go(x - 1, x * acc);
         go(n, 1)
 
     // 今度は `foreach` ループによる `factorial` の別の実装

@@ -1,7 +1,9 @@
 mod FpInFlix.Exercises.ErrorHandling.TestOption {
     use Assert.assertEq
+
     // 解答例
     // use FpInFlix.Answers.ErrorHandling.Option.{None, Option, Some}
+
     use FpInFlix.Exercises.ErrorHandling.Option.{None, Option, Some}
 
     mod FlixOption {

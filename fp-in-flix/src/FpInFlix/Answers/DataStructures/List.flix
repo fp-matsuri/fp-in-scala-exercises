@@ -20,34 +20,35 @@ pub mod FpInFlix.Answers.DataStructures.List {
     }
 
     pub def sum(ints: List[Int32]): Int32 =
-        match ints {  // 整数リストを足し上げるためにパターンマッチングを使う関数
-            case Nil => 0  // 空の整数リストの和は0
-            case Cons(x, xs) => x + sum(xs)  // `x` で始まるリストの和は `x` に残りのリストの和を加えたもの
+        match ints {
+            // 整数リストを足し上げるためにパターンマッチングを使う関数
+            case Nil         => 0 // 空の整数リストの和は0
+            case Cons(x, xs) => x + sum(xs) // `x` で始まるリストの和は `x` に残りのリストの和を加えたもの
         }
 
     pub def product(doubles: List[Float64]): Float64 =
         match doubles {
-            case Nil => 1.0
+            case Nil          => 1.0
             case Cons(0.0, _) => 0.0
-            case Cons(x, xs) => x * product(xs)
+            case Cons(x, xs)  => x * product(xs)
         }
 
     // Exercise 3.1: 以下の式 `result()` の評価結果は何になるか? (推測してからREPLで確認してみよう)
 
     pub def result(): Int32 =
         match Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil))))) {
-            case Cons(x, Cons(2, Cons(4, _))) => x
-            case Nil => 42
+            case Cons(x, Cons(2, Cons(4, _)))          => x
+            case Nil                                   => 42
             case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
-            case Cons(h, t) => h + sum(t)
+            case Cons(h, t)                            => h + sum(t)
             // NOTE: Flixでは到達不可能なパターン(分岐)があるとコンパイルエラーになる
             // case _ => 101
-        }  // => 3
+        } // => 3
     // 3番目の分岐にマッチし、 `x` が1、 `y` が2に束縛される。
 
     pub def append(a1: List[a], a2: List[a]): List[a] =
         match a1 {
-            case Nil => a2
+            case Nil        => a2
             case Cons(h, t) => Cons(h, append(t, a2))
         }
 
@@ -56,7 +57,7 @@ pub mod FpInFlix.Answers.DataStructures.List {
     // ref. https://doc.flix.dev/effect-polymorphism.html
     pub def foldRight(f: (a, b) -> b \ ef, acc: b, l: List[a]): b \ ef =
         match l {
-            case Nil => acc
+            case Nil         => acc
             case Cons(x, xs) => f(x, foldRight(f, acc, xs))
         }
 
@@ -81,7 +82,7 @@ pub mod FpInFlix.Answers.DataStructures.List {
             // Javaとの相互運用向けに例外のthrow/try-catchの機能も存在するが、Flixに閉じたプログラムでは利用しない。
             // また、有効値の有無や成否の区別を値で表すエラーハンドリングは `ErrorHandling` (第4章)モジュールで扱う。
             // ref. https://api.flix.dev/Abort.html
-            case Nil => Abort.abort(RichString.text("tail of empty list"))
+            case Nil        => Abort.abort(RichString.text("tail of empty list"))
             // パターンで不要な変数には `_` を使うことで無視する意図を表せる。
             // NOTE: Flixでは未使用変数がコンパイルエラーになる。
             case Cons(_, t) => t
@@ -91,7 +92,7 @@ pub mod FpInFlix.Answers.DataStructures.List {
 
     pub def setHead(l: List[a], h: a): List[a] \ Abort =
         match l {
-            case Nil => Abort.abort(RichString.text("setHead on empty list"))
+            case Nil        => Abort.abort(RichString.text("setHead on empty list"))
             case Cons(_, t) => Cons(h, t)
         }
 
@@ -99,19 +100,21 @@ pub mod FpInFlix.Answers.DataStructures.List {
 
     @Tailrec
     pub def drop(n: Int32, l: List[a]): List[a] =
-        if (n <= 0) l
-        else match l {
-            case Nil => Nil
-            case Cons(_, t) => drop(n - 1, t)
-        }
+        if (n <= 0)
+            l
+        else
+            match l {
+                case Nil        => Nil
+                case Cons(_, t) => drop(n - 1, t)
+            }
 
     // Exercise 3.5: リストの先頭から条件を満たす限り続けて要素を取り除く関数 `dropWhile` を定義せよ。
 
     @Tailrec
     pub def dropWhile(f: a -> Bool \ ef, l: List[a]): List[a] \ ef =
         match l {
-            case Cons(h, t) => if(f(h)) dropWhile(f, t) else l
-            case _ => l
+            case Cons(h, t) => if (f(h)) dropWhile(f, t) else l
+            case _          => l
         }
 
     // Exercise 3.6: 末尾要素以外のリストを返す関数 `init` を定義せよ。
@@ -124,9 +127,9 @@ pub mod FpInFlix.Answers.DataStructures.List {
      */
     pub def init(l: List[a]): List[a] \ Abort =
         match l {
-            case Nil => Abort.abort(RichString.text("init of empty list"))
+            case Nil          => Abort.abort(RichString.text("init of empty list"))
             case Cons(_, Nil) => Nil
-            case Cons(h, t) => Cons(h, init(t))
+            case Cons(h, t)   => Cons(h, init(t))
         }
 
     pub def init2(l: List[a]): List[a] \ Abort =
@@ -137,9 +140,9 @@ pub mod FpInFlix.Answers.DataStructures.List {
             @Tailrec
             def go(cur) =
                 match cur {
-                    case Nil => Abort.abort(RichString.text("init of empty list"))
+                    case Nil          => Abort.abort(RichString.text("init of empty list"))
                     case Cons(_, Nil) => MutList.toList(buf) |> FlixList.toList
-                    case Cons(h, t) => MutList.push(h, buf); go(t)
+                    case Cons(h, t)   => MutList.push(h, buf); go(t)
                 };
             go(l)
         }
@@ -172,7 +175,7 @@ pub mod FpInFlix.Answers.DataStructures.List {
     @Tailrec
     pub def foldLeft(f: (b, a) -> b \ ef, acc: b, l: List[a]): b \ ef =
         match l {
-            case Nil => acc
+            case Nil        => acc
             case Cons(h, t) => foldLeft(f, f(acc, h), t)
         }
 
@@ -231,7 +234,7 @@ pub mod FpInFlix.Answers.DataStructures.List {
             @Tailrec
             def go(xs) =
                 match xs {
-                    case Nil => MutList.toList(buf) |> FlixList.toList
+                    case Nil        => MutList.toList(buf) |> FlixList.toList
                     case Cons(h, t) => MutList.push(f(h), buf); go(t)
                 };
             go(l)
@@ -251,7 +254,7 @@ pub mod FpInFlix.Answers.DataStructures.List {
             @Tailrec
             def go(xs) =
                 match xs {
-                    case Nil => MutList.toList(buf) |> FlixList.toList
+                    case Nil        => MutList.toList(buf) |> FlixList.toList
                     case Cons(h, t) => if (f(h)) MutList.push(h, buf) else (); go(t)
                 };
             go(l)
@@ -271,8 +274,8 @@ pub mod FpInFlix.Answers.DataStructures.List {
 
     pub def addPairwise(a: List[Int32], b: List[Int32]): List[Int32] =
         match (a, b) {
-            case (Nil, _) => Nil
-            case (_, Nil) => Nil
+            case (Nil, _)                     => Nil
+            case (_, Nil)                     => Nil
             case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1 + h2, addPairwise(t1, t2))
         }
 
@@ -280,8 +283,8 @@ pub mod FpInFlix.Answers.DataStructures.List {
 
     pub def zipWith(f: (a, b) -> c \ ef, a: List[a], b: List[b]): List[c] \ ef =
         match (a, b) {
-            case (Nil, _) => Nil
-            case (_, Nil) => Nil
+            case (Nil, _)                     => Nil
+            case (_, Nil)                     => Nil
             case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(f, t1, t2))
         }
 
@@ -291,9 +294,9 @@ pub mod FpInFlix.Answers.DataStructures.List {
     @Tailrec
     def startWith(prefix: {prefix = List[a]}, l: List[a]): Bool with Eq[a] =
         match (prefix#prefix, l) {
-            case (Nil, _) => true
+            case (Nil, _)                                 => true
             case (Cons(h1, t1), Cons(h2, t2)) if h1 == h2 => startWith(prefix = t1, t2)
-            case _ => false
+            case _                                        => false
         }
 
     // NOTE: 引数 `sub` はレコードによる名前付きパラメータ
@@ -301,8 +304,8 @@ pub mod FpInFlix.Answers.DataStructures.List {
     @Tailrec
     pub def hasSubsequence(sub: {sub = List[a]}, sup: List[a]): Bool with Eq[a] =
         match sup {
-            case Nil => sub#sub == Nil
+            case Nil                                   => sub#sub == Nil
             case _ if startWith(prefix = sub#sub, sup) => true
-            case Cons(_, t) => hasSubsequence(sub, t)
+            case Cons(_, t)                            => hasSubsequence(sub, t)
         }
 }

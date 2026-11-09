@@ -1,7 +1,9 @@
 mod FpInFlix.Exercises.GettingStarted.TestMyProgram {
     use Assert.assertEq
+
     // 解答例
     // use FpInFlix.Answers.GettingStarted.{MyProgram => Sut}
+
     use FpInFlix.Exercises.GettingStarted.{MyProgram => Sut}
 
     @Test
