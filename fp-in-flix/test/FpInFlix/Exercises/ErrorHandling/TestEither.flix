@@ -1,7 +1,9 @@
 mod FpInFlix.Exercises.ErrorHandling.TestEither {
     use Assert.assertEq
+
     // 解答例
     // use FpInFlix.Answers.ErrorHandling.Either.{Either, Left, Right}
+
     use FpInFlix.Exercises.ErrorHandling.Either.{Either, Left, Right}
 
     @Test
@@ -12,8 +14,10 @@ mod FpInFlix.Exercises.ErrorHandling.TestEither {
     @Test
     def testFlatMap(): Unit \ Assert =
         def f(n) =
-            if (n `Int32.modulo` 2 == 0) Right(n / 2)
-            else Left("An odd number");
+            if (n `Int32.modulo` 2 == 0)
+                Right(n / 2)
+            else
+                Left("An odd number");
         assertEq(expected = Right(21), Either.flatMap(f, Right(42)));
         assertEq(expected = Left("An odd number"), Either.flatMap(f, Right(43)));
         assertEq(expected = Left("error"), Either.flatMap(f, Left("error")))
@@ -36,8 +40,10 @@ mod FpInFlix.Exercises.ErrorHandling.TestEither {
         enum Name(String) with Eq, ToString
 
         pub def make(name: String): Either[String, Name] =
-            if (String.isEmpty(name)) Left("Name is empty.")
-            else Right(Name(name))
+            if (String.isEmpty(name))
+                Left("Name is empty.")
+            else
+                Right(Name(name))
     }
 
     mod Age {
@@ -48,8 +54,10 @@ mod FpInFlix.Exercises.ErrorHandling.TestEither {
         enum Age(Int32) with Eq, ToString
 
         pub def make(age: Int32): Either[String, Age] =
-            if (age < 0) Left("Age is out of range.")
-            else Right(Age(age))
+            if (age < 0)
+                Left("Age is out of range.")
+            else
+                Right(Age(age))
     }
 
     mod Person {

@@ -7,11 +7,14 @@ pub mod FpInFlix.Exercises.GettingStarted.PolymorphicFunctions {
     pub def findFirst(p: a -> Bool, xs: Vector[a]): Int32 =
         @Tailrec
         def loop(n) =
-            if (n >= Vector.size(xs)) -1
-            // 関数 `p` が現在の要素にマッチしたら、
-            // 合うものが見つかったということでベクターのそのインデックスを返す。
-            else if (xs |> Vector.get(n) |> p) n
-            else loop(n + 1);
+            if (n >= Vector.size(xs))
+                -1
+                // 関数 `p` が現在の要素にマッチしたら、
+                // 合うものが見つかったということでベクターのそのインデックスを返す。
+            else if (xs |> Vector.get(n) |> p)
+                n
+            else
+                loop(n + 1);
         loop(0)
 
     // Exercise 2.2: `Vector[A]` がソート済みかどうかを判定する多相関数を定義せよ。

@@ -15,7 +15,7 @@ pub mod FpInFlix.Exercises.Laziness.LazyList {
     instance ToString[LazyList[a]] with ToString[a] {
         pub def toString(ll: LazyList[a]): String =
             match ll {
-                case Empty => "LazyList.Empty"
+                case Empty         => "LazyList.Empty"
                 case Cons(head, _) => "LazyList.Cons(${head}, <unevaluated>)"
             }
     }
@@ -27,7 +27,7 @@ pub mod FpInFlix.Exercises.Laziness.LazyList {
 
     pub def foldRight(f: (a, b) -> b \ ef, z: b, ll: LazyList[a]): b \ ef =
         match ll {
-            case Empty => z
+            case Empty            => z
             case Cons(head, tail) => f(head, foldRight(f, z, force tail))
         }
 
@@ -37,7 +37,7 @@ pub mod FpInFlix.Exercises.Laziness.LazyList {
     @Tailrec
     pub def find(f: a -> Bool \ ef, ll: LazyList[a]): Option[a] \ ef =
         match ll {
-            case Empty => None
+            case Empty            => None
             case Cons(head, tail) => if (f(head)) Some(head) else find(f, force tail)
         }
 

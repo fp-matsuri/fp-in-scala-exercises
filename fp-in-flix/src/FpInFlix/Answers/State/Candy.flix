@@ -16,19 +16,20 @@ pub mod FpInFlix.Answers.State.Candy {
     }
 
     pub type alias Machine = {
-        locked = Bool,
+        locked  = Bool,
         candies = Int32,
-        coins = Int32
+        coins   = Int32
     }
 
     pub def simulateMachine(inputs: List[Input]): State[Machine, (Int32, Int32)] =
         inputs
             |> State.traverse(update >> State.modify)
-            |> State.flatMap(_ ->
-                State.map(s ->
-                    (s#coins, s#candies),
-                    State.get()
-                )
+            |> State.flatMap(
+                _ ->
+                    State.map(
+                        s -> (s#coins, s#candies),
+                        State.get()
+                    )
             )
 
     def update(i: Input, m: Machine): Machine =

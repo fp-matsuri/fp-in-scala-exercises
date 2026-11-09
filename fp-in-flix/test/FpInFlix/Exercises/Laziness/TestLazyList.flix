@@ -1,7 +1,9 @@
 mod FpInFlix.Exercises.Laziness.TestLazyList {
     use Assert.{assertEq, assertFalse, assertTrue}
+
     // 解答例
     // use FpInFlix.Answers.Laziness.LazyList.{Cons, Empty, LazyList}
+
     use FpInFlix.Exercises.Laziness.LazyList.{Cons, Empty, LazyList}
 
     @Test
@@ -94,7 +96,7 @@ mod FpInFlix.Exercises.Laziness.TestLazyList {
     def testAppend(): Unit \ Assert =
         assertEq(
             expected = List#{1, 2, 3, 4, 5},
-            LazyList.append(Cons(1, lazy Cons(2, lazy Empty)),Cons(3, lazy Cons(4, lazy Cons(5, lazy Empty))))
+            LazyList.append(Cons(1, lazy Cons(2, lazy Empty)), Cons(3, lazy Cons(4, lazy Cons(5, lazy Empty))))
                 |> LazyList.toList
         );
         assertEq(
@@ -217,7 +219,8 @@ mod FpInFlix.Exercises.Laziness.TestLazyList {
                 (x, y) -> x + y,
                 Cons(1, lazy Cons(2, lazy Cons(3, lazy Empty))),
                 Cons(2, lazy Cons(3, lazy Cons(4, lazy Empty)))
-            ) |> LazyList.toList
+            )
+                |> LazyList.toList
         );
         assertEq(
             expected = Nil,
@@ -237,7 +240,8 @@ mod FpInFlix.Exercises.Laziness.TestLazyList {
             LazyList.zipAll(
                 Cons(1, lazy Cons(2, lazy Cons(3, lazy Empty))),
                 Cons(2, lazy Cons(3, lazy Cons(4, lazy Empty)))
-            ) |> LazyList.toList
+            )
+                |> LazyList.toList
         );
         assertEq(
             expected = List#{(None, Some(2)), (None, Some(3)), (None, Some(4))},

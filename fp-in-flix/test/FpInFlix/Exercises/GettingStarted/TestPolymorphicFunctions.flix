@@ -1,7 +1,9 @@
 mod FpInFlix.Exercises.GettingStarted.TestPolymorphicFunctions {
     use Assert.{assertEq, assertFalse, assertTrue}
+
     // 解答例
     // use FpInFlix.Answers.GettingStarted.{PolymorphicFunctions => Sut}
+
     use FpInFlix.Exercises.GettingStarted.{PolymorphicFunctions => Sut}
 
     @Test

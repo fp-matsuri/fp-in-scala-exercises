@@ -7,11 +7,14 @@ pub mod FpInFlix.Answers.GettingStarted.PolymorphicFunctions {
     pub def findFirst(p: a -> Bool, xs: Vector[a]): Int32 =
         @Tailrec
         def loop(n) =
-            if (n >= Vector.size(xs)) -1
-            // 関数 `p` が現在の要素にマッチしたら、
-            // 合うものが見つかったということでベクターのそのインデックスを返す。
-            else if (xs |> Vector.get(n) |> p) n
-            else loop(n + 1);
+            if (n >= Vector.size(xs))
+                -1
+                // 関数 `p` が現在の要素にマッチしたら、
+                // 合うものが見つかったということでベクターのそのインデックスを返す。
+            else if (xs |> Vector.get(n) |> p)
+                n
+            else
+                loop(n + 1);
         loop(0)
 
     // Exercise 2.2: `Vector[A]` がソート済みかどうかを判定する多相関数を定義せよ。
@@ -20,9 +23,12 @@ pub mod FpInFlix.Answers.GettingStarted.PolymorphicFunctions {
     pub def isSorted(gt: (a, a) -> Bool, xs: Vector[a]): Bool =
         @Tailrec
         def go(n) =
-            if (n >= Vector.size(xs) - 1) true
-            else if (gt(Vector.get(n, xs), Vector.get(n + 1, xs))) false
-            else go(n + 1);
+            if (n >= Vector.size(xs) - 1)
+                true
+            else if (gt(Vector.get(n, xs), Vector.get(n + 1, xs)))
+                false
+            else
+                go(n + 1);
         go(0)
 
     // 多相関数はたいてい型によって制約されているため、対応する実装がひとつしかないことがある。

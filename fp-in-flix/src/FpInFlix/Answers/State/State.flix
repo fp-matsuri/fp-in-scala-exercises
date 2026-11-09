@@ -15,9 +15,10 @@ pub mod FpInFlix.Answers.State.State {
         flatMap(a -> map(b -> f(a, b), sb), sa)
 
     pub def flatMap(f: a -> State[s, b], sa: State[s, a]): State[s, b] =
-        State(s0 ->
-            let (a, s1) = runState(s0, sa);
-            runState(s1, f(a))
+        State(
+            s0 ->
+                let (a, s1) = runState(s0, sa);
+                runState(s1, f(a))
         )
 
     pub def unit(a: a): State[s, a] =

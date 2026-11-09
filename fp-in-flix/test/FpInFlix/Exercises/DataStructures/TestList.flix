@@ -1,32 +1,52 @@
 mod FpInFlix.Exercises.DataStructures.TestList {
     use Assert.{assertEq, assertFalse, assertTrue}
+
     // 解答例
     // use FpInFlix.Answers.DataStructures.List.{Cons, List, Nil}
+
     use FpInFlix.Exercises.DataStructures.List.{Cons, List, Nil}
 
     @Test
     def testTail(): Unit \ Assert =
-        assertEq(expected = Ok(Cons(2, Nil)), run {
-            List.tail(Cons(1, Cons(2, Nil)))
-        } with Abort.runWithResult);
-        assertEq(expected = Ok(Nil), run {
-            List.tail(Cons(1, Nil))
-        } with Abort.runWithResult);
-        assertEq(expected = Err(RichString.text("tail of empty list")), run {
-            List.tail((Nil: List[Int32]))
-        } with Abort.runWithResult)
+        assertEq(
+            expected = Ok(Cons(2, Nil)),
+            run {
+                List.tail(Cons(1, Cons(2, Nil)))
+            } with Abort.runWithResult
+        );
+        assertEq(
+            expected = Ok(Nil),
+            run {
+                List.tail(Cons(1, Nil))
+            } with Abort.runWithResult
+        );
+        assertEq(
+            expected = Err(RichString.text("tail of empty list")),
+            run {
+                List.tail((Nil: List[Int32]))
+            } with Abort.runWithResult
+        )
 
     @Test
     def testSetHead(): Unit \ Assert =
-        assertEq(expected = Ok(Cons(2, Cons(3, Nil))), run {
-            List.setHead(Cons(1, Cons(3, Nil)), 2)
-        } with Abort.runWithResult);
-        assertEq(expected = Ok(Cons(2, Nil)), run {
-            List.setHead(Cons(1, Nil), 2)
-        } with Abort.runWithResult);
-        assertEq(expected = Err(RichString.text("setHead on empty list")), run {
-            List.setHead((Nil: List[Int32]), 2)
-        } with Abort.runWithResult)
+        assertEq(
+            expected = Ok(Cons(2, Cons(3, Nil))),
+            run {
+                List.setHead(Cons(1, Cons(3, Nil)), 2)
+            } with Abort.runWithResult
+        );
+        assertEq(
+            expected = Ok(Cons(2, Nil)),
+            run {
+                List.setHead(Cons(1, Nil), 2)
+            } with Abort.runWithResult
+        );
+        assertEq(
+            expected = Err(RichString.text("setHead on empty list")),
+            run {
+                List.setHead((Nil: List[Int32]), 2)
+            } with Abort.runWithResult
+        )
 
     @Test
     def testDrop(): Unit \ Assert =
@@ -42,15 +62,24 @@ mod FpInFlix.Exercises.DataStructures.TestList {
 
     @Test
     def testInit(): Unit \ Assert =
-        assertEq(expected = Ok(Cons(1, Nil)), run {
-            List.init(Cons(1, Cons(2, Nil)))
-        } with Abort.runWithResult);
-        assertEq(expected = Ok(Nil), run {
-            List.init(Cons(1, Nil))
-        } with Abort.runWithResult);
-        assertEq(expected = Err(RichString.text("init of empty list")), run {
-            List.init((Nil: List[Int32]))
-        } with Abort.runWithResult)
+        assertEq(
+            expected = Ok(Cons(1, Nil)),
+            run {
+                List.init(Cons(1, Cons(2, Nil)))
+            } with Abort.runWithResult
+        );
+        assertEq(
+            expected = Ok(Nil),
+            run {
+                List.init(Cons(1, Nil))
+            } with Abort.runWithResult
+        );
+        assertEq(
+            expected = Err(RichString.text("init of empty list")),
+            run {
+                List.init((Nil: List[Int32]))
+            } with Abort.runWithResult
+        )
 
     @Test
     def testLength(): Unit \ Assert =
@@ -150,7 +179,7 @@ mod FpInFlix.Exercises.DataStructures.TestList {
         assertEq(
             expected = Cons(5, Cons(7, Cons(9, Nil))),
             List.addPairwise(Cons(1, Cons(2, Cons(3, Nil))), Cons(4, Cons(5, Cons(6, Cons(7, Nil)))))
-            );
+        );
         assertEq(
             expected = Cons(6, Cons(8, Cons(10, Nil))),
             List.addPairwise(Cons(1, Cons(2, Cons(3, Cons(4, Nil)))), Cons(5, Cons(6, Cons(7, Nil))))

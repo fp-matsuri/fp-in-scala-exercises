@@ -48,6 +48,19 @@ DelayList(1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880)
     flix> :test  // または :t
     ```
 
+### フォーマット
+
+フォーマッターとして `flix format` が利用できる。
+
+```shell
+# フォーマットの修正
+flix format  # または make format
+# フォーマットのチェック
+make format-check  # または make lint
+```
+
+ℹ️ `flix format` には `--check` がないため、 `make format-check` はその場で整形してから差分の有無を確認する(未コミットの `.flix` ファイルがあると、整形済みでも差分として検出される)
+
 ## プロジェクト構成
 
 ```shell
@@ -55,6 +68,7 @@ tree -L 3 --gitignore
 .
 ├── flix.toml  # プロジェクト設定
 ├── Makefile
+├── packages.lock  # 依存のロックファイル
 ├── README.md
 ├── src  # ソースコード
 │   ├── FpInFlix

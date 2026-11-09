@@ -29,6 +29,8 @@ pub mod FpInFlix.Exercises.ErrorHandling.Either {
         ???
 
     pub def mean(xs: Vector[Float64]): Either[String, Float64] =
-        if (Vector.isEmpty(xs)) Left("mean of empty vector!")
-        else Right(Vector.fold(xs) / Int32.toFloat64(Vector.length(xs)))
+        if (Vector.isEmpty(xs))
+            Left("mean of empty vector!")
+        else
+            Right(Vector.fold(xs) / Int32.toFloat64(Vector.length(xs)))
 }

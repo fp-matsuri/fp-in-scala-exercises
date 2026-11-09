@@ -1,5 +1,6 @@
 pub mod FpInFlix.Answers.ErrorHandling.Option {
     use FpInFlix.Answers.ErrorHandling.Option.{None, Some}
+
     import java.lang.Math
 
     // ref. https://api.flix.dev/Option.html
@@ -14,13 +15,13 @@ pub mod FpInFlix.Answers.ErrorHandling.Option {
 
     pub def map(f: a -> b \ ef, o: Option[a]): Option[b] \ ef =
         match o {
-            case None => None
+            case None    => None
             case Some(a) => Some(f(a))
         }
 
     pub def getOrElse(default: a, o: Option[a]): a =
         match o {
-            case None => default
+            case None    => default
             case Some(a) => a
         }
 
@@ -29,7 +30,7 @@ pub mod FpInFlix.Answers.ErrorHandling.Option {
 
     pub def flatMap_1(f: a -> Option[b] \ ef, o: Option[a]): Option[b] \ ef =
         match o {
-            case None => None
+            case None    => None
             case Some(a) => f(a)
         }
 
@@ -39,12 +40,12 @@ pub mod FpInFlix.Answers.ErrorHandling.Option {
     pub def orElse_1(other: Option[a], o: Option[a]): Option[a] =
         match o {
             case None => other
-            case _ => o
+            case _    => o
         }
 
     pub def filter(p: a -> Bool \ ef, o: Option[a]): Option[a] \ ef =
         match o {
-            case None => None
+            case None    => None
             case Some(x) => if (p(x)) o else None
         }
 
@@ -53,22 +54,28 @@ pub mod FpInFlix.Answers.ErrorHandling.Option {
 
     pub def failingFn(): Int32 \ Abort =
         let y = Abort.abort(RichString.text("fail!"));
-        (run {
-            let x = 42 + 5;
-            x + y
-        } with Abort.runWithResult)
+        (
+            run {
+                let x = 42 + 5;
+                x + y
+            } with Abort.runWithResult
+        )
             |> Result.getWithDefault(43)
 
     pub def failingFn2(): Int32 =
-        (run {
-            let x = 42 + 5;
-            x + Abort.abort(RichString.text("fail!"))
-        } with Abort.runWithResult)
+        (
+            run {
+                let x = 42 + 5;
+                x + Abort.abort(RichString.text("fail!"))
+            } with Abort.runWithResult
+        )
             |> Result.getWithDefault(43)
 
     pub def mean(xs: Vector[Float64]): Option[Float64] =
-        if (Vector.isEmpty(xs)) None
-        else Some(Vector.fold(xs) / Int32.toFloat64(Vector.length(xs)))
+        if (Vector.isEmpty(xs))
+            None
+        else
+            Some(Vector.fold(xs) / Int32.toFloat64(Vector.length(xs)))
 
     // Exercise 4.2: 分散(平均からの偏差の2乗の平均)を計算する関数 `variance` を定義せよ。
 
@@ -87,7 +94,7 @@ pub mod FpInFlix.Answers.ErrorHandling.Option {
 
     pub def sequence(l: List[Option[a]]): Option[List[a]] =
         match l {
-            case Nil => Some(Nil)
+            case Nil    => Some(Nil)
             case h :: t => flatMap(x -> map(xs -> List.cons(x, xs), sequence(t)), h)
         }
 
@@ -98,7 +105,7 @@ pub mod FpInFlix.Answers.ErrorHandling.Option {
 
     pub def traverse(f: a -> Option[b] \ ef, l: List[a]): Option[List[b]] \ ef =
         match l {
-            case Nil => Some(Nil)
+            case Nil    => Some(Nil)
             case h :: t => map2(List.cons, f(h), traverse(f, t))
         }
 

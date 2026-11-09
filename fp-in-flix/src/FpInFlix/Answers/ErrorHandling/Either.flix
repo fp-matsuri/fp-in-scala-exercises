@@ -10,19 +10,19 @@ pub mod FpInFlix.Answers.ErrorHandling.Either {
 
     pub def map(f: a -> b \ ef, et: Either[e, a]): Either[e, b] \ ef =
         match et {
-            case Left(e) => Left(e)
+            case Left(e)  => Left(e)
             case Right(a) => Right(f(a))
         }
 
     pub def flatMap(f: a -> Either[e, b] \ ef, et: Either[e, a]): Either[e, b] \ ef =
         match et {
-            case Left(e) => Left(e)
+            case Left(e)  => Left(e)
             case Right(a) => f(a)
         }
 
     pub def orElse(other: Either[e, a], et: Either[e, a]): Either[e, a] =
         match et {
-            case Left(_) => other
+            case Left(_)  => other
             case Right(_) => et
         }
 
@@ -36,11 +36,11 @@ pub mod FpInFlix.Answers.ErrorHandling.Either {
         ) yield f(a, b)
          */
 
-    // Exercise 4.7: Optionに準じて `traverse`, `sequence` を実装せよ。
+        // Exercise 4.7: Optionに準じて `traverse`, `sequence` を実装せよ。
 
     pub def traverse(f: a -> Either[e, b] \ ef, xs: List[a]): Either[e, List[b]] \ ef =
         match xs {
-            case Nil => Right(Nil)
+            case Nil    => Right(Nil)
             case h :: t => map2(List.cons, f(h), traverse(f, t))
         }
 
@@ -51,6 +51,8 @@ pub mod FpInFlix.Answers.ErrorHandling.Either {
         traverse(identity, xs)
 
     pub def mean(xs: Vector[Float64]): Either[String, Float64] =
-        if (Vector.isEmpty(xs)) Left("mean of empty vector!")
-        else Right(Vector.fold(xs) / Int32.toFloat64(Vector.length(xs)))
+        if (Vector.isEmpty(xs))
+            Left("mean of empty vector!")
+        else
+            Right(Vector.fold(xs) / Int32.toFloat64(Vector.length(xs)))
 }

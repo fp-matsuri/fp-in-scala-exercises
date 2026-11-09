@@ -1,6 +1,6 @@
 pub mod FpInFlix.Answers.Introduction.SecondExample {
     mod Coffee {
-        pub enum Coffee({price = Float64})
+        enum Coffee({price = Float64})
 
         instance ToString[Coffee] {
             pub def toString(coffee: Coffee): String =
@@ -13,7 +13,7 @@ pub mod FpInFlix.Answers.Introduction.SecondExample {
     }
 
     mod CreditCard {
-        pub enum CreditCard(String) with Eq, ToString
+        enum CreditCard(String) with Eq, ToString
     }
 
     pub eff Payment {

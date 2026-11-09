@@ -1,7 +1,9 @@
 mod FpInFlix.Exercises.DataStructures.TestTree {
     use Assert.assertEq
+
     // 解答例
     // use FpInFlix.Answers.DataStructures.Tree.{Branch, Leaf, Tree}
+
     use FpInFlix.Exercises.DataStructures.Tree.{Branch, Leaf, Tree}
 
     @Test

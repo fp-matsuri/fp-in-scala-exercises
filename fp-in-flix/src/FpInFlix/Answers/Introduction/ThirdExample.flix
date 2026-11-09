@@ -1,6 +1,6 @@
 pub mod FpInFlix.Answers.Introduction.ThirdExample {
     mod Coffee {
-        pub enum Coffee({price = Float64})
+        enum Coffee({price = Float64})
 
         instance ToString[Coffee] {
             pub def toString(coffee: Coffee): String =
@@ -13,13 +13,13 @@ pub mod FpInFlix.Answers.Introduction.ThirdExample {
     }
 
     mod CreditCard {
-        pub enum CreditCard(String) with Eq, ToString
+        enum CreditCard(String) with Eq, ToString
     }
 
     mod Charge {
         use FpInFlix.Answers.Introduction.ThirdExample.CreditCard
 
-        pub enum Charge({creditCard = CreditCard, amount = Float64})
+        enum Charge({creditCard = CreditCard, amount = Float64})
 
         instance ToString[Charge] {
             pub def toString(charge: Charge): String =
@@ -30,8 +30,10 @@ pub mod FpInFlix.Answers.Introduction.ThirdExample {
         pub def combine(a: Charge, b: Charge): Result[String, Charge] =
             let Charge({creditCard = cardA, amount = amountA}) = a;
             let Charge({creditCard = cardB, amount = amountB}) = b;
-            if (cardA == cardB) Ok(Charge({creditCard = cardA, amount = amountA + amountB}))
-            else Err("Can't combine charges to different cards: cardA=${cardA}, cardB=${cardB}")
+            if (cardA == cardB)
+                Ok(Charge({creditCard = cardA, amount = amountA + amountB}))
+            else
+                Err("Can't combine charges to different cards: cardA=${cardA}, cardB=${cardB}")
 
         pub def coalesce(charges: List[Charge]): Result[String, List[Charge]] =
             charges
@@ -68,11 +70,13 @@ pub mod FpInFlix.Answers.Introduction.ThirdExample {
         println("Result of combining charges with different cards: ${resultErr}")
 
     pub def example_coalesce(): Unit \ IO =
-        let result = Charge.coalesce(List#{
-            Charge.Charge({creditCard = CreditCard.CreditCard("A"), amount = 1.0}),
-            Charge.Charge({creditCard = CreditCard.CreditCard("B"), amount = 2.0}),
-            Charge.Charge({creditCard = CreditCard.CreditCard("A"), amount = 3.0})
-        });
+        let result = Charge.coalesce(
+            List#{
+                Charge.Charge({creditCard = CreditCard.CreditCard("A"), amount = 1.0}),
+                Charge.Charge({creditCard = CreditCard.CreditCard("B"), amount = 2.0}),
+                Charge.Charge({creditCard = CreditCard.CreditCard("A"), amount = 3.0})
+            }
+        );
         println("Result of coalescing charges: ${result}")
 
     pub def example_buyCoffee(): Unit \ IO =

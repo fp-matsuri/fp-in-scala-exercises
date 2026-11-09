@@ -15,7 +15,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
     instance ToString[LazyList[a]] with ToString[a] {
         pub def toString(ll: LazyList[a]): String =
             match ll {
-                case Empty => "LazyList.Empty"
+                case Empty         => "LazyList.Empty"
                 case Cons(head, _) => "LazyList.Cons(${head}, <unevaluated>)"
             }
     }
@@ -24,7 +24,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
 
     pub def toListRecursive(ll: LazyList[a]): List[a] =
         match ll {
-            case Empty => Nil
+            case Empty            => Nil
             case Cons(head, tail) => head :: toListRecursive(force tail)
         }
 
@@ -32,7 +32,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
         @Tailrec
         def go(xs, acc) =
             match xs {
-                case Empty => List.reverse(acc)
+                case Empty            => List.reverse(acc)
                 case Cons(head, tail) => go(force tail, head :: acc)
             };
         go(ll, Nil)
@@ -43,7 +43,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
             @Tailrec
             def go(xs) =
                 match xs {
-                    case Empty => MutList.toList(buf)
+                    case Empty            => MutList.toList(buf)
                     case Cons(head, tail) => MutList.push(head, buf); go(force tail)
                 };
             go(ll)
@@ -51,7 +51,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
 
     pub def foldRight(f: (a, b) -> b \ ef, z: b, ll: LazyList[a]): b \ ef =
         match ll {
-            case Empty => z
+            case Empty            => z
             case Cons(head, tail) => f(head, foldRight(f, z, force tail))
         }
 
@@ -61,7 +61,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
     @Tailrec
     pub def find(f: a -> Bool \ ef, ll: LazyList[a]): Option[a] \ ef =
         match ll {
-            case Empty => None
+            case Empty            => None
             case Cons(head, tail) => if (f(head)) Some(head) else find(f, force tail)
         }
 
@@ -70,15 +70,15 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
     pub def take(n: Int32, ll: LazyList[a]): LazyList[a] =
         match ll {
             case Cons(head, tail) if n > 1 => Cons(head, lazy take(n - 1, force tail))
-            case Cons(head, _) if n == 1 => Cons(head, lazy Empty)
-            case _ => Empty
+            case Cons(head, _) if n == 1   => Cons(head, lazy Empty)
+            case _                         => Empty
         }
 
     @Tailrec
     pub def drop(n: Int32, ll: LazyList[a]): LazyList[a] =
         match ll {
             case Cons(_, tail) if n > 0 => drop(n - 1, force tail)
-            case _ => ll
+            case _                      => ll
         }
 
     // Exercise 5.3: 遅延リストの先頭から条件を満たす限り続けて要素を返す関数 `takeWhile` を定義せよ。
@@ -86,7 +86,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
     pub def takeWhile(p: a -> Bool, ll: LazyList[a]): LazyList[a] =
         match ll {
             case Cons(head, tail) if p(head) => Cons(head, lazy takeWhile(p, force tail))
-            case _ => Empty
+            case _                           => Empty
         }
 
     // Exercise 5.4: 遅延リストのすべての要素が条件を満たすかどうかを判定する関数 `forAll` を定義せよ。
@@ -142,7 +142,7 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
 
     pub def unfold(f: s -> Option[(a, s)], state: s): LazyList[a] =
         match f(state) {
-            case None => Empty
+            case None                    => Empty
             case Some((head, nextState)) => Cons(head, lazy unfold(f, nextState))
         }
 
@@ -174,52 +174,70 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
     // `zipAll` は2つの遅延リストが両方とも尽きるまでそれぞれ先頭から順に取り出して対応する要素をペアにして返す。
 
     pub def mapViaUnfold(f: a -> b, ll: LazyList[a]): LazyList[b] =
-        unfold(x -> match x {
-            case Empty => None
-            case Cons(head, tail) => Some((f(head), force tail))
-        }, ll)
+        unfold(
+            x -> match x {
+                case Empty            => None
+                case Cons(head, tail) => Some((f(head), force tail))
+            },
+            ll
+        )
 
     pub def takeViaUnfold(n: Int32, ll: LazyList[a]): LazyList[a] =
-        unfold(x -> match x {
-            case (m, Cons(head, tail)) if m > 1 => Some((head, (m - 1, force tail)))
-            case (m, Cons(head, _)) if m == 1 => Some((head, (0, Empty)))
-            case _ => None
-        }, (n, ll))
+        unfold(
+            x -> match x {
+                case (m, Cons(head, tail)) if m > 1 => Some((head, (m - 1, force tail)))
+                case (m, Cons(head, _)) if m == 1   => Some((head, (0, Empty)))
+                case _                              => None
+            },
+            (n, ll)
+        )
 
     pub def takeWhileViaUnfold(p: a -> Bool, ll: LazyList[a]): LazyList[a] =
-        unfold(x -> match x {
-            case Cons(head, tail) if p(head) => Some((head, force tail))
-            case _ => None
-        }, ll)
+        unfold(
+            x -> match x {
+                case Cons(head, tail) if p(head) => Some((head, force tail))
+                case _                           => None
+            },
+            ll
+        )
 
     pub def zipWith(f: (a, b) -> c, ll1: LazyList[a], ll2: LazyList[b]): LazyList[c] =
-        unfold(x -> match x {
-            case (Cons(head1, tail1), Cons(head2, tail2)) =>
-                Some((f(head1, head2), (force tail1, force tail2)))
-            case _ => None
-        }, (ll1, ll2))
+        unfold(
+            x -> match x {
+                case (Cons(head1, tail1), Cons(head2, tail2)) =>
+                    Some((f(head1, head2), (force tail1, force tail2)))
+                case _ => None
+            },
+            (ll1, ll2)
+        )
 
     // `zipWith` の特殊ケース
     pub def zip(ll1: LazyList[a], ll2: LazyList[b]): LazyList[(a, b)] =
         zipWith((x, y) -> (x, y), ll1, ll2)
 
     pub def zipAll(ll1: LazyList[a], ll2: LazyList[b]): LazyList[(Option[a], Option[b])] =
-        unfold(x -> match x {
-            case (Empty, Empty) => None
-            case (Cons(head1, tail1), Empty) => Some(((Some(head1), None), (force tail1, Empty)))
-            case (Empty, Cons(head2, tail2)) => Some(((None, Some(head2)), (Empty, force tail2)))
-            case (Cons(head1, tail1), Cons(head2, tail2)) =>
-                Some(((Some(head1), Some(head2)), (force tail1, force tail2)))
-        }, (ll1, ll2))
+        unfold(
+            x -> match x {
+                case (Empty, Empty) => None
+                case (Cons(head1, tail1), Empty) => Some(((Some(head1), None), (force tail1, Empty)))
+                case (Empty, Cons(head2, tail2)) => Some(((None, Some(head2)), (Empty, force tail2)))
+                case (Cons(head1, tail1), Cons(head2, tail2)) =>
+                    Some(((Some(head1), Some(head2)), (force tail1, force tail2)))
+            },
+            (ll1, ll2)
+        )
 
     pub def zipWithAll(f: (Option[a], Option[b]) -> c, ll1: LazyList[a], ll2: LazyList[b]): LazyList[c] =
-        unfold(x -> match x {
-            case (Empty, Empty) => None
-            case (Cons(head1, tail1), Empty) => Some((f(Some(head1), None), (force tail1, Empty)))
-            case (Empty, Cons(head2, tail2)) => Some((f(None, Some(head2)), (Empty, force tail2)))
-            case (Cons(head1, tail1), Cons(head2, tail2)) =>
-                Some((f(Some(head1), Some(head2)), (force tail1, force tail2)))
-        }, (ll1, ll2))
+        unfold(
+            x -> match x {
+                case (Empty, Empty) => None
+                case (Cons(head1, tail1), Empty) => Some((f(Some(head1), None), (force tail1, Empty)))
+                case (Empty, Cons(head2, tail2)) => Some((f(None, Some(head2)), (Empty, force tail2)))
+                case (Cons(head1, tail1), Cons(head2, tail2)) =>
+                    Some((f(Some(head1), Some(head2)), (force tail1, force tail2)))
+            },
+            (ll1, ll2)
+        )
 
     // `zipWithAll` の特殊ケース
     pub def zipAllViaZipWithAll(ll1: LazyList[a], ll2: LazyList[b]): LazyList[(Option[a], Option[b])] =
@@ -237,10 +255,15 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
 
     pub def tails(ll: LazyList[a]): LazyList[LazyList[a]] =
         Cons(Empty, lazy Empty)
-            |> append(unfold(x -> match x {
-                case Empty => None
-                case Cons(head, tail) => Some((Cons(head, tail), force tail))
-            }, ll))
+            |> append(
+                unfold(
+                    x -> match x {
+                        case Empty            => None
+                        case Cons(head, tail) => Some((Cons(head, tail), force tail))
+                    },
+                    ll
+                )
+            )
 
     pub def hasSubsequence(sub: {sub = LazyList[a]}, sup: LazyList[a]): Bool with Eq[a] =
         exists(startsWith(prefix = sub#sub), tails(sup))
@@ -248,9 +271,10 @@ pub mod FpInFlix.Answers.Laziness.LazyList {
     // Exercise 5.16: `tails` を一般化して、 `foldRight` の累積値を要素とする遅延リストを返す関数 `scanRight` を定義せよ。
 
     pub def scanRight(f: (a, b) -> b \ ef, init: b, ll: LazyList[a]): LazyList[b] \ ef =
-        foldRight((x, acc) ->
-            let y = f(x, fst(acc));
-            (y, Cons(y, lazy snd(acc))),
+        foldRight(
+            (x, acc) ->
+                let y = f(x, fst(acc));
+                (y, Cons(y, lazy snd(acc))),
             (init, Cons(init, lazy Empty)),
             ll
         )
